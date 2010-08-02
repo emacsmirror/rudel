@@ -1,4 +1,10 @@
 * Future
+** TODO Generic read functions instead of ones in each backend
+   + Components ::
+   + Type :: task
+   + Priority :: major
+   + Reporter :: Joe
+   + Assigned ::
 ** TODO Have a function to terminate the server
    + Components ::
    + Type :: task
@@ -362,6 +368,23 @@
 
 
 * Milestone rudel-0.3							:0.3:
+** NEW Choosing an already taken color can lead to missing update
+   + Component :: obby backend
+   + Type :: defect
+   + Priority :: major
+   + Reporter :: joe
+   + Assigned :: jan
+   Steps to reproduce the problem
+   1. Start Emacs process (A)
+   2. Host session in A
+   3. Join session in A
+   4. Start Emacs process (B)
+   5. Join session in B specifying a color that clashes with A's color
+      choice
+   6. To complete joining the session, choosing a different color is
+      required
+   In the resulting state A's (and maybe also the server's?)
+   representation of B still uses the original color
 ** TODO Enable modes by default?
    + Component :: configuration
    + Type :: task
