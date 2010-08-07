@@ -4,13 +4,18 @@
 
 * Related Work
 ** SubEthaEdit
-   http://www.codingmonkeys.de/subethaedit/
+   + http://www.codingmonkeys.de/subethaedit/
 ** Gobby
-   http://gobby.0x539.de/trac/
+   + http://gobby.0x539.de/trac/
 ** Eclipse Communication Framework
-   http://www.eclipse.org/ecf/
+   + http://www.eclipse.org/ecf/
 ** Saros
-   https://www.inf.fu-berlin.de/w/SE/DPP
+   + https://www.inf.fu-berlin.de/w/SE/DPP
+** XML Sync Islands
+   + http://hyperstruct.net/2007/02/24/xml-sync-islands-let-the-web-sharing-begin/
+   + http://www.sameplace.cc/
+** Google Wave [discontinued]
+   + http://wave.google.com
 * Rudel's Architecture
   #+BEGIN_CENTER
   #+CAPTION: Overview of Rudel's architecture
@@ -38,12 +43,12 @@
 ** Protocol Backends
 *** Obby Backend
     #+BEGIN_CENTER
-    #+CAPTION: Client connection state machine</title>
+    #+CAPTION: Client connection state machine
     file:./images/obby-client-connection-states.png
     #+END_CENTER
 *** Infinote Backend
     #+BEGIN_CENTER
-    #+CAPTION: Client connection state machine</title>
+    #+CAPTION: Client connection state machine
     file:./images/infinote-client-connection-states.png
     #+END_CENTER
 ** Transport Backends
@@ -63,3 +68,7 @@
      #+BEGIN_SRC sh
      tc qdisc del dev lo root handle 1:0
      #+END_SRC
+
+* Settings							   :noexport:
+#+STYLE: <link rel="stylesheet" type="text/css" href="manual.css"/>
+#+STARTUP: showeverything
