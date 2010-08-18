@@ -522,7 +522,7 @@ line publish state mode; otherwise, turn it off."
     ;; Define sub keymap
     (define-key sub-map "j" #'rudel-join-session)
     (define-key sub-map "h" #'rudel-host-session)
-    (define-key sub-map "e" #'rudel-end-session)
+    (define-key sub-map "e" #'rudel-leave-session)
 
     (define-key sub-map "c" #'rudel-change-color)
 
