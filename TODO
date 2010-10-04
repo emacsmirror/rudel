@@ -1,24 +1,23 @@
 * Future
-** TODO Generic read functions instead of ones in each backend
-   + Components ::
+** TODO Advice buffer-list to show publication status of buffers
+   + Components :: user interface
    + Type :: task
-   + Priority :: major
-   + Reporter :: Joe
+   + Priority :: minor
+   + Reporter :: joe
+   + Assigned ::
+** TODO Generic read functions instead of ones in each backend
+   + Components :: user interface, protocol backends, transport
+        backends
+   + Type :: task
+   + Priority :: minor
+   + Reporter :: joe
    + Assigned ::
 ** TODO Have a function to terminate the server
    + Components ::
    + Type :: task
    + Priority :: major
-   + Reporter :: Joe
+   + Reporter :: joe
    + Assigned ::
-** TODO Remember inputs and use as default when prompting again
-   + Components :: user interface
-   + Type :: task
-   + Priority :: minor
-   + Reporter :: Joe
-   + Assigned ::
-   Remember answers to session information prompts and use them as
-   defaults for later prompts if default values cannot be inferred
 ** TODO Transmit text properties
    + Components :: multiple components affected
    + Type :: task
@@ -241,6 +240,14 @@
    `rudel-header-subscriptions-minor-mode' displays users in the
    header line. This string can get too long, displacing some elements
    from the screen. It has to be shortened then.
+** STARTED Remember inputs and use as default when prompting again
+   + Components :: user interface
+   + Type :: task
+   + Priority :: minor
+   + Reporter :: joe
+   + Assigned ::
+   Remember answers to session information prompts and use them as
+   defaults for later prompts if default values cannot be inferred
 ** STARTED Allow users to insert comments		    :branch_comments:
    + Component :: multiple components affected
    + Type :: task
