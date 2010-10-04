@@ -313,6 +313,19 @@
    + Assigned ::
    Taking control over saturation and value away from the user makes
    it impossible to choose unreadable colors.
+
+** STARTED Infinote client functionality
+   + Component :: infinote-backend
+   + Type :: task
+   + Priority :: major
+   + Reporter :: jan
+   + Assigned :: jan
+** STARTED Support for trees of documents
+   + Component :: rudel-general
+   + Type :: task
+   + Priority :: major
+   + Reporter :: jan
+   + Assigned :: jan
 ** STARTED Use auth-source or secrets.el for passwords
    + Components ::
    + Type :: task
@@ -354,12 +367,6 @@
    + Assigned ::
    + Indicate who is currently editing a document
    + Idle mechanism for users?
-** STARTED Telepathy transport				   :branch_telepathy:
-   + Component :: telepathy-backend
-   + Type :: task
-   + Priority :: minor
-   + Reporter :: jan
-   + Assigned ::
 ** STARTED SubEthaEdit client functionality
    + Component :: subethaedit-backend
    + Type :: task
@@ -454,16 +461,10 @@
    + Priority :: minor
    + Reporter :: jan
    + Assigned ::
-** STARTED Support for trees of documents
-   + Component :: rudel-general
+** STARTED Telepathy transport				   :branch_telepathy:
+   + Component :: telepathy-backend
    + Type :: task
-   + Priority :: major
-   + Reporter :: jan
-   + Assigned :: jan
-** STARTED Infinote client functionality
-   + Component :: infinote-backend
-   + Type :: task
-   + Priority :: major
+   + Priority :: minor
    + Reporter :: jan
    + Assigned :: jan
 ** DONE Rename rudel-unpublish-buffer -> rudel-unsubscribe
