@@ -461,10 +461,16 @@
    + Priority :: minor
    + Reporter :: jan
    + Assigned ::
+** STARTED Telepathy session initiation			   :branch_telepathy:
+   + Component :: telepathy-backend
+   + Type :: task
+   + Priority :: major
+   + Reported :: jan
+   + Assigned :: jan
 ** STARTED Telepathy transport				   :branch_telepathy:
    + Component :: telepathy-backend
    + Type :: task
-   + Priority :: minor
+   + Priority :: major
    + Reporter :: jan
    + Assigned :: jan
 ** DONE Rename rudel-unpublish-buffer -> rudel-unsubscribe
