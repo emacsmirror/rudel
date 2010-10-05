@@ -1,4 +1,12 @@
 * Future
+** TODO Persistent Sessions
+   + Components :: protocol backends
+   + Type :: task
+   + Priority :: minor
+   + Reporter :: jan
+   + Assigned ::
+   Server components should be able to save the state of a session
+   (documents, users, etc.) to disk and restore it later
 ** TODO Advice buffer-list to show publication status of buffers
    + Components :: user interface
    + Type :: task
