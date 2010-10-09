@@ -927,7 +927,7 @@ will be prompted for."
 
     ;; Create the listener and session object.
     (setq listener (rudel-wait-for-connections
-		    transport-backend info #'ignore))
+		    transport-backend info #'rudel-ask-listen-info))
     (setq session  (rudel-host protocol-backend listener info))
 
     ;; Advertise the new session using registered session initiation
