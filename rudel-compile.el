@@ -66,7 +66,7 @@
       (add-to-list 'load-path subdir))
 
     ;; Byte compile everything.
-    ;(byte-recompile-directory rudel-dir 0)
+    (byte-recompile-directory rudel-dir 0)
 
     ;; Update autoloads.
     (let ((generated-autoload-file loaddefs))
