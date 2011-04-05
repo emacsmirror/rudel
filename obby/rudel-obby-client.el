@@ -1,6 +1,6 @@
 ;;; rudel-obby-client.el --- Client functions of the Rudel obby backend
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008, 2009, 2010, 2011 Jan Moringen
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, client
@@ -103,11 +103,18 @@
   ((this rudel-obby-client-state-encryption-start))
   "Handle net6 'encryption_begin' message."
   ;; Start TLS encryption for the connection.
-  (with-slots (transport) (oref this :connection)
-    (let ((root-transport (oref transport :root-transport)))
-      (when (rudel-start-tls-transport-child-p root-transport)
-	(rudel-enable-encryption root-transport)
-	(sit-for 1))))
+  (let* ((connection     (oref this :connection))
+	 (info           (oref connection :info))
+	 (transport      (oref connection :transport))
+	 (root-transport (oref transport :root-transport)))
+    (when (plist-get info :encryption)
+      (if (rudel-start-tls-transport-child-p root-transport)
+	  (progn
+	    (rudel-enable-encryption root-transport)
+	    (sit-for 1))
+	(warn "An encrypted connection has been requested, but
+the selected transport `%s' does not support encryption"
+	      (object-class root-transport)))))
 
   ;; The connection is now established
   'waiting-for-join-info)
