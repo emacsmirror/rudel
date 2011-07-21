@@ -1,6 +1,6 @@
 ;;; rudel-icons.el --- Icons used by Rudel
 ;;
-;; Copyright (C) 2008, 2009 Jan Moringen
+;; Copyright (C) 2008, 2009, 2011 Jan Moringen
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, icons
@@ -44,7 +44,7 @@
 (defconst rudel-icons-image-formats '(svg png)
   "Image formats to try (in that order) when loading Rudel icons.")
 
-(defconst rudel-icons-directory
+(defvar rudel-icons-directory
   (file-name-as-directory
    (concat (file-name-directory load-file-name)  "icons"))
   "Directory that holds Rudel icon files.")
@@ -64,14 +64,13 @@ associate with the image."
 		  `(:type   ,type
 		    :ascent center
 		    :mask   heuristic
-		    :file   ,(concat rudel-icons-directory
-				     name "." (symbol-name type))))
+		    :file   ,(concat name "." (symbol-name type))))
 		rudel-icons-image-formats)))
-    `(defimage ,icon
-       (,@specs)
-       ,(or docstring
-	    (format "%s icon." (capitalize name)))))
-  )
+    `(let ((image-load-path (list rudel-icons-directory)))
+       (defimage ,icon
+	 (,@specs)
+	 ,(or docstring
+	      (format "%s icon." (capitalize name)))))))
 
 
 ;;; Image definitions
