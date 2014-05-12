@@ -1,6 +1,6 @@
 ;;; rudel-interactive.el --- User interaction functions for Rudel.
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, user, interface, interaction
@@ -38,6 +38,7 @@
 
 ;;; Code:
 ;;
+(require 'cl)
 
 (require 'rudel-compat) ;; for `read-color' replacement
 (require 'rudel-backend) ;; for `rudel-backend-cons-p'
@@ -80,24 +81,28 @@ the name as string."
     (setq prompt "Session: "))
   ;; For presentation and identification of sessions, use the :name
   ;; property.
-  (flet ((to-string (session)
-		    (if (rudel-backend-cons-p session)
-			(symbol-name (car session))
-		      (plist-get session :name))))
+  (let ((to-string
+         (lambda (session)
+           (if (rudel-backend-cons-p session)
+               (symbol-name (car session))
+             (plist-get session :name)))))
     ;; Read a session by name, then return that name or the
     ;; corresponding session info.
     (let ((session-name (completing-read prompt
-					 (mapcar #'to-string sessions)
+					 (mapcar to-string sessions)
 					 nil t)))
       (cond
        ((eq return 'object)
 	(find session-name sessions
-	      :key  #'to-string :test #'string=))
+	      :key to-string :test #'string=))
        (t session-name))))
   )
 
 (defvar rudel-read-user-name-history nil
   "History of inputs read by `rudel-read-user-name'.")
+
+(defvar rudel-default-username)
+(defvar rudel-current-session)
 
 (defun rudel-read-user-name ()
   "Read a username.

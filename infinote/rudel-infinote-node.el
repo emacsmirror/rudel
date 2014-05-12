@@ -1,6 +1,6 @@
 ;;; rudel-infinote-node.el --- Base class of infinote node classes
 ;;
-;; Copyright (C) 2010 Jan Moringen
+;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, node

@@ -1,6 +1,6 @@
 ;;; rudel-protocol.el --- Interface implemented by Rudel protocol backends
 ;;
-;; Copyright (C) 2009 Jan Moringen
+;; Copyright (C) 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, backend, protocol

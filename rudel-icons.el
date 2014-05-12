@@ -1,6 +1,6 @@
 ;;; rudel-icons.el --- Icons used by Rudel
 ;;
-;; Copyright (C) 2008, 2009, 2011 Jan Moringen
+;; Copyright (C) 2008, 2009, 2011, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, icons
@@ -41,8 +41,9 @@
 ;;; Image constants
 ;;
 
+(eval-and-compile
 (defconst rudel-icons-image-formats '(svg png)
-  "Image formats to try (in that order) when loading Rudel icons.")
+  "Image formats to try (in that order) when loading Rudel icons."))
 
 (defvar rudel-icons-directory
   (file-name-as-directory

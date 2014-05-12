@@ -1,6 +1,6 @@
 ;;; rudel-infinote-state.el --- Base classes for infinote states
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinotes, states

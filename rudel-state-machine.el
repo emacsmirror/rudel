@@ -1,6 +1,6 @@
 ;;; rudel-state-machine.el --- A simple state machine for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, fsm
@@ -41,8 +41,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'eieio)
 

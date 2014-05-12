@@ -1,6 +1,6 @@
 ;;; rudel-infinote.el --- Infinote backend for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, gobby, infinote, protocol
@@ -54,7 +54,7 @@
 ;;; Class rudel-infinote-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-infinote-backend (rudel-protocol-backend)
   ((capabilities :initform '(join
 			     change-color
@@ -167,11 +167,11 @@ document) associated to the new group."
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'protocol)
 		   'infinote 'rudel-infinote-backend)
 
-;;;###autoload
+;;;###rudel-autoload
 (eval-after-load 'rudel-zeroconf
   '(rudel-zeroconf-register-service "_infinote._tcp"
 				    'xmpp 'infinote))

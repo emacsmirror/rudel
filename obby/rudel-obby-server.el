@@ -1,6 +1,6 @@
 ;;; rudel-obby-server.el --- Server component of the Rudel obby backend
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, server

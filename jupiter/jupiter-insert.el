@@ -1,6 +1,6 @@
 ;;; jupiter-insert.el --- Jupiter insert operation
 ;;
-;; Copyright (C) 2009 Jan Moringen
+;; Copyright (C) 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: jupiter, operation, insert

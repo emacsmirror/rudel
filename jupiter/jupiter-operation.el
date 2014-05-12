@@ -1,6 +1,6 @@
 ;;; jupiter-operation.el --- Operation base class for jupiter algorithm
 ;;
-;; Copyright (C) 2009 Jan Moringen
+;; Copyright (C) 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Jupiter, operation, base

@@ -1,5 +1,7 @@
+*~
 *.elc
 Makefile
-rudel-loaddefs.el
+rudel-pkg.el
+rudel-autoloads.el
 *.log
 doc/auto

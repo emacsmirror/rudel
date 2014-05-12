@@ -1,6 +1,6 @@
 ;;; rudel-wave.el --- A Wave backend for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, Wave protocol, backend
@@ -50,7 +50,7 @@
 ;;; Class rudel-wave-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-wave-backend (rudel-protocol-backend)
   ((capabilities :initform '(join
 			     chat
@@ -69,7 +69,7 @@ connections.")
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'protocol)
 		   'wave 'rudel-wave-backend)
 

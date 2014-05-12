@@ -1,6 +1,6 @@
 ;;; rudel-tls.el --- Start TLS protocol.
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008, 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, TLS, encryption, starttls, gnutls
@@ -244,7 +244,7 @@ capability.")
 ;;; Class rudel-start-tls-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-start-tls-backend (rudel-transport-backend)
   ((capabilities :initform (connect encrypt)))
   "STARTTLS transport backend.
@@ -319,7 +319,7 @@ and :port."
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'transport)
 		   'start-tls 'rudel-start-tls-backend)
 

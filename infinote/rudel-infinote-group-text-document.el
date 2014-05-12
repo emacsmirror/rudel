@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-text-document.el --- Communication group used by text documents
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, communication, group, text, document

@@ -1,6 +1,6 @@
 ;;; rudel-infinote-errors.el --- Error data used in the infinote Rudel backend
 ;;
-;; Copyright (C) 2010 Jan Moringen
+;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, infinote, errors

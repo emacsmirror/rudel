@@ -1,6 +1,6 @@
 ;;; rudel-color.el --- Color manipulation functions for Rudel
 ;;
-;; Copyright (C) 2010 Jan Moringen
+;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, color, color space
@@ -46,6 +46,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl))
 
 ;;; RGV <-> HSV conversion
 ;;

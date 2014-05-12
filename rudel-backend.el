@@ -1,6 +1,6 @@
 ;;; rudel-backend.el --- A generic backend management mechanism for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, backend, factory
@@ -46,8 +46,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'warnings)
 
@@ -81,7 +80,7 @@ symbol, that each describe one capability of the backend."))
 ;;; Class rudel-backend-factory
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-backend-factory ()
   ((backends  :initarg   :backends
 	      :type       hash-table
@@ -106,7 +105,7 @@ category each.")
     (call-next-method))
   (oset this :backends (make-hash-table :test #'eq)))
 
-;;;###autoload
+;;;###rudel-autoload
 (defmethod rudel-get-factory :static ((this rudel-backend-factory)
 				      category)
   "Return the factory responsible for CATEGORY.
@@ -116,7 +115,7 @@ If there is no responsible factory, create one and return it."
 	(puthash category (rudel-backend-factory category) factories)))
   )
 
-;;;###autoload
+;;;###rudel-autoload
 (defmethod rudel-add-backend ((this rudel-backend-factory)
 			      name class &optional replace)
   "Add factory class CLASS with name NAME to THIS.
@@ -215,13 +214,13 @@ objects."
        (symbolp (car cell))
        (object-p (cdr cell))))
 
-;;;###autoload
+;;;###rudel-autoload
 (defun rudel-backend-get (category name)
   "A shortcut for getting backend NAME of category CATEGORY.
 The returned backend is of the form (NAME . OBJECT)."
   (rudel-get-backend (rudel-backend-get-factory category) name))
 
-;;;###autoload
+;;;###rudel-autoload
 (defun rudel-backend-get-factory (category)
   "A shortcut for getting the factory object for CATEGORY."
   (rudel-get-factory rudel-backend-factory category))

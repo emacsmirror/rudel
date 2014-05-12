@@ -1,6 +1,6 @@
 ;;; rudel-tcp.el --- socket transport backend for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, socket, transport, backend
@@ -164,7 +164,7 @@ be a transport object representing the incoming connection."))
 ;;; Class rudel-tcp-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-tcp-backend (rudel-transport-backend)
   ((capabilities :initform (listen connect)))
   "TCP transport backend.
@@ -270,7 +270,7 @@ INFO has to be a property list containing the key :port."
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'transport)
 		   'tcp 'rudel-tcp-backend)
 

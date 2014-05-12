@@ -1,6 +1,6 @@
 ;;; rudel-display.el --- Display functions for Rudel objects
 ;;
-;; Copyright (C) 2009 Jan Moringen
+;; Copyright (C) 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, display, icons, text, representation

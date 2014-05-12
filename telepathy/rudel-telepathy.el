@@ -1,6 +1,6 @@
 ;;; rudel-telepathy.el --- A telepathy backend for Rudel
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008, 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, telepathy, backend
@@ -53,7 +53,7 @@
 ;;;  Class rudel-telepathy-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-telepathy-backend (rudel-transport-backend)
   ((capabilities :initform '()))
   "Class rudel-telepathy-backend ")
@@ -69,7 +69,7 @@
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'transport)
 		   'telepathy 'rudel-telepathy-backend)
 

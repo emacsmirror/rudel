@@ -1,6 +1,6 @@
 ;;; rudel-speedbar.el --- Speedbar rendering of Rudel objects
 ;;
-;; Copyright (C) 2008, 2009 Jan Moringen
+;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration, speedbar
@@ -76,6 +76,8 @@
 (defvar rudel-speedbar-menu
   '([ "Subscribe" #'ignore t])
   "Menu part in easymenu format used in speedbar while browsing objects.")
+
+(defvar rudel-current-session)
 
 (defun rudel-speedbar-toplevel-buttons (dir)
   "Return a list of objects to display in speedbar.

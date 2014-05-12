@@ -1,6 +1,6 @@
 ;;; rudel-xmpp.el --- XMPP transport backend for Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, transport, backend
@@ -63,7 +63,7 @@
 ;;; Class rudel-xmpp-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-xmpp-backend (rudel-transport-backend)
   ((capabilities :initform '(connect)))
   "Transport backend works by transporting XMPP messages through
@@ -419,7 +419,7 @@ previously shelved data"
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'transport)
 		   'xmpp 'rudel-xmpp-backend)
 

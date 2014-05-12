@@ -1,6 +1,6 @@
 ;;; rudel-xml.el --- XML processing functions used by Rudel
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xml
@@ -45,6 +45,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl))
 (require 'xml)
 
 

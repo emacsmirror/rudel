@@ -1,6 +1,6 @@
 ;;; rudel-transport-util.el --- Utility functions for Rudel transport functionality
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, backend, transport, utility, miscellaneous
@@ -48,7 +48,9 @@
 
 ;;; Code:
 ;;
-
+(eval-when-compile (require 'cl))
+(require 'eieio)
+(eval-when-compile (require 'rudel-util))
 (require 'rudel-errors) ;; for `rudel-error'
 (require 'rudel-transport)
 

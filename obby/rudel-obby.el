@@ -1,6 +1,6 @@
 ;;; rudel-obby.el --- An obby backend for Rudel
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, implementation
@@ -79,7 +79,7 @@ multiple chunks.")
 ;;; Class rudel-obby-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-obby-backend (rudel-protocol-backend)
   ((capabilities :initform '(join host
 			     change-color
@@ -454,11 +454,11 @@ The resulting message is a string that looks like this:
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'protocol)
 		   'obby 'rudel-obby-backend)
 
-;;;###autoload
+;;;###rudel-autoload
 (eval-after-load 'rudel-zeroconf
   '(rudel-zeroconf-register-service "_lobby._tcp"
 				    'start-tls 'obby))

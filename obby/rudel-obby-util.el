@@ -1,6 +1,6 @@
 ;;; rudel-obby-util.el --- Miscellaneous functions for the Rudel obby backend
 ;;
-;; Copyright (C) 2008, 2009 Jan Moringen
+;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, obby, backend, miscellaneous

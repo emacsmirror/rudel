@@ -1,6 +1,6 @@
 ;;; rudel-zeroconf.el --- Zeroconf support for Rudel
 ;;
-;; Copyright (C) 2008, 2009 Jan Moringen
+;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, service, discovery, advertising, zeroconf,
@@ -87,7 +87,7 @@ Each element is of the form
 	:key key :test (if (eq key 'rudel-zeroconf-service-type)
 			   #'string= #'eq)))
 
-;;;###autoload
+;;;###rudel-autoload
 (defun rudel-zeroconf-register-service
   (type transport-backend protocol-backend)
   "Add an entry for TYPE with TRANSPORT-BACKEND and PROTOCOL-BACKEND to the list of service types.
@@ -109,7 +109,7 @@ service type TYPE."
 ;;; Class rudel-zeroconf-backend
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-zeroconf-backend (rudel-session-initiation-backend)
   ((capabilities :initform (discover advertise))
    (priority     :initform primary))
@@ -259,7 +259,7 @@ service type TYPE."
 ;;; Autoloading
 ;;
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'session-initiation)
 		   'zeroconf 'rudel-zeroconf-backend)
 

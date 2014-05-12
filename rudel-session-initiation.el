@@ -1,6 +1,6 @@
 ;;; rudel-session-initiation.el --- Session discovery and advertising functions
 ;;
-;; Copyright (C) 2009, 2010 Jan Moringen
+;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, session, initiation, service, discovery, advertising
@@ -54,8 +54,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'eieio)
 
@@ -259,7 +258,7 @@ advertise the session."
 (defconst rudel-ask-protocol-version '(0 2)
   "Version of the ask-protocol backend for Rudel.")
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-ask-protocol-backend (rudel-session-initiation-backend)
   ((capabilities :initform (discover))
    (priority     :initform fallback))
@@ -295,7 +294,7 @@ required by the chosen backend.")
 	     :transport-backend transport-backend)))))
   )
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'session-initiation)
 		   'ask-protocol 'rudel-ask-protocol-backend)
 
@@ -306,7 +305,7 @@ required by the chosen backend.")
 (defconst rudel-configured-sessions-version '(0 2)
   "Version of the configured-sessions backend for Rudel.")
 
-;;;###autoload
+;;;###rudel-autoload
 (defclass rudel-configured-sessions-backend
   (rudel-session-initiation-backend)
   ((capabilities :initform (discover))
@@ -329,7 +328,7 @@ configured using customization.")
   (mapcar #'rudel-session-initiation-adjust-info
 	  rudel-configured-sessions))
 
-;;;###autoload
+;;;###rudel-autoload
 (rudel-add-backend (rudel-backend-get-factory 'session-initiation)
 		   'configured-sessions 'rudel-configured-sessions-backend)
 

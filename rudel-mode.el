@@ -1,6 +1,6 @@
 ;;; rudel-mode.el --- Global and buffer-local Rudel minor modes
 ;;
-;; Copyright (C) 2008, 2009, 2010 Jan Moringen
+;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, mode
@@ -48,6 +48,7 @@
 ;;; Code:
 ;;
 
+(require 'cl)
 (require 'easy-mmode)
 (require 'easymenu)
 
@@ -131,6 +132,8 @@
 	  (rudel-header-subscriptions--make-format
 	   (rudel-buffer-document))))
   (force-mode-line-update))
+
+(defvar rudel-header-subscriptions-minor-mode)
 
 (defun rudel-header-subscriptions--options-changed ()
   "Update headers in buffers that have header subscriptions mode enabled."
@@ -228,8 +231,7 @@ subscriptions mode; otherwise, turn it off."
 			  #'rudel-header-subscriptions--remove-user))
 
     ;; Reset header line to default format.
-    (setq header-line-format default-header-line-format)
-    (force-mode-line-update)) ;; TODO remove all handlers
+    (kill-local-variable 'header-line-format)) ;; TODO remove all handlers
 
    ;; No buffer document
    (t
@@ -237,8 +239,7 @@ subscriptions mode; otherwise, turn it off."
     (setq rudel-header-subscriptions-minor-mode nil)
 
     ;; Reset header line to default format.
-    (setq header-line-format default-header-line-format)
-    (force-mode-line-update)))
+    (kill-local-variable 'header-line-format)))
   )
 
 
@@ -410,6 +411,8 @@ of the buffer.")
   ;; Update the mode line.
   (force-mode-line-update)
   )
+
+(defvar rudel-mode-line-publish-state-minor-mode)
 
 (defun rudel-mode-line-publish-state--document-attach (document buffer)
   "Handle attaching of DOCUMENT to BUFFER.
