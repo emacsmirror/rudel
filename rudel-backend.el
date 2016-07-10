@@ -1,6 +1,6 @@
 ;;; rudel-backend.el --- A generic backend management mechanism for Rudel
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, backend, factory
@@ -96,24 +96,34 @@ factory objects."))
   "Factory class that holds an object for each known backend
 category. Objects manage backend implementation for one backend
 category each.")
-(oset-default rudel-backend-factory factories
+(oset-default 'rudel-backend-factory factories
 	      (make-hash-table :test #'eq))
 
-(defmethod initialize-instance ((this rudel-backend-factory) &rest slots)
+(defmethod initialize-instance ((this rudel-backend-factory) &rest _slots)
   "Initialize slots of THIS with SLOTS."
   (when (next-method-p)
     (call-next-method))
-  (oset this :backends (make-hash-table :test #'eq)))
+  (oset this backends (make-hash-table :test #'eq)))
+
+;;;###rudel-autoload
+(progn
+(defmacro rudel--with-memoization (place &rest code)
+  (declare (indent 1) (debug t))
+  (gv-letplace (getter setter) place
+    `(or ,getter
+         ,(macroexp-let2 nil val (macroexp-progn code)
+            `(progn
+               ,(funcall setter val)
+               ,val))))))
 
 ;;;###rudel-autoload
 (defmethod rudel-get-factory :static ((this rudel-backend-factory)
 				      category)
   "Return the factory responsible for CATEGORY.
 If there is no responsible factory, create one and return it."
-  (with-slots (factories) this
-    (or (gethash category factories)
-	(puthash category (rudel-backend-factory category) factories)))
-  )
+  (rudel--with-memoization
+   (gethash category (eieio-oref-default this 'factories))
+   (make-instance 'rudel-backend-factory))) ;; category
 
 ;;;###rudel-autoload
 (defmethod rudel-add-backend ((this rudel-backend-factory)
@@ -187,7 +197,8 @@ objects."
        (unless (object-p class)
 	 (condition-case error
 	     (puthash name (make-instance
-			    class (symbol-name name)) backends)
+			    class (symbol-name name))
+                      backends)
 	   (error
 	    ;; Store this error on the name symbol of the backend for
 	    ;; later display.
@@ -223,7 +234,7 @@ The returned backend is of the form (NAME . OBJECT)."
 ;;;###rudel-autoload
 (defun rudel-backend-get-factory (category)
   "A shortcut for getting the factory object for CATEGORY."
-  (rudel-get-factory rudel-backend-factory category))
+  (rudel-get-factory 'rudel-backend-factory category))
 
 (defun rudel-backend-suitable-backends (category predicate)
   "Return backends from category CATEGORY that satisfy PREDICATE.
@@ -289,15 +300,15 @@ available information available for the backends"
 
      ;; Insert all backends provided by this factory.
      (dolist (backend (rudel-all-backends factory))
-       (if (or (object-p (cdr backend))
-	       (null (get (car backend)
-			  'rudel-backend-last-load-error)))
-	   (insert (rudel-backend--format-backend-normal backend))
-	 (insert (rudel-backend--format-backend-error backend))))
+       (insert (if (or (object-p (cdr backend))
+                       (null (get (car backend)
+                                  'rudel-backend-last-load-error)))
+                   (rudel-backend--format-backend-normal backend)
+                 (rudel-backend--format-backend-error backend))))
 
      ;; One empty line between backend categories.
      (insert "\n"))
-   (oref rudel-backend-factory factories))
+   (oref-default 'rudel-backend-factory factories))
   (current-buffer))
 
 (defun rudel-backend--format-backend-normal (backend)
@@ -315,7 +326,7 @@ available information available for the backends"
 	  (propertize
 	   (if (object-p (cdr backend))
 	       (mapconcat #'prin1-to-string
-			  (oref (cdr backend) :version)
+			  (oref (cdr backend) version)
 			  ".")
 	     "?")
 	   'face 'font-lock-constant-face)
@@ -323,7 +334,7 @@ available information available for the backends"
 	  (propertize
 	   (if (object-p (cdr backend))
 	       (mapconcat #'prin1-to-string
-			  (oref (cdr backend) :capabilities)
+			  (oref (cdr backend) capabilities)
 			  " ")
 	     "?")
 	   'face 'font-lock-constant-face))

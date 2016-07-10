@@ -6,10 +6,10 @@ EMACS = emacs -Q --batch
 # the top-level directory for that (otherwise, maybe we could rely on
 # buffer-locally setting generated-autoload-file in the non-main files).
 
-rudel-loaddefs.el: $(shell find -name '*.el' -print | \
+rudel-loaddefs.el: $(shell find \( -name .git -prune \) -o \( -name '*.el' -print \) | \
 	                       egrep -v 'rudel-(pkg|autoloads|loaddefs)')
 	$(EMACS) \
 	    --eval '(setq generate-autoload-cookie ";;;###rudel-autoload")' \
 	    --eval '(setq generated-autoload-file (expand-file-name "$@"))' \
 	    -f batch-update-autoloads \
-	    $$(find . -name '*.el' -print | sed 's|/[^/]*$$||' | sort -u)
+	    $$(find \( -name .git -prune \) -o \( -name '*.el' -print \) | sed 's|/[^/]*$$||' | sort -u)

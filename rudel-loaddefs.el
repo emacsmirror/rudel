@@ -4,7 +4,7 @@
 
 
 ;;;### (autoloads nil "infinote/rudel-infinote" "infinote/rudel-infinote.el"
-;;;;;;  (21360 21635 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from infinote/rudel-infinote.el
 
 (eieio-defclass-autoload 'rudel-infinote-backend '(rudel-protocol-backend) "infinote/rudel-infinote" "")
@@ -15,8 +15,8 @@
 
 ;;;***
 
-;;;### (autoloads nil "obby/rudel-obby" "obby/rudel-obby.el" (21360
-;;;;;;  21618 0 0))
+;;;### (autoloads nil "obby/rudel-obby" "obby/rudel-obby.el" (0 0
+;;;;;;  0 0))
 ;;; Generated autoloads from obby/rudel-obby.el
 
 (eieio-defclass-autoload 'rudel-obby-backend '(rudel-protocol-backend) "obby/rudel-obby" "Main class of the Rudel obby backend. Creates obby client\nconnections and creates obby servers.")
@@ -27,13 +27,14 @@
 
 ;;;***
 
-;;;### (autoloads nil "rudel-backend" "rudel-backend.el" (21360 21376
-;;;;;;  0 0))
+;;;### (autoloads nil "rudel-backend" "rudel-backend.el" (0 0 0 0))
 ;;; Generated autoloads from rudel-backend.el
 
 (eieio-defclass-autoload 'rudel-backend-factory 'nil "rudel-backend" "Factory class that holds an object for each known backend\ncategory. Objects manage backend implementation for one backend\ncategory each.")
 
-(defmethod rudel-get-factory :static ((this rudel-backend-factory) category) "Return the factory responsible for CATEGORY.\nIf there is no responsible factory, create one and return it." (with-slots (factories) this (or (gethash category factories) (puthash category (rudel-backend-factory category) factories))))
+(defmacro rudel--with-memoization (place &rest code) (declare (indent 1) (debug t)) (gv-letplace (getter setter) place `(or ,getter ,(macroexp-let2 nil val (macroexp-progn code) `(progn ,(funcall setter val) ,val)))))
+
+(defmethod rudel-get-factory :static ((this rudel-backend-factory) category) "Return the factory responsible for CATEGORY.\nIf there is no responsible factory, create one and return it." (rudel--with-memoization (gethash category (eieio-oref-default this 'factories)) (make-instance 'rudel-backend-factory)))
 
 (defmethod rudel-add-backend ((this rudel-backend-factory) name class &optional replace) "\
 Add factory class CLASS with name NAME to THIS.
@@ -54,7 +55,7 @@ A shortcut for getting the factory object for CATEGORY.
 ;;;***
 
 ;;;### (autoloads nil "rudel-session-initiation" "rudel-session-initiation.el"
-;;;;;;  (21360 22136 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from rudel-session-initiation.el
 
 (eieio-defclass-autoload 'rudel-ask-protocol-backend '(rudel-session-initiation-backend) "rudel-session-initiation" "This fallback backend can \"discover\" sessions by letting the\nuser select a suitable backend and asking for connect information\nrequired by the chosen backend.")
@@ -68,7 +69,7 @@ A shortcut for getting the factory object for CATEGORY.
 ;;;***
 
 ;;;### (autoloads nil "socket/rudel-socket" "socket/rudel-socket.el"
-;;;;;;  (21360 21601 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from socket/rudel-socket.el
 
 (eieio-defclass-autoload 'rudel-tcp-backend '(rudel-transport-backend) "socket/rudel-socket" "TCP transport backend.\nThe transport backend is a factory for TCP transport objects.")
@@ -78,7 +79,7 @@ A shortcut for getting the factory object for CATEGORY.
 ;;;***
 
 ;;;### (autoloads nil "telepathy/rudel-telepathy" "telepathy/rudel-telepathy.el"
-;;;;;;  (21360 21587 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from telepathy/rudel-telepathy.el
 
 (eieio-defclass-autoload 'rudel-telepathy-backend '(rudel-transport-backend) "telepathy/rudel-telepathy" "Class rudel-telepathy-backend ")
@@ -87,8 +88,7 @@ A shortcut for getting the factory object for CATEGORY.
 
 ;;;***
 
-;;;### (autoloads nil "tls/rudel-tls" "tls/rudel-tls.el" (21360 21567
-;;;;;;  0 0))
+;;;### (autoloads nil "tls/rudel-tls" "tls/rudel-tls.el" (0 0 0 0))
 ;;; Generated autoloads from tls/rudel-tls.el
 
 (eieio-defclass-autoload 'rudel-start-tls-backend '(rudel-transport-backend) "tls/rudel-tls" "STARTTLS transport backend.\nThe transport backend is a factory for transport objects that\nsupport STARTTLS behavior.")
@@ -97,8 +97,8 @@ A shortcut for getting the factory object for CATEGORY.
 
 ;;;***
 
-;;;### (autoloads nil "wave/rudel-wave" "wave/rudel-wave.el" (21360
-;;;;;;  21542 0 0))
+;;;### (autoloads nil "wave/rudel-wave" "wave/rudel-wave.el" (0 0
+;;;;;;  0 0))
 ;;; Generated autoloads from wave/rudel-wave.el
 
 (eieio-defclass-autoload 'rudel-wave-backend '(rudel-protocol-backend) "wave/rudel-wave" "Main class of the Rudel Wave backend. Creates wave client\nconnections.")
@@ -107,8 +107,8 @@ A shortcut for getting the factory object for CATEGORY.
 
 ;;;***
 
-;;;### (autoloads nil "xmpp/rudel-xmpp" "xmpp/rudel-xmpp.el" (21360
-;;;;;;  21513 0 0))
+;;;### (autoloads nil "xmpp/rudel-xmpp" "xmpp/rudel-xmpp.el" (0 0
+;;;;;;  0 0))
 ;;; Generated autoloads from xmpp/rudel-xmpp.el
 
 (eieio-defclass-autoload 'rudel-xmpp-backend '(rudel-transport-backend) "xmpp/rudel-xmpp" "Transport backend works by transporting XMPP messages through\nXMPP connections.")
@@ -118,7 +118,7 @@ A shortcut for getting the factory object for CATEGORY.
 ;;;***
 
 ;;;### (autoloads nil "xmpp/rudel-xmpp-tunnel" "xmpp/rudel-xmpp-tunnel.el"
-;;;;;;  (21360 21525 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from xmpp/rudel-xmpp-tunnel.el
 
 (rudel-add-backend (rudel-backend-get-factory 'transport) 'xmpp 'rudel-xmpp-tunnel-backend)
@@ -126,7 +126,7 @@ A shortcut for getting the factory object for CATEGORY.
 ;;;***
 
 ;;;### (autoloads nil "zeroconf/rudel-zeroconf" "zeroconf/rudel-zeroconf.el"
-;;;;;;  (21360 21487 0 0))
+;;;;;;  (0 0 0 0))
 ;;; Generated autoloads from zeroconf/rudel-zeroconf.el
 
 (autoload 'rudel-zeroconf-register-service "zeroconf/rudel-zeroconf" "\
@@ -165,8 +165,8 @@ service type TYPE.
 ;;;;;;  "rudel-speedbar.el" "rudel-state-machine.el" "rudel-transport-util.el"
 ;;;;;;  "rudel-transport.el" "rudel-util.el" "rudel-xml.el" "rudel.el"
 ;;;;;;  "xmpp/rudel-xmpp-debug.el" "xmpp/rudel-xmpp-sasl.el" "xmpp/rudel-xmpp-state.el"
-;;;;;;  "xmpp/rudel-xmpp-tls.el" "xmpp/rudel-xmpp-util.el") (21360
-;;;;;;  22138 746854 586000))
+;;;;;;  "xmpp/rudel-xmpp-tls.el" "xmpp/rudel-xmpp-util.el") (0 0
+;;;;;;  0 0))
 
 ;;;***
 
