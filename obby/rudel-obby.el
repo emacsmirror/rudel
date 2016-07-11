@@ -1,6 +1,6 @@
 ;;; rudel-obby.el --- An obby backend for Rudel
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, implementation
@@ -52,7 +52,6 @@
 (require 'rudel-protocol)
 (require 'rudel-util)
 (require 'rudel-icons)
-(require 'rudel-compat) ;; for `read-color' replacement
 (require 'rudel-interactive) ;; for read functions
 
 

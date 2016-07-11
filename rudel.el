@@ -26,10 +26,16 @@
 
 
 ;;; Commentary:
-;;
+
 ;; Rudel is a framework for collaborative editing in Emacs.  Its
 ;; architecture allows communication with arbitrary collaborative
 ;; editors.
+
+;;;; Quickstart guide
+
+;; - M-x rudel-host-session RET RET
+;; - M-x rudel-join-session RET
+;;   obby RET tcp RET localhost RET 6522 RET n RET RET RET RET
 
 
 ;;; History:
