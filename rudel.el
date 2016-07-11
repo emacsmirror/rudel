@@ -1,11 +1,12 @@
 ;;; rudel.el --- A collaborative editing framework for Emacs
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration
 ;; Version: 0.3
 ;; URL: http://rudel.sourceforge.net/
+;; Package-Requires: ((cl-lib "0.5"))
 ;; X-RCS: $Id:$
 ;;
 ;; This file is part of Rudel.
@@ -59,7 +60,6 @@
 			     ;; `rudel-read-document',
 			     ;; `rudel-read-session'
 (require 'rudel-icons)
-(require 'rudel-compat) ;; for `read-color' replacement
 
 ;; Setup load-path for our subdirs.
 ;; FIXME: We should probably just load those files via relative file names

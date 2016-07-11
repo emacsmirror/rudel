@@ -1,6 +1,6 @@
 ;;; rudel-interactive.el --- User interaction functions for Rudel.
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, user, interface, interaction
@@ -40,7 +40,6 @@
 ;;
 (require 'cl)
 
-(require 'rudel-compat) ;; for `read-color' replacement
 (require 'rudel-backend) ;; for `rudel-backend-cons-p'
 
 
