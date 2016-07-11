@@ -33,9 +33,16 @@
 
 ;;;; Quickstart guide
 
+;; In a first Emacs session, do:
 ;; - M-x rudel-host-session RET RET
+;; Then in the same or another session, do:
 ;; - M-x rudel-join-session RET
-;;   obby RET tcp RET localhost RET 6522 RET n RET RET RET RET
+;;   obby RET tcp RET localhost RET 6522 RET n user1 RET red RET RET RET
+;; - M-x rudel-publish-buffer RET
+;; And finally in another Emacs session, do:
+;; - M-x rudel-join-session RET
+;;   obby RET tcp RET localhost RET 6522 RET n user2 RET green RET RET RET
+;; - M-x rudel-subscribe RET TAB RET
 
 
 ;;; History:
@@ -67,14 +74,6 @@
 			     ;; `rudel-read-session'
 (require 'rudel-icons)
 
-;; Setup load-path for our subdirs.
-;; FIXME: We should probably just load those files via relative file names
-;; rather than mess with load-path.
-(let ((rudel-dir (file-name-directory
-                  (or load-file-name (buffer-file-name)))))
-  (dolist (subdir '("jupiter" "adopted" "socket" "tls" "xmpp" "telepathy"
-                    "obby" "infinote" "zeroconf"))
-    (add-to-list 'load-path (expand-file-name subdir rudel-dir))))
 (load "rudel-loaddefs") ;; Internal autoloads.
 
 
