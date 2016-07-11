@@ -1,6 +1,6 @@
-;;; rudel-debug.el --- Debugging functions for Rudel
+;;; rudel-debug.el --- Debugging functions for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, debugging
@@ -86,6 +86,8 @@
 
 ;;; Data debug functions
 ;;
+(defvar rudel-current-session)
+(defvar rudel-buffer-document)
 
 (defun rudel-adebug-discover ()
   "Analyze list of discoverable sessions in data debug buffer."
@@ -203,8 +205,7 @@
 			(object-print data))
 		       (t
 			(prin1-to-string data)))))
-    (save-excursion
-      (set-buffer buffer)
+    (with-current-buffer buffer
       (goto-char 0)
       (insert prefix
 	      (if label
@@ -239,7 +240,7 @@ TAG and LABEL determine the logging style."
   "Saves state of state machines across one function call.")
 
 (defmethod rudel-switch :before
-  ((this rudel-state-machine) state &rest arguments)
+  ((this rudel-state-machine) _state &rest _)
   "Store name of STATE for later printing."
   (with-slots (state) this
     (setq rudel-debug-old-state
@@ -247,7 +248,7 @@ TAG and LABEL determine the logging style."
   )
 
 (defmethod rudel-switch :after
-  ((this rudel-state-machine) state &rest arguments)
+  ((this rudel-state-machine) _state &rest arguments)
   "Log STATE and ARGUMENTS to debug stream."
   (with-slots (state) this
     (let ((old-state rudel-debug-old-state)
@@ -292,16 +293,13 @@ TAG and LABEL determine the logging style."
 			     filter1)
   "Log DATA as it goes through THIS."
   (with-slots (filter) this
-    (lexical-let ((this1   this)
-		  (filter2 filter1))
-      (setq filter (lambda (data)
-		     (rudel-debug-write
-		      this1
-		      :received
-		      "ASSEMBLE"
-		      data)
-		     (funcall filter2 data)))))
-  )
+    (setq filter (lambda (data)
+                   (rudel-debug-write
+                    this
+                    :received
+                    "ASSEMBLE"
+                    data)
+                   (funcall filter1 data)))))
 
 (defmethod rudel-send :before
   ((this rudel-assembling-transport-filter) data)
@@ -342,16 +340,13 @@ TAG and LABEL determine the logging style."
 			     filter1)
   "Log DATA as it goes through THIS."
   (with-slots (filter) this
-    (lexical-let ((this1   this)
-		  (filter2 filter1))
-      (setq filter (lambda (data)
-		     (rudel-debug-write
-		      this1
-		      :received
-		      "PARSE"
-		      (format "%s" data) data)
-		     (funcall filter2 data)))))
-  )
+    (setq filter (lambda (data)
+                   (rudel-debug-write
+                    this
+                    :received
+                    "PARSE"
+                    (format "%s" data) data)
+                   (funcall filter1 data)))))
 
 (defmethod rudel-send :before
   ((this rudel-parsing-transport-filter) string-or-data)
@@ -380,14 +375,11 @@ TAG and LABEL determine the logging style."
 (defmethod rudel-set-filter ((this rudel-socket-transport)
 			     filter)
   "Log DATA as it goes through THIS."
-  (lexical-let ((this1   this)
-		(filter1 filter))
-    (oset
-     this :filter
-     (lambda (data)
-       (rudel-debug-write this1 :received "SOCKET" data)
-       (funcall filter1 data))))
-  )
+  (oset
+   this :filter
+   (lambda (data)
+     (rudel-debug-write this :received "SOCKET" data)
+     (funcall filter data))))
 
 (defmethod rudel-send :before ((this rudel-socket-transport)
 			       data)

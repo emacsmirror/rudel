@@ -1,6 +1,6 @@
-;;; rudel-transport-util.el --- Utility functions for Rudel transport functionality
+;;; rudel-transport-util.el --- Utility functions for Rudel transport functionality  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, backend, transport, utility, miscellaneous
@@ -153,37 +153,35 @@ are sent unmodified."))
 complete messages by calling an assembly function.")
 
 (defmethod initialize-instance ((this rudel-assembling-transport-filter)
-				slots)
+				_slots)
   "Initialize THIS using SLOTS and install suitable handlers."
   ;; Initialize slots.
   (when (next-method-p)
     (call-next-method))
 
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      ;; Install a handler for received data that assembles messages
-      ;; and passes them to the user-provided handler.
-      (rudel-set-filter
-       transport
-       (lambda (data)
+    ;; Install a handler for received data that assembles messages
+    ;; and passes them to the user-provided handler.
+    (rudel-set-filter
+     transport
+     (lambda (data)
 
-	 ;; Assemble complete fragments from stored fragments and
-	 ;; possibly incomplete messages in DATA.
-	 (with-slots (buffer assembly-function) this1
-	   (rudel-assemble-fragments data buffer assembly-function))
+       ;; Assemble complete fragments from stored fragments and
+       ;; possibly incomplete messages in DATA.
+       (with-slots (buffer assembly-function) this
+         (rudel-assemble-fragments data buffer assembly-function))
 
-	 ;; Process all complete messages.
-	 (with-slots (filter) this1
-	   (when filter
-	     (mapc filter data)))))
+       ;; Process all complete messages.
+       (with-slots (filter) this
+         (when filter
+           (mapc filter data)))))
 
-      ;; Install a handler for sentinel events and pass them to the
-      ;; user-provided handler.
-      (rudel-set-sentinel transport (lambda (event)
-				      (with-slots (sentinel) this1
-					(when sentinel
-					  (funcall sentinel event)))))))
-  )
+    ;; Install a handler for sentinel events and pass them to the
+    ;; user-provided handler.
+    (rudel-set-sentinel transport (lambda (event)
+                                    (with-slots (sentinel) this
+                                      (when sentinel
+                                        (funcall sentinel event)))))))
 
 (defmethod rudel-send ((this rudel-assembling-transport-filter) data)
   "Send DATA using the transport of THIS."
@@ -221,33 +219,31 @@ object to transform it into a string representation."))
 string representations and structured representations by calling
 a pair of one parse and one generate function.")
 
-(defmethod initialize-instance ((this rudel-parsing-transport-filter) slots)
+(defmethod initialize-instance ((this rudel-parsing-transport-filter) _slots)
   "Initialize THIS using SLOTS and install suitable handlers."
   ;; Initialize slots.
   (when (next-method-p)
     (call-next-method))
 
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      ;; Install a handler for received data that parses messages into
-      ;; structured representations and passes those to the
-      ;; user-provided handler.
-      (rudel-set-filter
-       transport
-       (lambda (message-data)
-	 ;; Parse and process all complete messages.
-	 (with-slots (parse-function filter) this1
-	   (when filter
-	     (let ((message (funcall parse-function message-data)))
-	       (funcall filter message))))))
+    ;; Install a handler for received data that parses messages into
+    ;; structured representations and passes those to the
+    ;; user-provided handler.
+    (rudel-set-filter
+     transport
+     (lambda (message-data)
+       ;; Parse and process all complete messages.
+       (with-slots (parse-function filter) this
+         (when filter
+           (let ((message (funcall parse-function message-data)))
+             (funcall filter message))))))
 
-      ;; Install a handler for sentinel events and pass them to the
-      ;; user-provided handler.
-      (rudel-set-sentinel transport (lambda (event)
-				      (with-slots (sentinel) this1
-					(when sentinel
-					  (funcall sentinel event)))))))
-  )
+    ;; Install a handler for sentinel events and pass them to the
+    ;; user-provided handler.
+    (rudel-set-sentinel transport (lambda (event)
+                                    (with-slots (sentinel) this
+                                      (when sentinel
+                                        (funcall sentinel event)))))))
 
 (defmethod rudel-send ((this rudel-parsing-transport-filter) message)
   "Apply generate function to MESSAGE, pass result to transport of THIS."
@@ -297,25 +293,23 @@ stopped."))
 incoming and outgoing data and process it later.")
 
 (defmethod initialize-instance ((this rudel-buffering-transport-filter)
-				slots)
+				_slots)
   "Initialize slots of THIS and install filter in underlying transport."
   ;; Initialize slots.
   (when (next-method-p)
     (call-next-method))
 
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      ;; Install `rudel-handle' as filter in underlying transport.
-      (rudel-set-filter transport (lambda (data)
-				    (rudel-handle this1 data)))
+    ;; Install `rudel-handle' as filter in underlying transport.
+    (rudel-set-filter transport (lambda (data)
+                                  (rudel-handle this data)))
 
-      ;; Install a handler for sentinel events and pass them to the
-      ;; user-provided handler.
-      (rudel-set-sentinel transport (lambda (event)
-				      (with-slots (sentinel) this1
-					(when sentinel
-					  (funcall sentinel event)))))))
-  )
+    ;; Install a handler for sentinel events and pass them to the
+    ;; user-provided handler.
+    (rudel-set-sentinel transport (lambda (event)
+                                    (with-slots (sentinel) this
+                                      (when sentinel
+                                        (funcall sentinel event)))))))
 
 (defmethod rudel-send ((this rudel-buffering-transport-filter) data)
   "Send DATA through THIS, queueing when necessary."
@@ -403,27 +397,25 @@ sent through them until certain amounts of data are available for
 transmission.")
 
 (defmethod initialize-instance ((this rudel-collecting-transport-filter)
-				slots)
+				_slots)
   "Initialize slots of THIS and setup filter of underlying transport."
   ;; Initialize slots of THIS.
   (when (next-method-p)
     (call-next-method))
 
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      ;; Install a filter in the underlying transport.
-      (rudel-set-filter transport (lambda (data)
-				    (with-slots (filter) this1
-				      (when filter
-					(funcall filter data)))))
+    ;; Install a filter in the underlying transport.
+    (rudel-set-filter transport (lambda (data)
+                                  (with-slots (filter) this
+                                    (when filter
+                                      (funcall filter data)))))
 
-      ;; Install a handler for sentinel events and pass them to the
-      ;; user-provided handler.
-      (rudel-set-sentinel transport (lambda (event)
-				      (with-slots (sentinel) this1
-					(when sentinel
-					  (funcall sentinel event)))))))
-  )
+    ;; Install a handler for sentinel events and pass them to the
+    ;; user-provided handler.
+    (rudel-set-sentinel transport (lambda (event)
+                                    (with-slots (sentinel) this
+                                      (when sentinel
+                                        (funcall sentinel event)))))))
 
 (defmethod rudel-send ((this rudel-collecting-transport-filter) data)
   "Send or enqueue DATA."
@@ -454,13 +446,11 @@ transmission.")
   ;; expires.
   (with-slots (timer delay) this
     (unless timer
-      (lexical-let ((this1 this))
-	(setq timer (run-at-time
-		     delay nil ;; no repeat
-		     (lambda ()
-		       (rudel-flush this1)
-		       (oset this1 :timer nil)))))))
-  )
+      (setq timer (run-at-time
+                   delay nil ;; no repeat
+                   (lambda ()
+                     (rudel-flush this)
+                     (oset this :timer nil)))))))
 
 (defmethod rudel-maybe-cancel-timer
   ((this rudel-collecting-transport-filter))
@@ -489,7 +479,7 @@ multiple chunks.")
   "TODO")
 
 (defmethod initialize-instance
-  ((this rudel-progress-reporting-transport-filter) slots)
+  ((this rudel-progress-reporting-transport-filter) _slots)
   "TODO"
   (when (next-method-p)
     (call-next-method))
@@ -499,12 +489,10 @@ multiple chunks.")
 
   ;; Install a handler as filter in underlying transport.
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      (rudel-set-filter transport (lambda (data)
-				    (with-slots (filter) this1
-				      (when filter
-					(funcall filter data)))))))
-  )
+    (rudel-set-filter transport (lambda (data)
+                                  (with-slots (filter) this
+                                    (when filter
+                                      (funcall filter data)))))))
 
 (defmethod rudel-send ((this rudel-progress-reporting-transport-filter)
 		       data)

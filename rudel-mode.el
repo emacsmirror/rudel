@@ -1,6 +1,6 @@
-;;; rudel-mode.el --- Global and buffer-local Rudel minor modes
+;;; rudel-mode.el --- Global and buffer-local Rudel minor modes  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, mode
@@ -146,7 +146,7 @@
 ;;; Header line indication of users' status and activities
 ;;
 
-(defun rudel-header-subscriptions--user-change (document user)
+(defun rudel-header-subscriptions--user-change (document _user)
   "Update header line after USER changed."
   ;; Update the header line to reflect the changes to USER.
   (rudel-header-subscriptions--update-from-document document))
@@ -154,17 +154,16 @@
 (defun rudel-header-subscriptions--add-user (document user)
   "Start monitoring USER and update header line."
   ;; Monitor USER.
-  (lexical-let ((document1 document))
-    (object-add-hook user 'change-hook
-		     (lambda (user)
-		       (rudel-header-subscriptions--user-change
-			document1 user))))
+  (object-add-hook user 'change-hook
+                   (lambda (user)
+                     (rudel-header-subscriptions--user-change
+                      document user)))
 
   ;; Update the header line once to get the user added.
   (rudel-header-subscriptions--update-from-document document)
   )
 
-(defun rudel-header-subscriptions--remove-user (document user)
+(defun rudel-header-subscriptions--remove-user (document _user)
   "Stop monitoring USER and update header line."
   ;; TODO Stop monitoring USER.
   ;; (object-remove-hook user 'change-hook
@@ -248,17 +247,17 @@ subscriptions mode; otherwise, turn it off."
 
 ;; Tracking stuff for the global mode
 
-(defun rudel-header-subscriptions--attach (document buffer)
+(defun rudel-header-subscriptions--attach (_document buffer)
   "Activate header subscriptions mode for BUFFER."
   (with-current-buffer buffer
     (rudel-header-subscriptions-minor-mode 1)))
 
-(defun rudel-header-subscriptions--detach (document buffer)
+(defun rudel-header-subscriptions--detach (_document buffer)
   "Deactivate header subscriptions mode for BUFFER."
   (with-current-buffer buffer
     (rudel-header-subscriptions-minor-mode 0)))
 
-(defun rudel-header-subscriptions--add-document (session document)
+(defun rudel-header-subscriptions--add-document (_session document)
   "Watch DOCUMENT for attach/detach events."
   ;; When document is attached to a buffer, turn the mode on.
   (with-slots (buffer) document
@@ -271,7 +270,7 @@ subscriptions mode; otherwise, turn it off."
   (object-add-hook
    document 'detach-hook #'rudel-header-subscriptions--detach))
 
-(defun rudel-header-subscriptions--remove-document (session document)
+(defun rudel-header-subscriptions--remove-document (_session document)
   "Stop watching DOCUMENT for attach/detach events."
   ;; When document is attached to a buffer, turn the mode off.
   (with-slots (buffer) document

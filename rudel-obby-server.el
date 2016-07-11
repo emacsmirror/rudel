@@ -1,6 +1,6 @@
-;;; rudel-obby-server.el --- Server component of the Rudel obby backend
+;;; rudel-obby-server.el --- Server component of the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, server
@@ -48,8 +48,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'warnings)
 
@@ -110,7 +109,7 @@ the negotiation."
   'before-join)
 
 (defmethod rudel-obby/net6_encryption_failed
-  ((this rudel-obby-server-state-encryption-negotiate))
+  ((_this rudel-obby-server-state-encryption-negotiate))
   "Handle net6 'encryption_failed' message.
 No action has to be taken, since the client simply proceeds after
 failed encryption negotiation."
@@ -128,7 +127,7 @@ failed encryption negotiation."
 
 (defmethod rudel-obby/net6_client_login
   ((this rudel-obby-server-state-before-join) username color
-   &optional global-password user-password)
+   &optional _global-password _user-password)
   "Handle net6 'client_login' message."
   (with-parsed-arguments ((color color))
     (with-slots (server
@@ -502,7 +501,7 @@ connected to the server. This object handles all direct
 communication with the client, while broadcast messages are
 handled by the server.")
 
-(defmethod initialize-instance ((this rudel-obby-client) slots)
+(defmethod initialize-instance ((this rudel-obby-client) _slots)
   "Initialize slots of THIS, register states and install filter."
   ;; Initialize slots of THIS
   (when (next-method-p)
@@ -521,23 +520,22 @@ handled by the server.")
     (setq transport (rudel-obby-make-transport-filter-stack transport))
 
     ;; Install process filter and sentinel.
-    (lexical-let ((this1 this))
-      ;; Install `rudel-accept' as filter to dispatch messages to the
-      ;; current state machine state.
-      (rudel-set-filter transport
-			(lambda (data)
-			  (rudel-accept this1 data)))
 
-      ;; Install a sentinel that calls `rudel-close' on THIS upon
-      ;; receiving a 'close' event.
-      (rudel-set-sentinel transport
-			  (lambda (event)
-			    (case event
-			      (close
-			       (rudel-close this1)))))))
-  )
+    ;; Install `rudel-accept' as filter to dispatch messages to the
+    ;; current state machine state.
+    (rudel-set-filter transport
+                      (lambda (data)
+                        (rudel-accept this data)))
 
-(defmethod rudel-register-state ((this rudel-obby-client) symbol state)
+    ;; Install a sentinel that calls `rudel-close' on THIS upon
+    ;; receiving a 'close' event.
+    (rudel-set-sentinel transport
+                        (lambda (event)
+                          (case event
+                            (close
+                             (rudel-close this)))))))
+
+(defmethod rudel-register-state ((this rudel-obby-client) _symbol state)
   "Register SYMBOL and STATE and set connection slot of STATE."
   ;; Associate THIS connection to STATE.
   (oset state :connection this)
@@ -667,7 +665,7 @@ that joins the associated session.")
 transformation context objects."))
   "Class rudel-obby-server ")
 
-(defmethod initialize-instance ((this rudel-obby-server) slots)
+(defmethod initialize-instance ((this rudel-obby-server) _slots)
   "Initialize slots of THIS and install a dispatch function."
   ;; Initialize slots of THIS.
   (when (next-method-p)
@@ -679,12 +677,10 @@ transformation context objects."))
 
   ;; Dispatch incoming connections to our `rudel-add-client' method.
   (with-slots (listener) this
-    (lexical-let ((this1 this))
-      (rudel-set-dispatcher
-       listener
-       (lambda (client-transport)
-	 (rudel-add-client this1 client-transport)))))
-  )
+    (rudel-set-dispatcher
+     listener
+     (lambda (client-transport)
+       (rudel-add-client this client-transport)))))
 
 (defmethod rudel-end ((this rudel-obby-server))
   ""

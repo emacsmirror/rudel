@@ -1,6 +1,6 @@
-;;; rudel-tcp.el --- socket transport backend for Rudel
+;;; rudel-tcp.el --- socket transport backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, socket, transport, backend
@@ -37,8 +37,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl)) ;; for `lexical-let' and `every'
+(require 'cl) ;; for `every'
 
 (require 'rudel-backend)
 (require 'rudel-transport)
@@ -79,31 +78,29 @@ directly installed into the underlying process and therefore has
 to be stored separately."))
   "Objects of this class use sockets to transport data.")
 
-(defmethod initialize-instance :after ((this rudel-socket-transport) slots)
+(defmethod initialize-instance :after ((this rudel-socket-transport) _slots)
   "Install process filter and sentinel for THIS."
   (with-slots (socket) this
-    (lexical-let ((this1 this))
-      (set-process-filter
-       socket (lambda (process data)
-		(with-slots (filter) this1
-		  (when filter
-		    (funcall filter data)))))
+    (set-process-filter
+     socket (lambda (_process data)
+              (with-slots (filter) this
+                (when filter
+                  (funcall filter data)))))
 
-      (set-process-sentinel
-       socket (lambda (process message)
-		(with-slots (sentinel) this1
-		  (when sentinel
-		    (case (process-status process)
-		      ;; Nothing to do here.
-		      (run
-		       nil)
+    (set-process-sentinel
+     socket (lambda (process _message)
+              (with-slots (sentinel) this
+                (when sentinel
+                  (case (process-status process)
+                    ;; Nothing to do here.
+                    (run
+                     nil)
 
-		      ;; Dispatch events which indicate the
-		      ;; termination of the connection to the
-		      ;; sentinel.
-		      ((closed failed exit finished)
-		       (funcall sentinel 'close)))))))))
-  )
+                    ;; Dispatch events which indicate the
+                    ;; termination of the connection to the
+                    ;; sentinel.
+                    ((closed failed exit finished)
+                     (funcall sentinel 'close)))))))))
 
 (defmethod rudel-send ((this rudel-socket-transport) data)
   "Send DATA through THIS."
@@ -170,7 +167,7 @@ be a transport object representing the incoming connection."))
   "TCP transport backend.
 The transport backend is a factory for TCP transport objects.")
 
-(defmethod initialize-instance ((this rudel-tcp-backend) slots)
+(defmethod initialize-instance ((this rudel-tcp-backend) _slots)
   "Initialize slots and set version of THIS."
   (when (next-method-p)
     (call-next-method))
@@ -183,7 +180,7 @@ The transport backend is a factory for TCP transport objects.")
 (defvar rudel-tcp-ask-connect-info-port-last nil
   "Last port read by TCP backend's `rudel-ask-connect-info'.")
 
-(defmethod rudel-ask-connect-info ((this rudel-tcp-backend)
+(defmethod rudel-ask-connect-info ((_this rudel-tcp-backend)
 				   &optional info)
   "Augment INFO by read a hostname and a port number."
   ;; Read server host and port.
@@ -208,7 +205,7 @@ The transport backend is a factory for TCP transport objects.")
 
 (defmethod rudel-make-connection ((this rudel-tcp-backend)
 				  info info-callback
-				  &optional progress-callback)
+				  &optional _progress-callback)
   "Connect to a TCP server using the information in INFO.
 INFO has to be a property list containing the keys :host
 and :port."
@@ -248,20 +245,19 @@ INFO has to be a property list containing the key :port."
 	 (listener (rudel-socket-listener
 		    (format "on %s:%s" (or address "*") port)))
 	 ;; Create the network process.
-	 (socket   (lexical-let ((listener1 listener))
-		     (apply
-		      #'make-network-process
-		      :name     (format "TCP on %s" port)
-		      :service  port
-		      :server   t
-		      :noquery  t
-		      :filter   #'ignore
-		      :sentinel #'ignore
-		      :log
-		      (lambda (server socket message)
-			(rudel-handle-connect listener1 socket))
-		      (when address
-			(list :host address))))))
+	 (socket   (apply
+                    #'make-network-process
+                    :name     (format "TCP on %s" port)
+                    :service  port
+                    :server   t
+                    :noquery  t
+                    :filter   #'ignore
+                    :sentinel #'ignore
+                    :log
+                    (lambda (_server socket _message)
+                      (rudel-handle-connect listener socket))
+                    (when address
+                      (list :host address)))))
     ;; Return the listener.
     (oset listener :socket socket)
     listener))

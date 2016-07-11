@@ -1,6 +1,6 @@
-;;; rudel-obby-client.el --- Client functions of the Rudel obby backend
+;;; rudel-obby-client.el --- Client functions of the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2011, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2011, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, client
@@ -65,7 +65,7 @@
   :method-invocation-order :c3)
 
 (defmethod rudel-obby/obby_welcome
-  ((this rudel-obby-client-state-new) version)
+  ((_this rudel-obby-client-state-new) version)
   "Handle obby 'welcome' message."
   ;; Examine announced protocol version.
   (with-parsed-arguments ((version number))
@@ -84,7 +84,7 @@
   :method-invocation-order :c3)
 
 (defmethod rudel-obby/net6_encryption
-  ((this rudel-obby-client-state-encryption-negotiate) value)
+  ((this rudel-obby-client-state-encryption-negotiate) _value)
   "Handle net6 'encryption' message."
   (rudel-send this "net6_encryption_ok")
   'encryption-start)
@@ -120,7 +120,7 @@ the selected transport `%s' does not support encryption"
   'waiting-for-join-info)
 
 (defmethod rudel-obby/net6_encryption_failed
-  ((this rudel-obby-client-state-encryption-start))
+  ((_this rudel-obby-client-state-encryption-start))
   "Handle net6 'encryption_failed' message."
   ;; The connection is now established; without encryption though.
   'waiting-for-join-info)
@@ -172,7 +172,7 @@ session."
   )
 
 (defmethod rudel-obby/obby_sync_init
-  ((this rudel-obby-client-state-joining) count)
+  ((_this rudel-obby-client-state-joining) count)
   "Handle obby 'sync_init' message."
   ;; Switch to 'synching' state, passing the number of synchronization
   ;; items.
@@ -180,7 +180,7 @@ session."
     (list 'session-synching count)))
 
 (defmethod rudel-obby/net6_login_failed
-  ((this rudel-obby-client-state-joining) reason)
+  ((_this rudel-obby-client-state-joining) reason)
   "Handle net6 'login_failed' message."
   (with-parsed-arguments ((reason number))
     (with-slots (connection) this
@@ -344,12 +344,11 @@ failure."))
 
 (defmethod rudel-obby/obby_document_create
   ((this rudel-obby-client-state-idle)
-   owner-id doc-id name suffix encoding)
+   owner-id doc-id name suffix _encoding)
   "Handle obby 'document_create' message."
   (with-parsed-arguments ((owner-id number)
 			  (doc-id   number)
-			  (suffix   number)
-			  (encoding coding-system))
+			  (suffix   number))
     (with-slots (connection) this
       (with-slots (session) connection
 	(let ((owner (rudel-find-user session owner-id
@@ -384,8 +383,8 @@ failure."))
   nil)
 
 (defmethod rudel-obby/obby_document/rename
-  ((this rudel-obby-client-state-idle)
-   document user new-name new-suffix)
+  ((_this rudel-obby-client-state-idle)
+   document _user new-name new-suffix)
   "Handle 'rename' submessage of the obby 'document' message."
   (with-parsed-arguments ((new-suffix number))
     (with-slots ((name :object-name) suffix) document
@@ -614,12 +613,11 @@ a 'self' user object."))
 
 (defmethod rudel-obby/obby_sync_doclist_document
   ((this rudel-obby-client-state-session-synching)
-   owner-id doc-id name suffix encoding &rest subscribed-user-ids)
+   owner-id doc-id name suffix _encoding &rest subscribed-user-ids)
   "Handle obby 'sync_doclist_document' message."
   (with-parsed-arguments ((doc-id   number)
 			  (owner-id number)
-			  (suffix   number)
-			  (encoding coding-system))
+			  (suffix   number))
     (with-slots (connection remaining-items) this
       (with-slots (session) connection
 	;; Retrieve the subscribed users
@@ -652,7 +650,7 @@ a 'self' user object."))
       'we-finalized)))
 
 (defmethod object-print ((this rudel-obby-client-state-session-synching)
-			 &rest strings)
+			 &rest _strings)
   "Append number of remaining items to string representation."
   (with-slots (remaining-items) this
     (call-next-method this (format " remaining: %d" remaining-items))))
@@ -687,7 +685,7 @@ a 'self' user object."))
   nil)
 
 (defmethod rudel-obby/obby_document/sync_init
-  ((this rudel-obby-client-state-subscribing) document num-bytes)
+  ((this rudel-obby-client-state-subscribing) _document num-bytes)
   "Handle 'sync_init' submessage of the obby 'document' message."
   (with-parsed-arguments ((num-bytes number))
     (with-slots (document) this
@@ -752,7 +750,7 @@ a 'self' user object."))
   )
 
 (defmethod object-print ((this rudel-obby-client-state-document-synching)
-			 &rest strings)
+			 &rest _strings)
   "Append number of remaining items to string representation."
   (with-slots (remaining-bytes) this
     (call-next-method this (format " remaining: %d" remaining-bytes))))
@@ -857,7 +855,7 @@ sends and receives its data.")
 documents."))
   "Class rudel-obby-connection ")
 
-(defmethod initialize-instance ((this rudel-obby-connection) slots)
+(defmethod initialize-instance ((this rudel-obby-connection) _slots)
   ;; Initialize slots of THIS
   (when (next-method-p)
     (call-next-method))
@@ -880,24 +878,23 @@ documents."))
     (setq transport (rudel-obby-make-transport-filter-stack transport))
 
     ;; Install process filter and sentinel.
-    (lexical-let ((this1 this))
-      ;; Install `rudel-accept' as filter to dispatch messages to the
-      ;; current state machine state.
-      (rudel-set-filter transport
-			(lambda (data)
-			  (rudel-accept this1 data)))
 
-      ;; Install a sentinel that calls `rudel-close' on THIS upon
-      ;; receiving a 'close' event.
-      (rudel-set-sentinel transport
-			  (lambda (event)
-			    (case event
-			      (close
-			       (rudel-close this1)))))))
-  )
+    ;; Install `rudel-accept' as filter to dispatch messages to the
+    ;; current state machine state.
+    (rudel-set-filter transport
+                      (lambda (data)
+                        (rudel-accept this data)))
+
+    ;; Install a sentinel that calls `rudel-close' on THIS upon
+    ;; receiving a 'close' event.
+    (rudel-set-sentinel transport
+                        (lambda (event)
+                          (case event
+                            (close
+                             (rudel-close this)))))))
 
 (defmethod rudel-register-state ((this rudel-obby-connection)
-				 symbol state)
+				 _symbol state)
   "Register SYMBOL and STATE and set connection slot of STATE."
   ;; Associate THIS connection to STATE.
   (oset state :connection this)
@@ -992,7 +989,7 @@ documents."))
     (with-slots (self) session
       (rudel-switch this 'subscribing self document)))
 
-  (lexical-let ((reporter (make-progress-reporter "Subscribing " 0.0 1.0)))
+  (let ((reporter (make-progress-reporter "Subscribing " 0.0 1.0)))
     (flet ((display-progress (state)
 	     (cond
 	      ;; Syncing document content, we can provide detailed progress.

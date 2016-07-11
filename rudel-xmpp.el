@@ -1,6 +1,6 @@
-;;; rudel-xmpp.el --- XMPP transport backend for Rudel
+;;; rudel-xmpp.el --- XMPP transport backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, transport, backend
@@ -69,14 +69,14 @@
   "Transport backend works by transporting XMPP messages through
 XMPP connections.")
 
-(defmethod initialize-instance ((this rudel-xmpp-backend) slots)
+(defmethod initialize-instance ((this rudel-xmpp-backend) _slots)
   "Initialize slots and set version of THIS."
   (when (next-method-p)
     (call-next-method))
 
   (oset this :version rudel-xmpp-transport-version))
 
-(defmethod rudel-ask-connect-info ((this rudel-xmpp-backend)
+(defmethod rudel-ask-connect-info ((_this rudel-xmpp-backend)
 				   &optional info)
   "Augment INFO by reading a hostname and a port number."
   ;; Read server host and port.
@@ -145,7 +145,7 @@ called repeatedly to report progress."
   ()
   "Initial state of new XMPP connections.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-new) to jid)
+(defmethod rudel-enter ((_this rudel-xmpp-state-new) to jid)
   "Switch to \"negotiate-stream\" state."
   (list 'negotiate-stream to jid (list 'sasl-start jid to)))
 
@@ -233,7 +233,7 @@ id=\"%s\">"
   ()
   "")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-authenticated))
+(defmethod rudel-enter ((_this rudel-xmpp-state-authenticated))
   ""
   ;; Switch to negotiate-stream telling it to switch to established in
   ;; case the negotiation succeeds.
@@ -248,7 +248,7 @@ id=\"%s\">"
   ()
   "")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-authentication-failed))
+(defmethod rudel-enter ((_this rudel-xmpp-state-authentication-failed))
   ""
   'we-finalize)
 
@@ -367,7 +367,7 @@ Authentication mechanisms can add more states to this list.")
  the current for processing in a successor state."))
   "")
 
-(defmethod initialize-instance ((this rudel-xmpp-transport) slots)
+(defmethod initialize-instance ((this rudel-xmpp-transport) _slots)
   "Initialize THIS and register states."
   ;; Initialize slots of THIS.
   (when (next-method-p)
@@ -379,15 +379,13 @@ Authentication mechanisms can add more states to this list.")
   ;; Install a handler that passes received data to the user-provided
   ;; handler.
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      (rudel-set-filter
-       transport
-       (lambda (data)
-	 (rudel-accept this1 data)))))
-  )
+    (rudel-set-filter
+     transport
+     (lambda (data)
+       (rudel-accept this data)))))
 
 (defmethod rudel-register-state ((this rudel-xmpp-transport)
-				 symbol state)
+				 _symbol state)
   "Associate THIS to STATE before registering STATE."
   ;; Associate THIS connection to STATE.
   (oset state :transport this)

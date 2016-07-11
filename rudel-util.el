@@ -1,6 +1,6 @@
-;;; rudel-util.el --- Miscellaneous functions for Rudel
+;;; rudel-util.el --- Miscellaneous functions for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, miscellaneous, util
@@ -99,8 +99,7 @@ list of hooks."
 (defmethod object-run-hook-with-args ((this rudel-hook-object)
 				      hook &rest arguments)
   "Run HOOK of THIS with arguments ARGUMENTS."
-  (let ((hook (slot-value this hook)))
-    (apply #'run-hook-with-args 'hook this arguments)))
+  (mapc (lambda (f) (apply f this arguments)) (slot-value this hook)))
 
 
 ;;; Class rudel-impersonator

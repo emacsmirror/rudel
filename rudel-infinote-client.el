@@ -1,6 +1,6 @@
-;;; rudel-infinote-client.el --- Client part of the infinote backend for Rudel
+;;; rudel-infinote-client.el --- Client part of the infinote backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, client
@@ -36,8 +36,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl)
 
 (require 'warnings)
 
@@ -97,7 +96,7 @@ side."))
   "TODO")
 
 (defmethod initialize-instance ((this rudel-infinote-client-connection)
-				slots)
+				_slots)
   ""
   ;; Initialize slots of THIS.
   (when (next-method-p)
@@ -109,10 +108,9 @@ side."))
 
   ;; Install handler.
   (with-slots (transport) this
-    (lexical-let ((this1 this))
-      (rudel-set-filter transport
-			(lambda (xml)
-			  (rudel-receive this1 xml)))))
+    (rudel-set-filter transport
+                      (lambda (xml)
+                        (rudel-receive this xml))))
 
   ;;
   (with-slots (session) this
@@ -175,8 +173,8 @@ which case it is the name of a group."
 		  group-or-name))))
       (remhash name groups))))
 
-(defmethod rudel-make-and-add-group ((this rudel-infinote-client-connection)
-				     type name method &optional node)
+(defmethod rudel-make-and-add-group ((_this rudel-infinote-client-connection)
+				     _type name method &optional node)
   "Create a group object and add it to THIS."
   ;; TODO the backend creates these
   (let ((group (rudel-infinote-group-text-document
@@ -346,7 +344,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; list of subscribed users of DOCUMENT.
   )
 
-(defmethod rudel-unsubscribe-from ((this rudel-infinote-client-connection)
+(defmethod rudel-unsubscribe-from ((_this rudel-infinote-client-connection)
 				   document)
   ""
   ;; Delete the jupiter context for DOCUMENT.
@@ -424,9 +422,9 @@ WHICH is compared to the result of KEY using TEST."
   ;; (jupiter-local-operation context operation))
   )
 
-(defmethod rudel-remote-operation ((this rudel-infinote-client-connection)
+(defmethod rudel-remote-operation ((_this rudel-infinote-client-connection)
 				   document user
-				   remote-revision local-revision
+				   _remote-revision _local-revision
 				   operation)
   "Handle OPERATION received through THIS connection performed by USER on DOCUMENT."
   (let* (;; Find jupiter context for DOCUMENT.

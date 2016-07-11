@@ -1,6 +1,6 @@
-;;; rudel-xmpp-sasl.el --- SASL mechanism for the Rudel XMPP backend
+;;; rudel-xmpp-sasl.el --- SASL mechanism for the Rudel XMPP backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, sasl, authentication
@@ -51,7 +51,7 @@
   ()
   "Start state of the SASL negotiation.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-sasl-start)
+(defmethod rudel-enter ((_this rudel-xmpp-state-sasl-start)
 			name server features)
   "Extract the list of supported mechanisms from FEATURES.
 Then switch to the try one state to try them in order."
@@ -86,7 +86,7 @@ Then switch to the try one state to try them in order."
   "State that selects a mechanism and switches to the mechanism
 start state for that mechanism.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-sasl-try-one)
+(defmethod rudel-enter ((_this rudel-xmpp-state-sasl-try-one)
 			name server mechanisms)
   "If Emacs support the first mechanism in MECHANISMS, try it, otherwise skip it.
 Mechanism are tried by switching to the mechanism start state.
@@ -247,10 +247,9 @@ mechanism.")
 
        ;; Proceed to next step and send response, possibly with
        ;; response data.
-       (let* ((sasl-read-passphrase (lexical-let ((this1 this))
-				      (lambda (prompt)
-					(rudel-obtain-sasl-password
-					 this1 prompt))))
+       (let* ((sasl-read-passphrase (lambda (prompt)
+                                      (rudel-obtain-sasl-password
+                                       this prompt)))
 	      (next                 (sasl-next-step client step)))
 	 (if next
 	     ;; If there is another step, send a 'response' element,
@@ -303,6 +302,8 @@ password request and passes it to `rudel-obtain-password'."
     (sasl-mechanism-start . rudel-xmpp-state-sasl-mechanism-start)
     (sasl-mechanism-step  . rudel-xmpp-state-sasl-mechanism-step))
   "States used during SASL authentication.")
+
+(defvar rudel-xmpp-states)
 
 (eval-after-load "rudel-xmpp"
   '(dolist (state rudel-xmpp-sasl-states)
