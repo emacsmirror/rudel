@@ -37,6 +37,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-lib)
 (require 'rudel-state-machine)
 
 (require 'rudel-backend)
@@ -103,8 +104,8 @@ keys
 If non-nil, PROGRESS-CALLBACK has to be a function which is
 called repeatedly to report progress."
   ;; Ensure that INFO contains all necessary information.
-  (unless (every (lambda (keyword) (member keyword info))
-		 '(:host :jid))
+  (unless (cl-every (lambda (keyword) (member keyword info))
+                    '(:host :jid))
     (setq info (funcall info-callback this info)))
 
   ;; Extract information from INFO and connect.

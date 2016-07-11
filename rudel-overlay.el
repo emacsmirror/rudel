@@ -1,6 +1,6 @@
 ;;; rudel-overlay.el --- Overlay functions for Rudel
 ;;
-;; Copyright (C) 2008-2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, overlay
@@ -36,7 +36,7 @@
 
 (require 'custom)
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'eieio)
 
@@ -89,7 +89,7 @@ Otherwise all Rudel-related overlays are returned."
   (let* ((overlay-lists (overlay-lists))
 	 (overlays      (append (car overlay-lists)
 				(cdr overlay-lists))))
-    (remove-if-not predicate overlays))
+    (cl-remove-if-not predicate overlays))
   )
 
 (defun rudel-overlays-at (position &optional predicate)
@@ -98,7 +98,7 @@ If PREDICATE is non-nil returned overlays satisfy PREDICATES;
 Otherwise all Rudel-related overlays are returned."
   (unless predicate
     (setq predicate #'rudel-overlay-p))
-  (remove-if-not predicate (overlays-at position)))
+  (cl-remove-if-not predicate (overlays-at position)))
 
 (defun rudel-overlays-in (start end &optional predicate)
   "Return a list of Rudel-related overlays in the range START to END.
@@ -106,7 +106,7 @@ If PREDICATE is non-nil returned overlays satisfy PREDICATES;
 Otherwise all Rudel-related overlays are returned."
   (unless predicate
     (setq predicate #'rudel-overlay-p))
-  (remove-if-not predicate (overlays-in start end)))
+  (cl-remove-if-not predicate (overlays-in start end)))
 
 (defun rudel-overlays-remove-all ()
   "Remove all Rudel overlays from the current buffer."

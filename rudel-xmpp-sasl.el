@@ -36,6 +36,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-lib)
 (require 'xml)
 (require 'sasl)
 
@@ -56,9 +57,9 @@
   "Extract the list of supported mechanisms from FEATURES.
 Then switch to the try one state to try them in order."
   ;; Find mechanism tags
-  (let* ((mechanism-tags (remove* 'mechanisms features
-				  :test-not #'eq
-				  :key      #'xml-node-name))
+  (let* ((mechanism-tags (cl-remove 'mechanisms features
+                                    :test-not #'eq
+                                    :key      #'xml-node-name))
 	 ;; XML -> alist
 	 (mechanisms
 	  (apply #'append
@@ -93,7 +94,7 @@ Mechanism are tried by switching to the mechanism start state.
 When no mechanisms are left, switch to the authentication failed state."
   ;; If there are mechanism on the list, try them, otherwise fail.
   (if mechanisms
-      (destructuring-bind (schema mechanism-name) (car mechanisms)
+      (pcase-let ((`(,schema ,mechanism-name) (car mechanisms)))
 	;; If Emacs supports the head of the mechanism list, try it,
 	;; otherwise go with the tail.
 	(let ((mechanism (sasl-find-mechanism (list mechanism-name))))
@@ -199,21 +200,21 @@ mechanism.")
 
 (defmethod rudel-accept ((this rudel-xmpp-state-sasl-mechanism-step) xml)
   "Interpret XML to decide how to proceed with the authentication mechanism."
-  (case (xml-node-name xml)
+  (pcase (xml-node-name xml)
     ;; Authentication mechanism failed.
-    (failure
+    (`failure
      (let ((child (car-safe (xml-node-children xml))))
-       (case (xml-node-name child)
+       (pcase (xml-node-name child)
 
 	;; The id chosen for identification was not accepted (example:
 	;; incorrectly formatted user id).
-	(invalid-authzid
+	(`invalid-authzid
 	 (with-slots (name server rest) this
 	   (list 'sasl-try-one name server rest))) ;; TODO how do we react?
 
 	;; The not-authorized failure means that the credentials we
 	;; provided were wrong.
-	('not-authorized
+	(`not-authorized
 	 (with-slots (name server rest) this
 	   (list 'sasl-try-one name server rest))) ;; TODO how do we react?
 
@@ -222,19 +223,19 @@ mechanism.")
 	;; Not handled explicitly: <aborted/>, <incorrect-encoding/>,
 	;; <invalid-mechanism/>, <mechanism-too-weak/>,
 	;; <temporary-auth-failure/>
-	(t
+	(_
 	 (with-slots (name server rest) this
 	   (list 'sasl-try-one name server rest))))))
 
     ;; Authentication mechanism succeeded. Switch to authenticated
     ;; state.
-    (success
+    (`success
      'authenticated)
 
     ;; Authentication mechanism requires a challenge-response
     ;; step. The Emacs SASL implementation does the heavy lifting for
     ;; us.
-    (challenge
+    (`challenge
      ;; TODO is the challenge data always there?
      (with-slots (name server schema client step rest) this
        ;; TODO assert string= schema (xml-node-attr xml "xmlns")
@@ -272,7 +273,7 @@ mechanism.")
 	   (list 'sasl-try-one name server rest)))))
 
     ;; Unknown message.
-    (t
+    (_
      nil)) ;; TODO send error or call-next-method?
   )
 

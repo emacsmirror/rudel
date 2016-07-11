@@ -1,6 +1,6 @@
 ;;; adopted-insert.el --- Adopted insert operation
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, insert
@@ -36,6 +36,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'eieio)
 
 (require 'rudel-operations)
@@ -74,7 +75,7 @@
 	 ;; <this>
 	 ;;
 	 ((> other-from this-from)
-	  (incf other-from this-length))
+	  (cl-incf other-from this-length))
 
 	 ;;
 	 ;; <other>
@@ -85,7 +86,7 @@
 	 ;; ordering.
 	 ((= other-from this-from)
 	  (when (string< this-data other-data)
-	    (incf other-from this-length)))))))
+	    (cl-incf other-from this-length)))))))
 
    ;;
    ;; Transform a delete operation
@@ -104,8 +105,8 @@
 	 ;; <other> and   <other> and        <other>
 	 ;; <this>      <this>        <this>
 	 ((>= other-from this-from)
-	  (incf other-from this-length)
-	  (incf other-to   this-length))
+	  (cl-incf other-from this-length)
+	  (cl-incf other-to   this-length))
 
 	 ;;
 	 ;; <  other  >

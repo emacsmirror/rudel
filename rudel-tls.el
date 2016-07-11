@@ -1,6 +1,6 @@
 ;;; rudel-tls.el --- Start TLS protocol.
 ;;
-;; Copyright (C) 2008, 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, TLS, encryption, starttls, gnutls
@@ -39,6 +39,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-lib)
 (require 'format-spec)
 
 (require 'rudel)
@@ -297,7 +298,7 @@ support STARTTLS behavior.")
 INFO has to be a property list containing the keys :host
 and :port."
   ;; Ensure that INFO contains all necessary information.
-  (unless (every (lambda (keyword) (member keyword info))
+  (unless (cl-every (lambda (keyword) (member keyword info))
 		 '(:host :port))
     (setq info (funcall info-callback this info)))
 

@@ -38,8 +38,6 @@
 
 ;;; Code:
 ;;
-(require 'cl)
-
 (require 'rudel-backend) ;; for `rudel-backend-cons-p'
 
 
@@ -92,7 +90,7 @@ the name as string."
 					 nil t)))
       (cond
        ((eq return 'object)
-	(find session-name sessions
+	(cl-find session-name sessions
 	      :key to-string :test #'string=))
        (t session-name))))
   )
@@ -141,7 +139,7 @@ the name as string."
 	 (user-name  (completing-read prompt user-names nil t)))
     (cond
      ((eq return 'object)
-      (find user-name users
+      (cl-find user-name users
 	    :test 'string= :key 'object-name-string))
      (t user-name)))
   )
@@ -165,7 +163,7 @@ return the name as string."
 	 (document-name  (completing-read prompt document-names nil t)))
     (cond
      ((eq return 'object)
-      (find document-name documents
+      (cl-find document-name documents
 	    :test #'string= :key #'rudel-unique-name))
      (t document-name)))
   )

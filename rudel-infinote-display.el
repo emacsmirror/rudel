@@ -1,6 +1,6 @@
 ;;; rudel-infinote-display.el --- Display functions for infinote users
 ;;
-;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, user interface
@@ -47,29 +47,29 @@
     (concat
      (call-next-method)
 
-     (case status
-       (active
+     (pcase status
+       (`active
 	(propertize
 	 "a"
 	 'display   rudel-icon-connected
 	 'help-echo (format "%s is connected"
 			    name)))
 
-       (inactive
+       (`inactive
 	(propertize
 	 "i"
 	 'display   rudel-icon-connected
 	 'help-echo (format "%s is connected, but inactive"
 			    name)))
 
-       (unavailable
+       (`unavailable
 	(propertize
 	 "-"
 	 'display   rudel-icon-disconnected
 	 'help-ehco (format "%s is not connected"
 			    name)))
 
-       (t
+       (_
 	"?"))))
   )
 

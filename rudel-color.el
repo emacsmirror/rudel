@@ -1,6 +1,6 @@
 ;;; rudel-color.el --- Color manipulation functions for Rudel
 ;;
-;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, color, color space
@@ -46,7 +46,6 @@
 ;;; Code:
 ;;
 
-(eval-when-compile (require 'cl))
 
 ;;; RGV <-> HSV conversion
 ;;
@@ -84,7 +83,7 @@ http://www.emacswiki.org/emacs/hexrgb.el"
 		(+ 4.0 (/ (- red green) delta)))))
 	(setq hue (/ hue 6.0))
 	(when (<= hue 0.0)
-	  (incf hue))))
+	  (cl-incf hue))))
 
     (list hue saturation value))
   )
@@ -107,18 +106,18 @@ http://www.emacswiki.org/emacs/hexrgb.el"
 	   (pp      (* value (- 1 saturation)))
 	   (qq      (* value (- 1 (* saturation fract))))
 	   (ww      (* value (- 1 (* saturation (- 1 (- hue int-hue)))))))
-      (case int-hue
-	((0 6)
+      (pcase int-hue
+	((or `0 `6)
 	 (list value ww pp))
-	(1
+	(`1
 	 (list qq value pp))
-	(2
+	(`2
 	 (list pp value ww))
-	(3
+	(`3
 	 (list pp qq value))
-	(4
+	(`4
 	 (list ww pp value))
-	(otherwise
+	(_
 	 (list value pp qq)))))
   )
 

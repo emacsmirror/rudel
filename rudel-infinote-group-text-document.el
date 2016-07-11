@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-text-document.el --- Communication group used by text documents
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, communication, group, text, document
@@ -35,6 +35,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'rudel-xml)
 
 (require 'rudel-operations)
@@ -204,7 +205,7 @@
 	    :data (or text "\n")))))
 
       ;; Expect one less synchronization item.
-      (decf remaining-items)))
+      (cl-decf remaining-items)))
   nil)
 
 (defmethod rudel-infinote/request/delete

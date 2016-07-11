@@ -41,8 +41,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 (require 'eieio)
 
@@ -81,7 +80,7 @@ jupiter algorithm.")
   "Store OPERATION in the operation log of THIS and increase local revision count."
   (with-slots (local-revision local-log) this
     (push (cons local-revision operation) local-log)
-    (incf local-revision)))
+    (cl-incf local-revision)))
 
 (defmethod jupiter-remote-operation ((this jupiter-context)
 				     local-revision remote-revision
@@ -95,7 +94,7 @@ site is referring to."
 
       ;; Discard stored local operations which are older than the
       ;; local revision to which the remote site refers.
-      (setq local-log (delete-if
+      (setq local-log (cl-delete-if
 		       (lambda (revision) (< revision local-revision))
 		       local-log
 		       :key 'car))
@@ -117,7 +116,7 @@ site is referring to."
        (reverse local-log))
 
       ;; Increase remote revision
-      (incf this-remote-revision))
+      (cl-incf this-remote-revision))
     ;; The transformed operation is the result of the computation.
     transformed-operation)
   )

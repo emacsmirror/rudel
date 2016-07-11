@@ -36,7 +36,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'warnings)
 
@@ -190,7 +190,7 @@ which case it is the name of a group."
   "Find node WHICH in the node list of THIS.
 WHICH is compared to the result of KEY using TEST."
   (with-slots (nodes) this
-    (find which nodes
+    (cl-find which nodes
 	  :key  (or key #'rudel-id)
 	  :test (or test #'=))))
 
@@ -215,31 +215,31 @@ WHICH is compared to the result of KEY using TEST."
 
       ;; Create the new node. Distinguish document and directory nodes
       ;; based on TYPE.
-      (destructuring-bind (node . is-document)
-	  (cond
-	   ;; This is a special kind of node. Nodes of this kind are
-	   ;; inner nodes in the node tree.
-	   ((string= type "InfSubdirectory")
-	    (cons (rudel-infinote-node-directory
-		   name
-		   :id     id
-		   :parent parent
-		   :group  (rudel-get-group this "InfDirectory"))
-		  nil))
+      (pcase-let ((`(,node . ,is-document)
+                   (cond
+                    ;; This is a special kind of node. Nodes of this kind are
+                    ;; inner nodes in the node tree.
+                    ((string= type "InfSubdirectory")
+                     (cons (rudel-infinote-node-directory
+                            name
+                            :id     id
+                            :parent parent
+                            :group  (rudel-get-group this "InfDirectory"))
+                           nil))
 
-	   ;; Other special kinds of nodes would go here
+                    ;; Other special kinds of nodes would go here
 
-	   ;; Ordinary document nodes.
-	   ;; TODO the backend should construct the appropriate document
-	   ;; object based on TYPE
-	   ((string= type "InfText")
-	    (cons (rudel-infinote-text-document
-		   name
-		   :id     id
-		   :parent parent)
-		  t)))
+                    ;; Ordinary document nodes.
+                    ;; TODO the backend should construct the appropriate
+                    ;; document object based on TYPE
+                    ((string= type "InfText")
+                     (cons (rudel-infinote-text-document
+                            name
+                            :id     id
+                            :parent parent)
+                           t)))))
 
-	;; Integrate the document object into the hierarchy.
+        ;; Integrate the document object into the hierarchy.
 	(when parent
 	  (rudel-add-child parent node))
 	(rudel-add-node this node)
@@ -254,9 +254,9 @@ WHICH is compared to the result of KEY using TEST."
 
 (defmethod rudel-receive ((this rudel-infinote-client-connection) xml)
   ""
-  (case (xml-node-name xml)
+  (pcase (xml-node-name xml)
     ;;
-    (group
+    (`group
      (let* ((name  (xml-get-attribute xml 'name))
 	    (xml   (xml-node-children xml))
 	    (group (rudel-get-group this name)))
@@ -274,7 +274,7 @@ WHICH is compared to the result of KEY using TEST."
      nil)
 
     ;;
-    (t
+    (_
      (when (next-method-p)
        (call-next-method)))) ;; TODO what is actually called here?
   )

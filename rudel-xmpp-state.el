@@ -1,6 +1,6 @@
 ;;; rudel-xmpp-state.el --- Base class for states used in XMPP connections
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, state machine
@@ -36,6 +36,7 @@
 ;;; Code:
 ;;
 
+(require 'xml)
 (require 'rudel-util)
 (require 'rudel-state-machine)
 
@@ -75,17 +76,17 @@ machine of which uses the state object."))
 (defmethod rudel-accept ((this rudel-xmpp-state) xml)
   ""
   (let ((name (xml-node-name xml)))
-    (case name
+    (pcase name
      ;;
      ;; TODO example
      ;; <stream:error>
      ;; <not-authorized xmlns="urn:ietf:params:xml:ns:xmpp-streams"/>
      ;; </stream:error>
-     ('stream:error ;; TODO is this qualified
+     (`stream:error ;; TODO is this qualified
       'they-finalize)
 
      ;; we do not accept unexpected messages.
-     (t
+     (_
       'we-finalize)))
   )
 

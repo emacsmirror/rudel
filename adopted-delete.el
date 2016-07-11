@@ -1,6 +1,6 @@
 ;;; adopted-delete.el --- Adopted delete operation
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, delete
@@ -36,6 +36,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'eieio)
 
 (require 'rudel-operations)
@@ -73,7 +74,7 @@ OTHER is destructively modified or replaced."
 	 ;;        <other>
 	 ;; <this>
 	 ((> other-from this-to)
-	  (decf other-from this-length))
+	  (cl-decf other-from this-length))
 
 	 ;;   <other>
 	 ;; <  this  >
@@ -96,8 +97,8 @@ OTHER is destructively modified or replaced."
 	 ;; THIS. Therefore OTHER has to be shifted by the length of
 	 ;; the deleted region.
 	 ((> other-from this-to)
-	  (decf other-from this-length)
-	  (decf other-to   this-length))
+	  (cl-decf other-from this-length)
+	  (cl-decf other-to   this-length))
 
 	 ;; <other>
 	 ;;         <this>
@@ -108,12 +109,12 @@ OTHER is destructively modified or replaced."
 	 ;; <  other  >
 	 ;;   <this>
 	 ((and (>= other-from this-from) (>= other-to this-to))
-	  (decf other-to this-length))
+	  (cl-decf other-to this-length))
 
 	 ;; <other>
 	 ;;    <this>
 	 ((and (< other-from this-from) (< other-to this-to))
-	  (decf other-to (- other-to this-to)))
+	  (cl-decf other-to (- other-to this-to)))
 
 	 ;;    <other>
 	 ;; <this>
@@ -125,7 +126,7 @@ OTHER is destructively modified or replaced."
 	 ;; overlap.
 	 ((and (< other-from this-to) (> other-to this-to))
 	  (setq other-from this-from)
-	  (incf other-to   (+ other-from (- other-to this-to))))
+	  (cl-incf other-to   (+ other-from (- other-to this-to))))
 	 ;; (setq other-to (this-to - other-from))
 
 	 ;;   <other>

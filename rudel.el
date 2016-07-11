@@ -55,7 +55,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'eieio)
 (require 'eieio-base)
@@ -227,7 +227,7 @@ with arguments THIS and USER."
   "Find user WHICH in the user list.
 WHICH is compared to the result of KEY using TEST."
   (with-slots (users) this
-    (find which users
+    (cl-find which users
 	  :key  (or key  #'object-name-string)
 	  :test (or test #'string=))))
 
@@ -258,7 +258,7 @@ WHICH is compared to the result of KEY using TEST."
   "Find document WHICH in the document list.
 WHICH is compared to the result of KEY using TEST."
   (with-slots (documents) this
-    (find which documents
+    (cl-find which documents
 	  :key  (or key  #'object-name-string)
 	  :test (or test #'string=))))
 
@@ -306,7 +306,7 @@ client perspective.")
     (unless self
       (error "Cannot find unsubscribed documents without self user"))
 
-    (remove-if
+    (cl-remove-if
      (lambda (document)
        (with-slots (subscribed) document
 	 (memq self subscribed)))
@@ -569,7 +569,7 @@ with arguments THIS and USER."
   "Find user WHICH in the list of subscribed users.
 WHICH is compared to the result of KEY using TEST."
   (with-slots (subscribed) this
-    (find which subscribed
+    (cl-find which subscribed
 	  :key  (or key  #'object-name-string)
 	  :test (or test #'string=))))
 
@@ -657,7 +657,7 @@ null rudel-user-child)."
 			       (list (- (overlay-start overlay) 1)
 				     (- (overlay-end   overlay) 1)
 				     (rudel-overlay-user overlay)))
-			     (sort* (rudel-author-overlays)
+			     (cl-sort (rudel-author-overlays)
 				    #'< :key #'overlay-start)))
 	    (last)
 	    (augmented-chunks))
@@ -691,7 +691,7 @@ null rudel-user-child)."
 		augmented-chunks))
 
 	;; Sort chunks according to the start position.
-	(sort* augmented-chunks #'< :key #'car))))
+	(cl-sort augmented-chunks #'< :key #'car))))
   )
 
 

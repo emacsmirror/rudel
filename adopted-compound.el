@@ -57,8 +57,8 @@ number of child operation.")
 (defmethod rudel-apply ((this adopted-compound) object)
   "Apply THIS to BUFFER by applying the child operation."
   (with-slots (children) this
-    (let ((child (first children))
-	  (rest  (rest  children)))
+    (let ((child (car children))
+	  (rest  (cdr children)))
       ;; Apply all child operations
       (while child
 	(rudel-apply child object)
@@ -67,8 +67,7 @@ number of child operation.")
 	(dolist (next rest)
 	  (setf next (adopted-transform child next)))
 	;; Advance to next child operation.
-	(setq child (first rest)
-	      rest  (rest rest)))))
+	(setq child (pop rest)))))
   )
 
 (defmethod adopted-transform ((this adopted-compound) other)

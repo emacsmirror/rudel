@@ -39,6 +39,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'warnings)
 
 (require 'eieio)
@@ -591,7 +592,7 @@ a 'self' user object."))
 		    have-self t)))))
 
       ;; Decrease number of not yet received synchronization items.
-      (decf remaining-items)))
+      (cl-decf remaining-items)))
   nil)
 
 (defmethod rudel-obby/obby_sync_usertable_user
@@ -608,7 +609,7 @@ a 'self' user object."))
 				 :color      color)))
 
       ;; Decrease number of not yet received synchronization items.
-      (decf remaining-items)))
+      (cl-decf remaining-items)))
   nil)
 
 (defmethod rudel-obby/obby_sync_doclist_document
@@ -638,7 +639,7 @@ a 'self' user object."))
 				       :suffix     suffix))))
 
       ;; Decrease number of not yet received synchronization items.
-      (decf remaining-items)))
+      (cl-decf remaining-items)))
   nil)
 
 (defmethod rudel-obby/obby_sync_final
@@ -743,7 +744,7 @@ a 'self' user object."))
 	  (rudel-remote-operation document user operation)))
 
       ;; After all bytes are transferred, go back to idle state.
-      (decf remaining-bytes (string-bytes data))
+      (cl-decf remaining-bytes (string-bytes data))
       (if (zerop remaining-bytes)
 	  'idle
 	nil)))
@@ -889,8 +890,8 @@ documents."))
     ;; receiving a 'close' event.
     (rudel-set-sentinel transport
                         (lambda (event)
-                          (case event
-                            (close
+                          (pcase event
+                            (`close
                              (rudel-close this)))))))
 
 (defmethod rudel-register-state ((this rudel-obby-connection)
@@ -989,33 +990,34 @@ documents."))
     (with-slots (self) session
       (rudel-switch this 'subscribing self document)))
 
-  (let ((reporter (make-progress-reporter "Subscribing " 0.0 1.0)))
-    (flet ((display-progress (state)
-	     (cond
-	      ;; Syncing document content, we can provide detailed progress.
-	      ((and (consp state)
-		    (eq (car state) 'document-synching))
-	       (with-slots (all-bytes remaining-bytes) (cdr state)
-		 (progress-reporter-force-update
-		  reporter
-		  (- 1.0 (/ (float remaining-bytes) (float all-bytes)))
-		  (format "Subscribing (%s) " (car state)))))
+  (let* ((reporter (make-progress-reporter "Subscribing " 0.0 1.0))
+         (display-progress
+          (lambda (state)
+            (cond
+             ;; Syncing document content, we can provide detailed progress.
+             ((and (consp state)
+                   (eq (car state) 'document-synching))
+              (with-slots (all-bytes remaining-bytes) (cdr state)
+                (progress-reporter-force-update
+                 reporter
+                 (- 1.0 (/ (float remaining-bytes) (float all-bytes)))
+                 (format "Subscribing (%s) " (car state)))))
 
-	      ;; For other states, we just spin.
-	      ((consp state)
-	       (progress-reporter-force-update
-	        reporter 0.5
-	        (format "Subscribing (%s) " (car state))))
+             ;; For other states, we just spin.
+             ((consp state)
+              (progress-reporter-force-update
+               reporter 0.5
+               (format "Subscribing (%s) " (car state))))
 
-	      ;; Done
-	      (t
-	       (progress-reporter-force-update reporter 1.0 "Subscribing ")
-	       (progress-reporter-done reporter)))))
-      (rudel-state-wait
-       this
-       '(idle)
-       '(we-finalized they-finalized disconnected)
-       #'display-progress)))
+             ;; Done
+             (t
+              (progress-reporter-force-update reporter 1.0 "Subscribing ")
+              (progress-reporter-done reporter))))))
+    (rudel-state-wait
+     this
+     '(idle)
+     '(we-finalized they-finalized disconnected)
+     display-progress))
 
   ;; We receive a notification of our own subscription from the
   ;; server. Consequently we do not add SELF to the list of subscribed

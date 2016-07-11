@@ -43,7 +43,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'eieio)
 
@@ -52,10 +52,6 @@
 
 ;;; Errors
 ;;
-
-;; rudel-dispatch-error
-
-(intern "rudel-dispatch-error")
 
 (put 'rudel-dispatch-error 'error-conditions
      '(error
@@ -120,11 +116,11 @@ the slots of some other object as if they were their own slots."
   "Look up SLOT-NAME in the state machine associated to THIS."
   (let ((target (slot-value this (oref this impersonation-target-slot))))
     (condition-case error
-	(case operation
-	  (oref
+	(pcase operation
+	  (`oref
 	   (slot-value target slot-name))
 
-	  (oset
+	  (`oset
 	   (set-slot-value target slot-name new-value)))
       (invalid-slot-name
        (if (next-method-p)
@@ -151,7 +147,7 @@ methods."
 				 method &rest args)
   "Call METHOD on the target object instead of THIS."
   (let ((target (slot-value this (oref this delegation-target-slot))))
-    (apply method target (rest args))))
+    (apply method target (cdr args))))
 
 
 ;;; Fragmentation and assembling functions.
@@ -165,15 +161,13 @@ processing.
 FUNCTION is called to identify complete and partial fragments in
 the data."
   (declare (debug (symbolp symbolp form)))
-  (let ((complete (make-symbol "complete"))
-	(partial  (make-symbol "partial")))
+  (let ((x (make-symbol "x")))
     ;; Ask FUNCTION to find complete and partial fragments in the
     ;; combined data DATA and STORAGE. Store the results in DATA
     ;; STORAGE.
-    `(multiple-value-bind (,complete ,partial)
-	 (funcall ,function ,data ,storage)
-       (setq ,storage ,partial
-	     ,data    ,complete)))
+    `(let ((,x (funcall ,function ,data ,storage)))
+       (setq ,storage (cadr ,x)
+	     ,data    (car ,x))))
   )
 
 (defun rudel-assemble-lines (data storage)
@@ -186,7 +180,7 @@ where complete COMPLETE is a list of complete lines and
 INCOMPLETE is a list of string fragments of not yet complete
 lines."
   ;; Try to find a line break in data.
-  (let ((index (position ?\n data :from-end t)))
+  (let ((index (cl-position ?\n data :from-end t)))
     (list
      ;; Complete lines
      (when index

@@ -48,7 +48,6 @@
 ;;; Code:
 ;;
 
-(require 'cl)
 (require 'easy-mmode)
 (require 'easymenu)
 
@@ -370,10 +369,8 @@ of the buffer.")
 
 (defun rudel-mode-line-publish-state--add-indicator-to-mode-line ()
   "Add Rudel publish state indicator to mode line."
-  (let* ((new-format      (copy-list mode-line-format))
-         (format-rest     (nthcdr
-                           (position 'mode-line-modified mode-line-format)
-                           new-format))
+  (let* ((new-format      (copy-sequence mode-line-format))
+         (format-rest     (memq 'mode-line-modified new-format))
          (format-rest-cdr (cdr format-rest)))
     (setcdr format-rest (cons 'rudel-mode-line-publish-state-string
 			      format-rest-cdr))
@@ -382,11 +379,9 @@ of the buffer.")
 
 (defun rudel-mode-line-publish-state--remove-indicator-from-mode-line ()
   "Remove Rudel publish state indicator from mode line."
-  (let ((format-rest (nthcdr
-		      (position 'mode-line-remote mode-line-format)
-		      mode-line-format)))
+  (let ((format-rest (memq 'mode-line-remote mode-line-format)))
     ;; Only change the mode line if our indicator is present.
-    (when (eq (second format-rest) 'rudel-mode-line-publish-state-string)
+    (when (eq (cadr format-rest) 'rudel-mode-line-publish-state-string)
       (setcdr format-rest (cddr format-rest))
       (force-mode-line-update))))
 

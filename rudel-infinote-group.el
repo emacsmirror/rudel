@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group.el --- Common aspects of infinote communication groups
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -49,6 +49,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'warnings)
 
 (require 'eieio)
@@ -77,9 +78,9 @@
 (defmethod rudel-accept ((this rudel-infinote-group-state) xml)
   "Dispatch XML to appropriate handler method based on content."
   (let ((type (xml-node-name xml)))
-    (case type
+    (pcase type
       ;; Handle request-failed messages.
-      (request-failed
+      (`request-failed
        ;; TODO handle the problem
        ;; TODO there can be a description:
        ;;      <request-failed><text>Bla</text></request-failed>
@@ -96,7 +97,7 @@ domain: `%s', code: `%s'"
 
       ;; Dispatch all normal message to appropriate methods
       ;; automatically.
-      (t
+      (_
        (let ((name (symbol-name type)))
 	 (condition-case error
 	     ;; Try to dispatch on the message type.
@@ -213,7 +214,7 @@ and do not increment the sequence number counter."
 	   (cons `(seq . ,(number-to-string seq-num))
 		 attributes))
 	  children)))
-      (incf seq-num)))
+      (cl-incf seq-num)))
   )
 
 

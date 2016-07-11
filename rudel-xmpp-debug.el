@@ -1,6 +1,6 @@
 ;;; rudel-xmpp-debug.el --- Debugging functions for the Rudel XMPP backend
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, debug
@@ -37,6 +37,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-lib)
 (require 'eieio)
 
 (require 'rudel-xml)
@@ -80,7 +81,7 @@
 	this
 	:sent
 	"RESPDATA"
-	(if (find ?= pair)
+	(if (cl-find ?= pair)
 	    (apply #'format "%-16s: %s" (split-string pair "="))
 	  pair)))
      (split-string
@@ -99,7 +100,7 @@
 	this
 	:received
 	"CHALDATA"
-	(if (find ?= pair)
+	(if (cl-find ?= pair)
 	    (apply #'format "%-16s: %s" (split-string pair "="))
 	  pair)))
      (split-string

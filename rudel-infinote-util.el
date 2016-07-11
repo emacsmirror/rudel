@@ -1,6 +1,6 @@
 ;;; rudel-infinote-util.el --- Miscellaneous functions for infinote backend
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, miscellaneous, utility
@@ -35,9 +35,6 @@
 
 ;;; Code:
 ;;
-(eval-when-compile
-  (require 'cl))
-
 (require 'rudel-util)
 (require 'rudel-xml)
 

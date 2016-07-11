@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-directory.el --- Infinote directory group
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -38,6 +38,7 @@
 ;;; Code:
 ;;
 
+(eval-when-compile (require 'cl-lib))
 (require 'warnings)
 
 (require 'eieio)
@@ -171,7 +172,7 @@ explored.")
 		     name
 		     type) xml
 	(rudel-add-node group id parent name type))
-    (decf remaining-messages))
+    (cl-decf remaining-messages))
   nil)
 
 (defmethod rudel-infinote/explore-end

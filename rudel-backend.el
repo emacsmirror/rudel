@@ -46,7 +46,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'warnings)
 
@@ -177,7 +177,7 @@ Backends are loaded, if necessary."
   ;; Retrieve and return all backends, filtering the list using
   ;; PREDICATE. Backends that could not be loaded, are ignored.
   (if predicate
-      (remove-if-not
+      (cl-remove-if-not
        (lambda (cell)
 	 (funcall predicate (cdr cell)))
        (rudel-all-backends this t))

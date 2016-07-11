@@ -1,6 +1,6 @@
 ;;; rudel-state-machine.el --- A simple state machine for Rudel
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, fsm
@@ -41,7 +41,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'eieio)
 
@@ -188,7 +188,7 @@ that fails as well, the first state in the state list is used."
 STATES is a list of cons cells whose car is a symbol - the name
 of the state - and whose cdr is a class."
   (dolist (symbol-and-state states)
-    (destructuring-bind (name . class) symbol-and-state
+    (pcase-let ((`(,name . ,class) symbol-and-state))
       (rudel-register-state
        this name (make-instance class (symbol-name name)))))
   )
@@ -198,7 +198,7 @@ of the state - and whose cdr is a class."
 If OBJECT is non-nil, (NAME . OBJECT) is returned. Otherwise,
 just NAME."
   (with-slots (states state) this
-    (let ((state-symbol (car (find state states :key #'cdr :test #'eq))))
+    (let ((state-symbol (car (cl-find state states :key #'cdr :test #'eq))))
       (if object
 	  (cons state-symbol state)
 	state-symbol)))
@@ -358,8 +358,8 @@ arguments and when they switch states.")
     ;; Remove :start initarg
     (while rest
       (unless (eq (car rest) :start)
-	(push (first  rest) replacement-args)
-	(push (second rest) replacement-args))
+	(push (nth 0 rest) replacement-args)
+	(push (nth 1 rest) replacement-args))
       (setq rest (cddr rest)))
 
     ;; Return remaining initargs.
@@ -388,8 +388,8 @@ symbol of the current state and STATE is the state object."
 	 (catch 'state-wait
 	   (while t
 	     ;; Retrieve current state.
-	     (destructuring-bind (symbol . state)
-		 (rudel-current-state machine t)
+	     (pcase-let ((`(,symbol . ,state)
+                          (rudel-current-state machine t)))
 
 	       ;; Check against success and error states.
 	       (when (memq symbol success-states)

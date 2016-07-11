@@ -41,9 +41,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
-
+(require 'cl-lib)
 (require 'eieio)
 
 (require 'rudel)
@@ -182,44 +180,44 @@ Return the connection object."
 
 	    ;; Connection entered error state
 	    (rudel-entered-error-state
-	     (destructuring-bind (symbol . state) (cdr error-data)
+	     (pcase-let ((`(,symbol . ,state) (cdr error-data)))
 	       (if (eq (rudel-find-state connection 'join-failed) state)
 
 		   ;; For the join-failed state, we can extract
 		   ;; details and react accordingly.
-		   (case symbol
+		   (pcase symbol
 		     ;; Error state is 'join-failed'
-		     (join-failed
+		     (`join-failed
 		      (with-slots (error-symbol error-data) state
 			(message "Login error: %s %s."
 				 error-symbol error-data)
 			(sleep-for 2)
-			(case error-symbol
+			(pcase error-symbol
 			  ;; Invalid username; reset it.
-			  (rudel-obby-invalid-username
+			  (`rudel-obby-invalid-username
 			   (setq info      (plist-put info :username nil)
 				 switch-to (list 'joining info)))
 
 			  ;; Username already in use; reset it.
-			  (rudel-obby-username-in-use
+			  (`rudel-obby-username-in-use
 			   (setq info      (plist-put info :username nil)
 				 switch-to (list 'joining info)))
 
 			  ;; Invalid color; reset it.
-			  (rudel-obby-invalid-color
+			  (`rudel-obby-invalid-color
 			   (setq info      (plist-put info :color nil)
 				 switch-to (list 'joining info)))
 
 			  ;; Color already in use; reset it.
-			  (rudel-obby-color-in-use
+			  (`rudel-obby-color-in-use
 			   (setq info      (plist-put info :color nil)
 				 switch-to (list 'joining info)))
 
 			  ;; Unknown error TODO should we signal?
-			  (t nil))))
+			  (_ nil))))
 
 		     ;; Error state is one of {we, they}-finalize
-		     ((we-finalized they-finalized)
+		     ((or `we-finalized `they-finalized)
 		      (with-slots (reason) state
 			(signal 'rudel-join-error (list reason)))))
 
@@ -275,7 +273,7 @@ Return the new document."
   (let* ((used-ids (with-slots (documents) session
 		     (mapcar 'rudel-id documents)))
 	 (test-ids (number-sequence 0 (length used-ids))))
-    (car (sort (set-difference test-ids used-ids) '<)))
+    (car (sort (cl-set-difference test-ids used-ids) #'<)))
   )
 
 
@@ -414,7 +412,7 @@ whose cdr is the replacement for the pattern."
 
 (defun rudel-obby-format-color (color)
   "Format the Emacs color COLOR as obby color string."
-  (multiple-value-bind (red green blue) (color-values color)
+  (pcase-let ((`(,red ,green ,blue) (color-values color)))
     (format "%02x%02x%02x" (lsh red -8) (lsh green -8) (lsh blue -8))))
 
 (defun rudel-obby-assemble-message (name &rest arguments)

@@ -40,9 +40,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl))
-
+(require 'cl-lib)
 (require 'eieio)
 
 (require 'jupiter)
@@ -109,14 +107,13 @@ construction of the name of the new operation. "
      ;; Compound operation
      ((string= type "split")
       (let* ((rest   (cdr message))
-	     (offset (position-if
+	     (offset (cl-position-if
 		       (lambda (item)
-			 (member* item '("ins" "del" "nop")
-				  :test #'string=))
+			 (member item '("ins" "del" "nop")))
 		       rest
 		       :start 1))
-	     (first  (subseq rest 0 offset))
-	     (second (subseq rest offset)))
+	     (first  (cl-subseq rest 0 offset))
+	     (second (cl-subseq rest offset)))
 	(jupiter-compound
 	 (format "compound-%d-%d"
 		 remote-revision local-revision)
@@ -155,8 +152,8 @@ construction of the name of the new operation. "
     (let ((old-from (+ from 1))
 	  (old-to   (+ to   1)))
       (with-current-buffer buffer
-	(destructuring-bind (change-from change-to string)
-	    rudel-buffer-change-workaround-data
+	(pcase-let ((`(,change-from ,change-to string)
+                     rudel-buffer-change-workaround-data))
 	  (setq from   (- (position-bytes old-from) 1)
 		length (string-bytes
 			(substring string
@@ -237,23 +234,23 @@ coding-system."
   (let ((bindings
 	 (mapcar
 	  (lambda (spec)
-	    (destructuring-bind (var type) spec
+	    (pcase-let ((`(,var ,type) spec))
 	      (list var
-		    (case type
+		    (pcase type
 		      ;; Number
-		      (number
+		      (`number
 		       `(string-to-number ,var 16))
 		      ;; Color
-		      (color
+		      (`color
 		       `(rudel-obby-parse-color ,var))
 		      ;; Document Id
-		      (document-id
+		      (`document-id
 		       `(mapcar
 			 (lambda (string)
 			   (string-to-number string 16))
 			 (split-string ,var " " t)))
 		      ;; Coding System
-		      (coding-system
+		      (`coding-system
 		       `(coding-system-from-name (downcase ,var)))))))
 	  specs)))
     `(let (,@bindings)

@@ -1,6 +1,6 @@
 ;;; rudel-session-initiation.el --- Session discovery and advertising functions
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, session, initiation, service, discovery, advertising
@@ -54,7 +54,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'eieio)
 
@@ -188,12 +188,12 @@ priority."
 			     (lambda (backend)
 			       (rudel-capable-of-p backend capability))))
 	 ;; Select primary backends
-	 (primary-backends  (remove*
+	 (primary-backends  (cl-remove
 			     'fallback suitable-backends
 			     :key (lambda (backend)
 				    (rudel-priority (cdr backend)))))
 	 ;; Select fallback backends
-	 (fallback-backends (remove*
+	 (fallback-backends (cl-remove
 			     'primary suitable-backends
 			     :key (lambda (backend)
 				    (rudel-priority (cdr backend))))))
@@ -209,20 +209,21 @@ The returned list is of the form (INFO-1 ... INFO-N FALLBACK-1
 ... FALLBACK-M) where INFO-I are connect info property lists (see
 `rudel-join-session') and FALLBACK-I are conses of the form (NAME
 . CLASS-OR-OBJECT) that specify fallback backends."
-  (multiple-value-bind (primary-backends fallback-backends)
-      (rudel-session-initiation-suitable-backends 'discover)
+  (pcase-let ((`(,primary-backends ,fallback-backends)
+               (rudel-session-initiation-suitable-backends 'discover)))
     ;; Retrieve session list from primary backend and fall back to
     ;; fallback backends if the list is empty.
     (if backend-name
-	(let ((backend (or (find backend-name primary-backends :key #'car)
-			   (find backend-name fallback-backends :key #'car))))
+	(let ((backend
+               (or (cl-find backend-name primary-backends :key #'car)
+                   (cl-find backend-name fallback-backends :key #'car))))
 	  (when backend
 	    (rudel-discover (cdr backend))))
       (let ((primary-results
-	     (remove-if #'null
-			(apply #'append
-			       (mapcar #'rudel-discover
-				       (mapcar #'cdr primary-backends))))))
+	     (cl-remove-if #'null
+                           (apply #'append
+                                  (mapcar #'rudel-discover
+                                          (mapcar #'cdr primary-backends))))))
 	(append primary-results fallback-backends))))
   )
 
@@ -236,20 +237,17 @@ backends are tried.
 
 The result is non-nil if at least one backend was able to
 advertise the session."
-  (multiple-value-bind (primary-backends fallback-backends)
-      (rudel-session-initiation-suitable-backends 'advertise)
+  (pcase-let ((`(,primary-backends ,fallback-backends)
+               (rudel-session-initiation-suitable-backends 'advertise)))
     (or ;; Try to advertise the session using primary backends.
-        (some #'identity
-	      (mapcar (lambda (backend)
-			(rudel-advertise backend info))
-		      (mapcar #'cdr primary-backends)))
+        (cl-some (lambda (backend)
+                   (rudel-advertise (cdr backend) info))
+                 primary-backends)
 	;; When the primary backends fail, try to advertise the
 	;; session using fallback backends
-	(some #'identity
-	      (mapcar (lambda (backend)
-			(rudel-advertise backend info))
-		      (mapcar #'cdr fallback-backends)))))
-  )
+	(cl-some (lambda (backend)
+                   (rudel-advertise (cdr backend) info))
+                 fallback-backends))))
 
 
 ;;; Class rudel-ask-protocol-backend

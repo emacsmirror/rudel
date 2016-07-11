@@ -48,7 +48,7 @@
 ;;; Code:
 ;;
 
-(require 'cl)
+(require 'cl-lib)
 
 (require 'warnings)
 
@@ -193,7 +193,7 @@ failed encryption negotiation."
 				(rudel-obby-format-color color))))))
 
 	    ;; Transmit list of disconnected users.
-	    (let ((offline-users (remove-if #'rudel-connected users)))
+	    (let ((offline-users (cl-remove-if #'rudel-connected users)))
 	      (dolist (user offline-users)
 		(with-slots ((name :object-name) user-id color) user
 		  (rudel-send this
@@ -297,7 +297,7 @@ of her color to COLOR."
 					    name
 					  (format "%s<%d>" name suffix))
 					#'string= #'rudel-unique-name)
-	      (incf suffix))
+	      (cl-incf suffix))
 
 	    ;; Add the document to the server's document list
 	    (rudel-add-document server document)
@@ -352,7 +352,7 @@ of her color to COLOR."
 
 	  ;; Send buffer chunks with author ids
 	  (dolist (chunk (rudel-chunks document))
-	    (multiple-value-bind (from to author) chunk
+	    (pcase-let ((`(,from ,to ,author) chunk))
 	      (let ((string (buffer-substring (+ from 1) (+ to 1))))
 		(rudel-send this
 			    "obby_document"
@@ -531,8 +531,8 @@ handled by the server.")
     ;; receiving a 'close' event.
     (rudel-set-sentinel transport
                         (lambda (event)
-                          (case event
-                            (close
+                          (pcase event
+                            (`close
                              (rudel-close this)))))))
 
 (defmethod rudel-register-state ((this rudel-obby-client) _symbol state)
@@ -622,7 +622,7 @@ handled by the server.")
   "Return a list of clients subscribed to DOCUMENT excluding THIS."
   (with-slots (clients) (oref this :server)
     (with-slots (subscribed) document
-      (remove-if
+      (cl-remove-if
        (lambda (client)
 	 (with-slots (user) client
 	   (or (eq client this)
@@ -709,8 +709,8 @@ such objects derived from rudel-obby-client."
 	  ((and (listp receivers)
 		(eq (car receivers) 'exclude))
 	   (with-slots (clients) this
-	     (set-difference clients (cdr receivers)
-			     :key #'rudel-id)))
+	     (cl-set-difference clients (cdr receivers)
+                                :key #'rudel-id)))
 	  ;; If RECEIVERS is a single rudel-obby-client (or derived)
 	  ;; object, send the message to that client.
 	  ((rudel-obby-client-child-p receivers)
@@ -733,7 +733,7 @@ such objects derived from rudel-obby-client."
 		 :user-id    next-user-id
 		 :connected  t
 		 :encryption encryption)))
-      (incf next-user-id)
+      (cl-incf next-user-id)
       user))
   )
 
@@ -776,7 +776,7 @@ user. COLOR has to be sufficiently different from used colors."
 		   :id         next-client-id
 		   :encryption nil)))
       (push client clients))
-    (incf next-client-id))
+    (cl-incf next-client-id))
   )
 
 (defmethod rudel-remove-client ((this rudel-obby-server)

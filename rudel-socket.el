@@ -37,7 +37,7 @@
 ;;; Code:
 ;;
 
-(require 'cl) ;; for `every'
+(require 'cl-lib) ;; for `cl-every'
 
 (require 'rudel-backend)
 (require 'rudel-transport)
@@ -91,15 +91,15 @@ to be stored separately."))
      socket (lambda (process _message)
               (with-slots (sentinel) this
                 (when sentinel
-                  (case (process-status process)
+                  (pcase (process-status process)
                     ;; Nothing to do here.
-                    (run
+                    (`run
                      nil)
 
                     ;; Dispatch events which indicate the
                     ;; termination of the connection to the
                     ;; sentinel.
-                    ((closed failed exit finished)
+                    ((or `closed `failed `exit `finished)
                      (funcall sentinel 'close)))))))))
 
 (defmethod rudel-send ((this rudel-socket-transport) data)
@@ -210,8 +210,8 @@ The transport backend is a factory for TCP transport objects.")
 INFO has to be a property list containing the keys :host
 and :port."
   ;; Ensure that INFO contains all necessary information.
-  (unless (every (lambda (keyword) (member keyword info))
-		 '(:host :port))
+  (unless (cl-every (lambda (keyword) (member keyword info))
+                    '(:host :port))
     (setq info (funcall info-callback this info)))
 
   ;; Extract information from INFO and create the socket.
@@ -234,8 +234,8 @@ and :port."
   "Create TCP server according to INFO.
 INFO has to be a property list containing the key :port."
   ;; Ensure that INFO contains all necessary information.
-  (unless (every (lambda (keyword) (member keyword info))
-		 '(:port))
+  (unless (cl-every (lambda (keyword) (member keyword info))
+                    '(:port))
     (setq info (funcall info-callback this info)))
 
   ;; Extract information from INFO and create the socket.

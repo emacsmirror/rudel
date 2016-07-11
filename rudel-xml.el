@@ -1,6 +1,6 @@
 ;;; rudel-xml.el --- XML processing functions used by Rudel
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xml
@@ -45,7 +45,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 (require 'xml)
 
 
@@ -75,15 +75,15 @@ PRETTY-PRINT is currently ignored."
   "Generate code for accessing the NAME component of NODE-VAR.
 The optional argument TYPE is used when name is :child
 or :children to specify the element name of the child."
-  (case name
+  (pcase name
     ;; Retrieve child text node of NODE-VAR.
-    (:text
+    (`:text
      (list
       `(car (xml-node-children ,node-var))
       nil))
 
     ;; Retrieve a single child named TYPE of NODE-VAR.
-    (:child
+    (`:child
      (unless type
        (signal 'wrong-number-of-arguments
 	       (list 'rudel-xml--node-component name 2)))
@@ -92,7 +92,7 @@ or :children to specify the element name of the child."
       t))
 
     ;; Retrieve a list of children, optionally filtering by NAME.
-    (:children
+    (`:children
      (if type
 	 (list
 	  `(xml-get-children ,node-var (quote ,type))
@@ -102,7 +102,7 @@ or :children to specify the element name of the child."
 	nil)))
 
     ;; Retrieve an attribute value.
-    (t
+    (_
      (list
       `(xml-get-attribute ,node-var (quote ,name))
       nil)))
@@ -111,18 +111,18 @@ or :children to specify the element name of the child."
 (defun rudel-xml--parse-value (value-var type)
   "Generate code to parse the value of VALUE-VAR as TYPE.
 Currently, TYPE can be one of 'string and 'number."
-  (case type
+  (pcase type
     ;; String; no conversion
-    (string
+    (`string
      value-var)
 
     ;; Convert to number
-    (number
+    (`number
      `(when ,value-var
 	(string-to-number ,value-var)))
 
     ;; For other types, signal an error.
-    (t
+    (_
      (signal 'wrong-type-argument (list 'type type))))
   )
 
@@ -139,35 +139,33 @@ tag name. TYPE can be 'number."
 	 (bindings
 	  (mapcar
 	   (lambda (attr)
-	     (cond
+	     (pcase attr
 
 	      ;; Simple form
-	      ((symbolp attr)
+	      ((pred symbolp)
 	       `(,attr ,(car (rudel-xml--node-component
 			      node-var attr))))
 
 	      ;; Variable name and attribute name
-	      ((= (length attr) 2)
-	       (destructuring-bind (attr-var name) attr
-		 (let ((value (car (rudel-xml--node-component
-				    node-var name))))
-		   `(,attr-var ,value))))
+	      (`(,attr-var ,name)
+               (let ((value (car (rudel-xml--node-component
+                                  node-var name))))
+                 `(,attr-var ,value)))
 
 	      ;; Variable name, attribute name and type
-	      ((= (length attr) 3)
-	       (destructuring-bind (attr-var name type) attr
-		 (destructuring-bind (value type-consumed)
-		     (rudel-xml--node-component
-		      node-var name type)
-		   (if type-consumed
-		       `(,attr-var ,value)
-		     (let ((string (make-symbol "value-string")))
-		       `(,attr-var (let ((,string ,value))
-				     ,(rudel-xml--parse-value
-				       string type))))))))
+	      (`(,attr-var ,name ,type)
+               (pcase-let ((`(,value ,type-consumed)
+                            (rudel-xml--node-component
+                             node-var name type)))
+                 (if type-consumed
+                     `(,attr-var ,value)
+                   (let ((string (make-symbol "value-string")))
+                     `(,attr-var (let ((,string ,value))
+                                   ,(rudel-xml--parse-value
+                                     string type)))))))
 
 	      ;; Invalid form
-	      (t
+	      (_
 	       ;; TODO define a proper condition or use signal?
 	       (error "Invalid tag clause: %s" attr))))
 	   attrs)))
@@ -218,8 +216,8 @@ start position and an end position."
 	(unless (or (= (aref string (- index 1)) ?/)
 		    (= (aref string (- index 1)) ??))
 	  (if tag-opening
-	      (incf depth)
-	    (decf depth)))
+	      (cl-incf depth)
+	    (cl-decf depth)))
 	(when (= depth 0)
 	  (push (cons start (+ index 1)) tags)))))
 
@@ -249,8 +247,8 @@ The returned value is a list of the following form
 \(COMPLETE INCOMPLETE\)
 where complete COMPLETE is a list of complete tags and INCOMPLETE
 is a string containing not yet complete tags."
-  (destructuring-bind (tags buffer)
-      (rudel-xml-toplevel-tags (concat storage data))
+  (pcase-let ((`(,tags ,buffer)
+               (rudel-xml-toplevel-tags (concat storage data))))
     (list tags buffer)))
 
 

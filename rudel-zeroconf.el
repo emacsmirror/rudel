@@ -1,6 +1,6 @@
 ;;; rudel-zeroconf.el --- Zeroconf support for Rudel
 ;;
-;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, service, discovery, advertising, zeroconf,
@@ -48,8 +48,7 @@
 ;;; Code:
 ;;
 
-(eval-when-compile
-  (require 'cl)) ;; first, second, third
+(require 'cl-lib)
 
 (require 'zeroconf)
 
@@ -72,20 +71,20 @@ Each element is of the form
 ;;; Accessors and manipulators for the service list
 ;;
 
-(defalias 'rudel-zeroconf-service-type 'first
+(defalias 'rudel-zeroconf-service-type #'car
   "Return type of service.")
 
-(defalias 'rudel-zeroconf-transport-backend 'second
+(defalias 'rudel-zeroconf-transport-backend #'cadr
   "Return transport backend associated with service type.")
 
-(defalias 'rudel-zeroconf-protocol-backend 'third
+(defalias 'rudel-zeroconf-protocol-backend #'cl-third
   "Return protocol backend associated with service type.")
 
 (defun rudel-zeroconf-service (key which)
   "Return the Zeroconf service type used by BACKEND."
-  (find which rudel-zeroconf-service-types
-	:key key :test (if (eq key 'rudel-zeroconf-service-type)
-			   #'string= #'eq)))
+  (cl-find which rudel-zeroconf-service-types
+           :key key :test (if (eq key 'rudel-zeroconf-service-type)
+                              #'string= #'eq)))
 
 ;;;###rudel-autoload
 (defun rudel-zeroconf-register-service
@@ -126,7 +125,7 @@ service type TYPE."
   "Return a list of session information property lists for Zeroconf-advertised sessions."
   (mapcar
    #'rudel-zeroconf-service->plist
-   (remove-if
+   (cl-remove-if
     #'null
     (mapcar
      #'zeroconf-resolve-service
@@ -226,7 +225,7 @@ service type TYPE."
   (apply #'append
 	 (mapcar
 	  (lambda (entry)
-	    (multiple-value-bind (key value) (split-string entry "=")
+	    (pcase-let ((`(,key ,value) (split-string entry "=")))
 	      (list (intern (concat ":" key))
 		    value)))
 	  record))
@@ -246,9 +245,9 @@ service type TYPE."
 			    (mapcar #'zeroconf-service-name services)
 			    nil t))
 	 ;; Retrieve and resolve the selected service object.
-	 (service          (find service-name services
-				 :key  #'zeroconf-service-name
-				 :test #'string=))
+	 (service          (cl-find service-name services
+                                    :key  #'zeroconf-service-name
+                                    :test #'string=))
 	 (service-resolved (zeroconf-resolve-service service)))
     ;; Return host and port
     (list (zeroconf-service-host service-resolved)

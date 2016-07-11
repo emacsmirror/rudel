@@ -48,7 +48,7 @@
 
 ;;; Code:
 ;;
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 (require 'eieio)
 (eval-when-compile (require 'rudel-util))
 (require 'rudel-errors) ;; for `rudel-error'
@@ -120,7 +120,7 @@ transform a bidirectional data stream as it passes through them."
 (defmethod no-applicable-method ((this rudel-transport-filter)
 				 method &rest args)
   "Make methods of underlying transport callable as virtual methods of THIS."
-  (apply method (oref this :transport) (rest args)))
+  (apply method (oref this :transport) (cdr args)))
 
 
 ;;; Class rudel-assembling-transport-filter
@@ -422,7 +422,7 @@ transmission.")
   (with-slots (transport queue queued-size flush-size) this
     ;; Enqueue new data.
     (push data queue)
-    (incf queued-size (length data))
+    (cl-incf queued-size (length data))
 
     ;; Transmit data immediately if necessary, otherwise ensure the
     ;; timer is running.
@@ -508,7 +508,7 @@ multiple chunks.")
 	  (rudel-loop-chunks data chunk rudel-long-message-chunk-size
 	    (progress-reporter-update reporter (/ (float current) total))
 	    (rudel-send transport chunk)
-	    (incf current))
+	    (cl-incf current))
 	  (progress-reporter-done reporter))
 
       ;; Send small messages in one chunk
@@ -534,11 +534,11 @@ The returned value is the \"top\" of the constructed stack (BASE
 being the \"bottom\")."
   (let ((current base))
     (dolist (spec specs)
-      (destructuring-bind (class &rest args) spec
-	  (setq current (apply #'make-instance
-			       class
-			       :transport current
-			       args))))
+      (pcase-let ((`(,class . ,args) spec))
+        (setq current (apply #'make-instance
+                             class
+                             :transport current
+                             args))))
     current))
 
 (provide 'rudel-transport-util)

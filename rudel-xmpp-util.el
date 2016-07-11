@@ -1,6 +1,6 @@
 ;;; rudel-xmpp-util.el --- Miscellaneous functions for the Rudel XMPP backend
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, backend, miscellaneous
@@ -38,6 +38,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-lib)
 (require 'rudel-xml)
 
 (require 'rudel-transport-util)
@@ -57,8 +58,8 @@ does not contains any incomplete stanzas."
   ;; Form a string by concatenating STORAGE and DATA. Form the stream
   ;; header, find the end of stream:features.
   (let* ((string (concat storage data))
-	 (end    (or (search "</stream:features>" string)
-		     (search "<stream:features/>" string)))
+	 (end    (or (cl-search "</stream:features>" string)
+		     (cl-search "<stream:features/>" string)))
 	 (end    (when end
 		   (+ end 18))))
     ;; If the end of stream:features has been found, artificially
@@ -68,17 +69,17 @@ does not contains any incomplete stanzas."
 	(list nil string)
       ;; Otherwise find top-level tags. This can still leave
       ;; incomplete tags.
-      (destructuring-bind (tags buffer)
-	  (rudel-xml-toplevel-tags
-	   (concat (substring string 0 end)
-		   "</stream:stream>"
-		   (replace-regexp-in-string
-		    "</stream:stream>"
-		    ""
-		    (substring string end))))
+      (pcase-let ((`(,tags ,buffer)
+                   (rudel-xml-toplevel-tags
+                    (concat (substring string 0 end)
+                            "</stream:stream>"
+                            (replace-regexp-in-string
+                             "</stream:stream>"
+                             ""
+                             (substring string end))))))
 	(list
 	 ;; Remove processing instructions.
-	 (remove-if
+	 (cl-remove-if
 	  (lambda (tag)
 	    (= (aref tag 1) ??))
 	  tags)
