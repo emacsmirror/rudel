@@ -42,13 +42,13 @@
 
 (require 'rudel-obby) ;; make sure `rudel-obby-user' is defined
 
-(defmethod rudel-display-string ((this rudel-obby-user)
+(cl-defmethod rudel-display-string ((this rudel-obby-user)
 				 &optional use-images align)
   "Return a textual representation of THIS for user interface purposes."
   (with-slots (connected color) this
     (let ((encryption  (and (slot-boundp this :encryption) ;; TODO this is bad
 			    (oref this :encryption)))
-	  (name-string (call-next-method)))
+	  (name-string (cl-call-next-method)))
       (concat
        ;; Name bit
        (cond

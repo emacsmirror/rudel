@@ -62,14 +62,14 @@ state."))
   "Base class for state classes used in the obby backend."
   :abstract t)
 
-(defmethod rudel-enter ((_this rudel-obby-state))
+(cl-defmethod rudel-enter ((_this rudel-obby-state))
   "Default behavior is doing nothing when entering a state."
   nil)
 
-(defmethod rudel-leave ((_this rudel-obby-state))
+(cl-defmethod rudel-leave ((_this rudel-obby-state))
   "Default behavior is doing nothing when leaving a state.")
 
-(defmethod rudel-accept ((this rudel-obby-state) message)
+(cl-defmethod rudel-accept ((this rudel-obby-state) message)
   "Dispatch to appropriate handler based on MESSAGE.
 Display a warning if no such handler is found."
   ;; Try to dispatch to the correct message handler. If there is none,
@@ -101,7 +101,7 @@ Display a warning if no such handler is found."
   "Base class for state classes used by obby client connections."
   :abstract t)
 
-(defmethod rudel-obby/net6_ping ((this rudel-obby-client-connection-state))
+(cl-defmethod rudel-obby/net6_ping ((this rudel-obby-client-connection-state))
   "Handle net6 'ping' message."
   (rudel-send this "net6_pong")
   nil)
@@ -115,7 +115,7 @@ Display a warning if no such handler is found."
   "Base class for server connection states."
   :abstract t)
 
-(defmethod rudel-broadcast ((this rudel-obby-server-connection-state)
+(cl-defmethod rudel-broadcast ((this rudel-obby-server-connection-state)
 			    receivers name &rest arguments)
   "Broadcast message NAME with arguments ARGUMENTS to RECEIVERS."
   (with-slots (connection) this
@@ -136,7 +136,7 @@ called to retrieved document object by their ids."))
 obby 'document' messages."
   :abstract t)
 
-(defmethod rudel-obby/obby_document
+(cl-defmethod rudel-obby/obby_document
   ((this rudel-obby-document-handler) doc-id action &rest arguments)
   "Handle obby 'document' message family."
   ;; Try to dispatch to the correct message handler. If there is none,

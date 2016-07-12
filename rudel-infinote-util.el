@@ -35,6 +35,7 @@
 
 ;;; Code:
 ;;
+(require 'cl-generic)
 (require 'rudel-util)
 (require 'rudel-xml)
 
@@ -47,31 +48,31 @@
 ;;; Message serialization
 ;;
 
-(defgeneric rudel-operation->xml ((this adopted-operation))
+(cl-defgeneric rudel-operation->xml ((this adopted-operation))
   "Generate an XML infoset from THIS operation.")
 
-(defmethod rudel-operation->xml ((this adopted-insert))
+(cl-defmethod rudel-operation->xml ((this adopted-insert))
   "Serialize THIS insert operation."
   (with-slots (from data) this
     `(insert
       ((pos . ,(format "%d" from)))
       ,data)))
 
-(defmethod rudel-operation->xml ((this adopted-delete))
+(cl-defmethod rudel-operation->xml ((this adopted-delete))
   "Serialize THIS delete operation."
   (with-slots (from length) this
     `(delete
       ((pos . ,(format "%d" from))
        (len . ,(format "%d" length))))))
 
-(defmethod rudel-operation->xml ((this adopted-compound))
+(cl-defmethod rudel-operation->xml ((this adopted-compound))
   "Serialize THIS compound operation."
   (with-slots (children) this
     (apply #'append
 	   '(split)
 	   (mapcar #'rudel-operation->xml children))))
 
-(defmethod rudel-operation->xml ((_this adopted-nop))
+(cl-defmethod rudel-operation->xml ((_this adopted-nop))
   "Serialize THIS nop operation."
   `(nop))
 

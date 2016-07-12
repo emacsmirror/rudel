@@ -55,14 +55,14 @@
   ()
   "")
 
-(defmethod rudel-infinote/sync-begin
+(cl-defmethod rudel-infinote/sync-begin
   ((_this rudel-infinote-group-document-state-idle) xml)
   "Handle 'sync-begin' message."
   (with-tag-attrs ((num-messages num-messages number)) xml
     ;; Switch to synchronizing state.
     (list 'synchronizing num-messages)))
 
-(defmethod rudel-infinote/user-join
+(cl-defmethod rudel-infinote/user-join
   ((this rudel-infinote-group-document-state-idle) xml)
   "Handle 'user-join' message."
   (with-tag-attrs ((id        id        number)
@@ -95,7 +95,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/user-rejoin
+(cl-defmethod rudel-infinote/user-rejoin
   ((this rudel-infinote-group-document-state-idle) xml)
   ""
   (with-tag-attrs ((id        id        number)
@@ -123,7 +123,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/user-status-change
+(cl-defmethod rudel-infinote/user-status-change
   ((this rudel-infinote-group-document-state-idle) xml)
   ""
   (with-tag-attrs ((id  id  number)
@@ -143,7 +143,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/user-color-change
+(cl-defmethod rudel-infinote/user-color-change
   ((this rudel-infinote-group-document-state-idle) xml)
   ""
   (with-tag-attrs ((id  id  number)
@@ -165,7 +165,7 @@
   nil)
 
 ;; TODO does this belong here or in derived classes?
-(defmethod rudel-infinote/request
+(cl-defmethod rudel-infinote/request
   ((this rudel-infinote-group-document-state-idle) xml)
   ""
   (with-tag-attrs ((user-id user number)) xml
@@ -189,7 +189,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/session-close
+(cl-defmethod rudel-infinote/session-close
   ((_this rudel-infinote-group-document-state-idle) _xml)
   "Handle 'session-close' message."
   ;; Switch to closed state.
@@ -222,7 +222,7 @@
 		    ""))
   "")
 
-(defmethod rudel-enter ((this rudel-infinote-group-document-state-synchronizing)
+(cl-defmethod rudel-enter ((this rudel-infinote-group-document-state-synchronizing)
 			num-items)
   ""
   (with-slots (document all-items remaining-items) this
@@ -234,7 +234,7 @@
 	  remaining-items num-items))
   nil)
 
-(defmethod rudel-infinote/sync-user
+(cl-defmethod rudel-infinote/sync-user
   ((this rudel-infinote-group-document-state-synchronizing) xml)
   "Create a user object and add it to the document."
   ;; TODO send sync-error if remaining-items is already zero
@@ -260,7 +260,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/sync-request
+(cl-defmethod rudel-infinote/sync-request
   ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-request' message."
   (with-slots (remaining-items) this
@@ -272,7 +272,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/sync-segment ;; TODO text documents only?
+(cl-defmethod rudel-infinote/sync-segment ;; TODO text documents only?
   ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-segment' message."
   (with-slots (remaining-items) this
@@ -284,7 +284,7 @@
   ;; Stay in this state.
   nil)
 
-(defmethod rudel-infinote/sync-end
+(cl-defmethod rudel-infinote/sync-end
   ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-end' message."
   (with-slots (all-items remaining-items) this
@@ -313,7 +313,7 @@
   ;; Stay in this state.
   'idle)
 
-(defmethod rudel-infinote/sync-cancel
+(cl-defmethod rudel-infinote/sync-cancel
   ((_this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-cancel' message."
   ;; Stay in this state.
@@ -336,7 +336,7 @@
 associated to a document. After sending a 'user-join' message, we
 expect a 'user-join' or 'user-rejoin' message in response.")
 
-(defmethod rudel-enter
+(cl-defmethod rudel-enter
   ((this rudel-infinote-group-document-state-joining))
   ""
   (let ((self (rudel-self (oref this :session))))
@@ -355,7 +355,7 @@ expect a 'user-join' or 'user-rejoin' message in response.")
   ;; Remain in this state and wait for reply.
   nil)
 
-(defmethod rudel-infinote/user-join
+(cl-defmethod rudel-infinote/user-join
   ((this rudel-infinote-group-document-state-joining) xml)
   "Handle 'user-join' message."
   (with-tag-attrs ((id        id        number)
@@ -392,7 +392,7 @@ expect a 'user-join' or 'user-rejoin' message in response.")
   ;; can leave the state and go to idle.
   'idle)
 
-(defmethod rudel-infinote/user-rejoin
+(cl-defmethod rudel-infinote/user-rejoin
   ((this rudel-infinote-group-document-state-joining) xml)
   ""
   (with-tag-attrs ((id        id        number)
@@ -451,12 +451,11 @@ expect a 'user-join' or 'user-rejoin' message in response.")
    (delegation-target-slot    :initform document))
   "")
 
-(defmethod initialize-instance ((this rudel-infinote-group-document)
+(cl-defmethod initialize-instance ((this rudel-infinote-group-document)
 				_slots)
   ""
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Register states.
   (rudel-register-states

@@ -65,7 +65,7 @@
   "Start state of newly established connections."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/obby_welcome
+(cl-defmethod rudel-obby/obby_welcome
   ((_this rudel-obby-client-state-new) version)
   "Handle obby 'welcome' message."
   ;; Examine announced protocol version.
@@ -84,7 +84,7 @@
   "Start state of the encryption handshake."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/net6_encryption
+(cl-defmethod rudel-obby/net6_encryption
   ((this rudel-obby-client-state-encryption-negotiate) _value)
   "Handle net6 'encryption' message."
   (rudel-send this "net6_encryption_ok")
@@ -100,7 +100,7 @@
   "Second state of the encryption handshake."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/net6_encryption_begin
+(cl-defmethod rudel-obby/net6_encryption_begin
   ((this rudel-obby-client-state-encryption-start))
   "Handle net6 'encryption_begin' message."
   ;; Start TLS encryption for the connection.
@@ -120,7 +120,7 @@ the selected transport `%s' does not support encryption"
   ;; The connection is now established
   'waiting-for-join-info)
 
-(defmethod rudel-obby/net6_encryption_failed
+(cl-defmethod rudel-obby/net6_encryption_failed
   ((_this rudel-obby-client-state-encryption-start))
   "Handle net6 'encryption_failed' message."
   ;; The connection is now established; without encryption though.
@@ -148,7 +148,7 @@ session."
   "First state after the connection has been properly set up."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-joining) info)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-joining) info)
   "When entering this state, send a login request."
   ;; Send login request with username and color. This can easily fail
   ;; (resulting in response 'net6_login_failed') if the username or
@@ -172,7 +172,7 @@ session."
       (list 'join-failed (cons 'rudel-obby-invalid-color nil))))
   )
 
-(defmethod rudel-obby/obby_sync_init
+(cl-defmethod rudel-obby/obby_sync_init
   ((_this rudel-obby-client-state-joining) count)
   "Handle obby 'sync_init' message."
   ;; Switch to 'synching' state, passing the number of synchronization
@@ -180,7 +180,7 @@ session."
   (with-parsed-arguments ((count number))
     (list 'session-synching count)))
 
-(defmethod rudel-obby/net6_login_failed
+(cl-defmethod rudel-obby/net6_login_failed
   ((_this rudel-obby-client-state-joining) reason)
   "Handle net6 'login_failed' message."
   (with-parsed-arguments ((reason number))
@@ -237,7 +237,7 @@ failure."))
   "State for failed login attempts."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-join-failed)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-join-failed)
 			error)
   "When the state is entered, store the error data passed in ERROR."
   (with-slots (error-symbol error-data) this
@@ -256,7 +256,7 @@ failure."))
   "Default state of the connection."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/net6_client_join
+(cl-defmethod rudel-obby/net6_client_join
   ((this rudel-obby-client-state-idle)
    client-id name encryption user-id color)
   "Handle net6 'client_join' message."
@@ -295,7 +295,7 @@ failure."))
     (message "Client joined: %s %s" name color))
   nil)
 
-(defmethod rudel-obby/net6_client_part
+(cl-defmethod rudel-obby/net6_client_part
   ((this rudel-obby-client-state-idle) client-id)
   "Handle net6 'client_part' message."
   ;; Find the user object, associated to the client id. Remove the
@@ -320,7 +320,7 @@ failure."))
 	     :warning))))))
   nil)
 
-(defmethod rudel-obby/obby_user_colour
+(cl-defmethod rudel-obby/obby_user_colour
   ((this rudel-obby-client-state-idle) user-id color)
   "Handle obby 'user_colour' message."
   (with-parsed-arguments ((user-id number)
@@ -343,7 +343,7 @@ failure."))
 	     color1))))))
   nil)
 
-(defmethod rudel-obby/obby_document_create
+(cl-defmethod rudel-obby/obby_document_create
   ((this rudel-obby-client-state-idle)
    owner-id doc-id name suffix _encoding)
   "Handle obby 'document_create' message."
@@ -363,7 +363,7 @@ failure."))
       (message "New document: %s" name))) ;; TODO remove this
   nil)
 
-(defmethod rudel-obby/obby_document_remove
+(cl-defmethod rudel-obby/obby_document_remove
   ((this rudel-obby-client-state-idle) doc-id)
   "Handle obby 'document_remove' message."
   (with-parsed-arguments ((doc-id document-id))
@@ -383,7 +383,7 @@ failure."))
 	     :warning))))))
   nil)
 
-(defmethod rudel-obby/obby_document/rename
+(cl-defmethod rudel-obby/obby_document/rename
   ((_this rudel-obby-client-state-idle)
    document _user new-name new-suffix)
   "Handle 'rename' submessage of the obby 'document' message."
@@ -393,7 +393,7 @@ failure."))
 	    suffix new-suffix)))
   nil)
 
-(defmethod rudel-obby/obby_document/subscribe
+(cl-defmethod rudel-obby/obby_document/subscribe
   ((this rudel-obby-client-state-idle) document user-id)
   "Handle 'subscribe' submessage of obby 'document' message."
   (with-parsed-arguments ((user-id number))
@@ -404,7 +404,7 @@ failure."))
 	  (rudel-add-user document user)))))
   nil)
 
-(defmethod rudel-obby/obby_document/unsubscribe
+(cl-defmethod rudel-obby/obby_document/unsubscribe
   ((this rudel-obby-client-state-idle) document user-id)
   "Handle 'unsubscribe' submessage of obby 'document' message."
   (with-parsed-arguments ((user-id number))
@@ -415,7 +415,7 @@ failure."))
 	  (rudel-remove-user document user)))))
   nil)
 
-(defmethod rudel-obby/obby_document/record
+(cl-defmethod rudel-obby/obby_document/record
   ((this rudel-obby-client-state-idle)
    document user-id local-revision remote-revision
    action &rest arguments)
@@ -456,7 +456,7 @@ failure."))
 	  nil))))
   )
 
-(defmethod rudel-obby/obby_document/record/ins
+(cl-defmethod rudel-obby/obby_document/record/ins
   ((this rudel-obby-client-state-idle)
    document user local-revision remote-revision
    position data)
@@ -474,7 +474,7 @@ failure."))
 				operation))))
   nil)
 
-(defmethod rudel-obby/obby_document/record/del
+(cl-defmethod rudel-obby/obby_document/record/del
   ((this rudel-obby-client-state-idle)
    document user local-revision remote-revision
    position length)
@@ -493,7 +493,7 @@ failure."))
 				operation))))
   nil)
 
-(defmethod rudel-obby/obby_document/record/split
+(cl-defmethod rudel-obby/obby_document/record/split
   ((this rudel-obby-client-state-idle)
    document user local-revision remote-revision
    &rest operations)
@@ -508,7 +508,7 @@ failure."))
 			      operation)))
   nil)
 
-(defmethod rudel-obby/obby_document/record/noop
+(cl-defmethod rudel-obby/obby_document/record/noop
   ((this rudel-obby-client-state-idle)
    document user local-revision remote-revision)
   "Handle 'noop' submessage of 'record' submessage of obby 'document' message."
@@ -522,7 +522,7 @@ failure."))
 			      operation)))
   nil)
 
-(defmethod rudel-obby/obby_message ((this rudel-obby-client-state-idle)
+(cl-defmethod rudel-obby/obby_message ((this rudel-obby-client-state-idle)
 				    sender text)
   "Handle obby 'message' message"
   (with-parsed-arguments ((sender number))
@@ -555,7 +555,7 @@ a 'self' user object."))
   "State used for synching session data."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-session-synching)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-session-synching)
 			num-items)
   "When entering state, store number of expected items."
   (with-slots (all-items remaining-items have-self) this
@@ -564,7 +564,7 @@ a 'self' user object."))
 	  have-self       nil))
   nil)
 
-(defmethod rudel-obby/net6_client_join
+(cl-defmethod rudel-obby/net6_client_join
   ((this rudel-obby-client-state-session-synching)
    client-id name encryption user-id color)
   "Handle net6 'client_join' message."
@@ -595,7 +595,7 @@ a 'self' user object."))
       (cl-decf remaining-items)))
   nil)
 
-(defmethod rudel-obby/obby_sync_usertable_user
+(cl-defmethod rudel-obby/obby_sync_usertable_user
   ((this rudel-obby-client-state-session-synching) user-id name color)
   "Handle obby 'sync_usertable_user' message."
   (with-parsed-arguments ((user-id number)
@@ -612,7 +612,7 @@ a 'self' user object."))
       (cl-decf remaining-items)))
   nil)
 
-(defmethod rudel-obby/obby_sync_doclist_document
+(cl-defmethod rudel-obby/obby_sync_doclist_document
   ((this rudel-obby-client-state-session-synching)
    owner-id doc-id name suffix _encoding &rest subscribed-user-ids)
   "Handle obby 'sync_doclist_document' message."
@@ -642,7 +642,7 @@ a 'self' user object."))
       (cl-decf remaining-items)))
   nil)
 
-(defmethod rudel-obby/obby_sync_final
+(cl-defmethod rudel-obby/obby_sync_final
   ((this rudel-obby-client-state-session-synching))
   "Handle obby 'sync_final' message."
   (with-slots (have-self) this
@@ -650,11 +650,11 @@ a 'self' user object."))
 	'idle
       'we-finalized)))
 
-(defmethod object-print ((this rudel-obby-client-state-session-synching)
+(cl-defmethod object-print ((this rudel-obby-client-state-session-synching)
 			 &rest _strings)
   "Append number of remaining items to string representation."
   (with-slots (remaining-items) this
-    (call-next-method this (format " remaining: %d" remaining-items))))
+    (cl-call-next-method this (format " remaining: %d" remaining-items))))
 
 
 ;;; Class rudel-obby-client-state-subscribing
@@ -671,7 +671,7 @@ a 'self' user object."))
   ""
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-subscribing)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-subscribing)
 			user document)
   "When entering this state, send a subscription request to the server."
   (with-slots ((document1 :document)) this
@@ -685,7 +685,7 @@ a 'self' user object."))
 		    (format "%x" user-id)))))
   nil)
 
-(defmethod rudel-obby/obby_document/sync_init
+(cl-defmethod rudel-obby/obby_document/sync_init
   ((this rudel-obby-client-state-subscribing) _document num-bytes)
   "Handle 'sync_init' submessage of the obby 'document' message."
   (with-parsed-arguments ((num-bytes number))
@@ -718,7 +718,7 @@ a 'self' user object."))
   ""
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-document-synching)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-document-synching)
 			document num-bytes)
   ""
   (with-slots ((document1 :document) all-bytes remaining-bytes) this
@@ -727,7 +727,7 @@ a 'self' user object."))
 	  remaining-bytes num-bytes))
   nil)
 
-(defmethod rudel-obby/obby_document/sync_chunk
+(cl-defmethod rudel-obby/obby_document/sync_chunk
   ((this rudel-obby-client-state-document-synching)
    document data user-id)
   "Handle 'sync_chunk' submessage of the obby 'document' message."
@@ -750,11 +750,11 @@ a 'self' user object."))
 	nil)))
   )
 
-(defmethod object-print ((this rudel-obby-client-state-document-synching)
+(cl-defmethod object-print ((this rudel-obby-client-state-document-synching)
 			 &rest _strings)
   "Append number of remaining items to string representation."
   (with-slots (remaining-bytes) this
-    (call-next-method this (format " remaining: %d" remaining-bytes))))
+    (cl-call-next-method this (format " remaining: %d" remaining-bytes))))
 
 
 ;;; Class rudel-obby-client-state-we-finalized
@@ -769,7 +769,7 @@ a 'self' user object."))
   "State used to indicate that we closed the connection."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-we-finalized)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-we-finalized)
 			&optional reason1)
   "Close the underlying transport and switch to disconnected state."
   (with-slots (reason) this
@@ -793,7 +793,7 @@ a 'self' user object."))
   "State used to indicate that the connection was closed by the peer."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-client-state-they-finalized)
+(cl-defmethod rudel-enter ((this rudel-obby-client-state-they-finalized)
 			&optional reason1)
   "Close the underlying transport and switch to disconnected state."
   (with-slots (reason) this
@@ -856,10 +856,9 @@ sends and receives its data.")
 documents."))
   "Class rudel-obby-connection ")
 
-(defmethod initialize-instance ((this rudel-obby-connection) _slots)
+(cl-defmethod initialize-instance ((this rudel-obby-connection) _slots)
   ;; Initialize slots of THIS
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Create a new hash-table object to hold jupiter contexts
   ;; associated to documents.
@@ -894,33 +893,32 @@ documents."))
                             (`close
                              (rudel-close this)))))))
 
-(defmethod rudel-register-state ((this rudel-obby-connection)
+(cl-defmethod rudel-register-state ((this rudel-obby-connection)
 				 _symbol state)
   "Register SYMBOL and STATE and set connection slot of STATE."
   ;; Associate THIS connection to STATE.
   (oset state :connection this)
 
   ;; Register STATE.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
   )
 
-(defmethod rudel-send ((this rudel-obby-connection) &rest args)
+(cl-defmethod rudel-send ((this rudel-obby-connection) &rest args)
   "Send ARGS through the transport of THIS."
   (with-slots (transport) this
     (rudel-send transport args)))
 
-(defmethod rudel-disconnect ((this rudel-obby-connection))
+(cl-defmethod rudel-disconnect ((this rudel-obby-connection))
   "Disconnect THIS from the remote endpoint."
   ;; Switch to finalization state and wait until the connection
   ;; reaches the disconnected state.
   (rudel-switch this 'we-finalized)
   (rudel-state-wait this '(disconnected) nil)
 
-  (when (next-method-p)
-    (call-next-method)))
+  (when (cl-next-method-p)
+    (cl-call-next-method)))
 
-(defmethod rudel-close ((this rudel-obby-connection))
+(cl-defmethod rudel-close ((this rudel-obby-connection))
   "Cleanup after THIS has been disconnected."
   ;; Move the state machine into an error state.
   (rudel-switch this 'they-finalized)
@@ -929,12 +927,12 @@ documents."))
   (with-slots (session) this
     (rudel-end session)))
 
-(defmethod rudel-find-context ((this rudel-obby-connection) document)
+(cl-defmethod rudel-find-context ((this rudel-obby-connection) document)
   "Return the jupiter context associated to DOCUMENT in THIS connection."
   (with-slots (contexts) this
     (gethash (oref document :id) contexts)))
 
-(defmethod rudel-add-context ((this rudel-obby-connection) document)
+(cl-defmethod rudel-add-context ((this rudel-obby-connection) document)
   "Add a jupiter context for DOCUMENT to THIS connection."
   (with-slots (contexts) this
     (with-slots ((doc-name :object-name) (doc-id :id)) document
@@ -943,17 +941,17 @@ documents."))
 	       contexts)))
   )
 
-(defmethod rudel-remove-context ((this rudel-obby-connection) document)
+(cl-defmethod rudel-remove-context ((this rudel-obby-connection) document)
   "Remove the jupiter context associated to DOCUMENT from THIS connection."
   (with-slots (contexts) this
     (remhash (oref document :id) contexts)))
 
-(defmethod rudel-change-color- ((this rudel-obby-connection) color)
+(cl-defmethod rudel-change-color- ((this rudel-obby-connection) color)
   ""
   (rudel-send this "obby_user_colour"
 	      (rudel-obby-format-color color)))
 
-(defmethod rudel-publish ((this rudel-obby-connection) document)
+(cl-defmethod rudel-publish ((this rudel-obby-connection) document)
   "Publish DOCUMENT to server."
   ;; Create a new jupiter context for DOCUMENT.
   (rudel-add-context this document)
@@ -968,7 +966,7 @@ documents."))
 		  (buffer-string))))
   )
 
-(defmethod rudel-unpublish ((this rudel-obby-connection) document)
+(cl-defmethod rudel-unpublish ((this rudel-obby-connection) document)
   "Remove DOCUMENT from the obby session THIS is connected to."
   ;; Request removal of DOCUMENT.
   (with-slots ((doc-id :id) owner-id) document
@@ -979,7 +977,7 @@ documents."))
   (rudel-remove-context this document)
   )
 
-(defmethod rudel-subscribe-to ((this rudel-obby-connection) document)
+(cl-defmethod rudel-subscribe-to ((this rudel-obby-connection) document)
   ""
   ;; Create a new jupiter context for DOCUMENT.
   (rudel-add-context this document)
@@ -1024,7 +1022,7 @@ documents."))
   ;; users of DOCUMENT.
   )
 
-(defmethod rudel-unsubscribe-from ((this rudel-obby-connection) document)
+(cl-defmethod rudel-unsubscribe-from ((this rudel-obby-connection) document)
   ""
   ;; Delete the jupiter context for DOCUMENT.
   (rudel-remove-context this document)
@@ -1043,7 +1041,7 @@ documents."))
   ;; subscribed users of DOCUMENT.
   )
 
-(defmethod rudel-local-insert ((this rudel-obby-connection)
+(cl-defmethod rudel-local-insert ((this rudel-obby-connection)
 			       document position data)
   ""
   (rudel-local-operation
@@ -1051,7 +1049,7 @@ documents."))
    document
    (jupiter-insert "insert" :from position :data data)))
 
-(defmethod rudel-local-delete ((this rudel-obby-connection)
+(cl-defmethod rudel-local-delete ((this rudel-obby-connection)
 			       document position length)
   ""
   (rudel-local-operation
@@ -1059,7 +1057,7 @@ documents."))
    document
    (jupiter-delete "delete" :from position :to (+ position length))))
 
-(defmethod rudel-local-operation ((this rudel-obby-connection)
+(cl-defmethod rudel-local-operation ((this rudel-obby-connection)
 				  document operation)
   "Handle OPERATION performed on DOCUMENT by sending a message through THIS connection."
   ;; Convert character positions in OPERATION to byte positions, since
@@ -1087,7 +1085,7 @@ documents."))
       (jupiter-local-operation context operation))
   )
 
-(defmethod rudel-remote-operation ((this rudel-obby-connection)
+(cl-defmethod rudel-remote-operation ((this rudel-obby-connection)
 				   document user
 				   remote-revision local-revision
 				   operation)

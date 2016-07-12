@@ -44,7 +44,7 @@
 ;;; Client connection debugging
 ;;
 
-(defmethod rudel-debug-target ((this rudel-obby-connection))
+(cl-defmethod rudel-debug-target ((this rudel-obby-connection))
   "Return debug target of the transport as debug target for THIS."
   (with-slots (transport) this
     (rudel-debug-target transport)))
@@ -53,7 +53,7 @@
 ;;; Server connection debugging
 ;;
 
-(defmethod rudel-debug-target ((this rudel-obby-client))
+(cl-defmethod rudel-debug-target ((this rudel-obby-client))
   "Return debug target of the transport as debug target for THIS."
   (with-slots (transport) this
     (rudel-debug-target transport)))

@@ -58,10 +58,9 @@
   ((capabilities :initform '()))
   "Class rudel-telepathy-backend ")
 
-(defmethod initialize-instance ((this rudel-telepathy-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-telepathy-backend) _slots)
   "Initialize slots of THIS according to SLOTS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-telepathy-version))
 

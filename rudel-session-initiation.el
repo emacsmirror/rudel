@@ -56,6 +56,7 @@
 
 (require 'cl-lib)
 
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'rudel-backend)
@@ -156,7 +157,7 @@ implemented by this backend. Has to be either 'primary or
   "Interface implemented by session initiation backends."
   :abstract t)
 
-(defgeneric rudel-discover ((this rudel-session-initiation-backend))
+(cl-defgeneric rudel-discover ((this rudel-session-initiation-backend))
   "Return a list of discovered sessions.
 Each list element is a connect info property list. See
 `rudel-join-session' for a description of the format of this
@@ -165,7 +166,7 @@ list.
 The presence of an implementation of this generic function should
 be indicated by the presence of the 'discover' capability.")
 
-(defgeneric rudel-advertise ((this rudel-session-initiation-backend) info)
+(cl-defgeneric rudel-advertise ((this rudel-session-initiation-backend) info)
   "Advertise session described by INFO.
 INFO is a connect info property list. See `rudel-host-session'
 for a description of the format of this list.
@@ -264,15 +265,14 @@ advertise the session."
 user select a suitable backend and asking for connect information
 required by the chosen backend.")
 
-(defmethod initialize-instance ((this rudel-ask-protocol-backend)
+(cl-defmethod initialize-instance ((this rudel-ask-protocol-backend)
 				_slots)
   "Set backend version."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-ask-protocol-version))
 
-(defmethod rudel-discover ((_this rudel-ask-protocol-backend))
+(cl-defmethod rudel-discover ((_this rudel-ask-protocol-backend))
   "\"Discover\" sessions by asking the user about the backend to use and the connect info."
   (let ((protocol-backend  (rudel-backend-choose
 			    'protocol
@@ -311,15 +311,14 @@ required by the chosen backend.")
   "This fallback backend can \"discover\" sessions the user has
 configured using customization.")
 
-(defmethod initialize-instance ((this rudel-configured-sessions-backend)
+(cl-defmethod initialize-instance ((this rudel-configured-sessions-backend)
 				_slots)
   "Set backend version."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-configured-sessions-version))
 
-(defmethod rudel-discover ((_this rudel-configured-sessions-backend))
+(cl-defmethod rudel-discover ((_this rudel-configured-sessions-backend))
   "\"Discover\" sessions the has configured."
   ;; Iterate over all configured sessions in order to make
   ;; adjustments.

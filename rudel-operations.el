@@ -47,6 +47,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-generic)
 (require 'eieio)
 
 
@@ -58,7 +59,7 @@
   "Abstract base class for operations."
   :abstract t)
 
-(defgeneric rudel-apply ((this rudel-operation) object)
+(cl-defgeneric rudel-apply ((this rudel-operation) object)
   "Apply the change represented by THIS to OBJECT.")
 
 
@@ -90,7 +91,7 @@ end of buffer"))
   ""
   :abstract t)
 
-(defmethod slot-missing ((this rudel-range-operation)
+(cl-defmethod slot-missing ((this rudel-range-operation)
 			 slot-name operation &optional new-value)
   "Simulate slot :length"
   (cond
@@ -102,7 +103,7 @@ end of buffer"))
 	  (- to from)
 	(setq to (+ from new-value)))))
    ;; Call next method
-   (t (call-next-method)))
+   (t (cl-call-next-method)))
   )
 
 
@@ -117,12 +118,12 @@ end of buffer"))
 	 "The inserted string."))
   "Objects of this class represent insertion operations.")
 
-(defmethod rudel-apply ((this rudel-insert-op) object)
+(cl-defmethod rudel-apply ((this rudel-insert-op) object)
   "Apply THIS to OBJECT by inserting the associated data."
   (with-slots (from data) this
     (rudel-insert object from data)))
 
-(defmethod slot-missing ((this rudel-insert-op)
+(cl-defmethod slot-missing ((this rudel-insert-op)
 			 slot-name operation &optional _new-value)
   "Simulate read-only slots :length and :to."
   (cond
@@ -139,7 +140,7 @@ end of buffer"))
     (with-slots (from length) this
       (+ from length)))
    ;; Call next method
-   (t (call-next-method)))
+   (t (cl-call-next-method)))
   )
 
 
@@ -151,7 +152,7 @@ end of buffer"))
   ()
   "Objects of this class represent deletion operations.")
 
-(defmethod rudel-apply ((this rudel-delete-op) object)
+(cl-defmethod rudel-apply ((this rudel-delete-op) object)
   "Apply THIS to OBJECT by deleting the associated region."
   (with-slots (from length) this
     (rudel-delete object from length)))
@@ -164,7 +165,7 @@ end of buffer"))
   ()
   "Objects of this class represent cursor movements.")
 
-(defmethod rudel-apply ((this rudel-move-cursor-op) object)
+(cl-defmethod rudel-apply ((this rudel-move-cursor-op) object)
   "Apply THIS to OBJECT by changing the position of one user's cursor."
   (with-slots (from) this
     (rudel-move-cursor object from)))
@@ -178,7 +179,7 @@ end of buffer"))
   "Objects of this class represent changes of users'
 selections.")
 
-(defmethod rudel-apply ((this rudel-move-selection-op) object)
+(cl-defmethod rudel-apply ((this rudel-move-selection-op) object)
   "Apply THIS to OBJECT by changing one user's selection."
   (with-slots (from to) this
     (rudel-move-selection object from to)))

@@ -52,7 +52,7 @@
   ()
   "Objects of this class represent insertions into buffers.")
 
-(defmethod jupiter-transform ((this jupiter-insert) other)
+(cl-defmethod jupiter-transform ((this jupiter-insert) other)
   "Transform OTHER using THIS."
   (cond
 
@@ -152,10 +152,10 @@
 	     (object-class other))))
   other)
 
-(defmethod object-print ((this jupiter-insert) &rest _strings)
+(cl-defmethod object-print ((this jupiter-insert) &rest _strings)
   "Add from, to, length and data to string representation of THIS."
   (with-slots (from to length data) this
-    (call-next-method
+    (cl-call-next-method
      this
      (format " from %d" from)
      (format " to %d" to)

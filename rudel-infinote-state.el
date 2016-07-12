@@ -54,14 +54,14 @@
 	       ""))
   "Base class for infinote state classes.")
 
-(defmethod rudel-enter ((_this rudel-infinote-state))
+(cl-defmethod rudel-enter ((_this rudel-infinote-state))
   ""
   nil)
 
-(defmethod rudel-leave ((_this rudel-infinote-state))
+(cl-defmethod rudel-leave ((_this rudel-infinote-state))
   "")
 
-(defmethod rudel-accept ((_this rudel-infinote-state) _xml)
+(cl-defmethod rudel-accept ((_this rudel-infinote-state) _xml)
   ""
   nil)
 

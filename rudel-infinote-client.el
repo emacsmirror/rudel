@@ -95,12 +95,11 @@ objects.")
 side."))
   "TODO")
 
-(defmethod initialize-instance ((this rudel-infinote-client-connection)
+(cl-defmethod initialize-instance ((this rudel-infinote-client-connection)
 				_slots)
   ""
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Create hash-table for groups.
   (with-slots (groups) this
@@ -143,12 +142,12 @@ side."))
       ))
   )
 
-(defmethod rudel-get-group ((this rudel-infinote-client-connection) name)
+(cl-defmethod rudel-get-group ((this rudel-infinote-client-connection) name)
   "Return group named NAME or nil if there is no such group."
   (with-slots (groups) this
     (gethash name groups)))
 
-(defmethod rudel-add-group ((this rudel-infinote-client-connection) group)
+(cl-defmethod rudel-add-group ((this rudel-infinote-client-connection) group)
   ""
   (with-slots ((name :object-name) connection) group
     ;;
@@ -159,7 +158,7 @@ side."))
       (puthash name group groups)))
   )
 
-(defmethod rudel-remove-group ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-remove-group ((this rudel-infinote-client-connection)
 			       group-or-name)
   "Remove GROUP-OR-NAME from the list of groups of THIS.
 GROUP-OR-NAME is a `rudel-infinote-group' object or a string in
@@ -173,7 +172,7 @@ which case it is the name of a group."
 		  group-or-name))))
       (remhash name groups))))
 
-(defmethod rudel-make-and-add-group ((_this rudel-infinote-client-connection)
+(cl-defmethod rudel-make-and-add-group ((_this rudel-infinote-client-connection)
 				     _type name method &optional node)
   "Create a group object and add it to THIS."
   ;; TODO the backend creates these
@@ -185,7 +184,7 @@ which case it is the name of a group."
 		:document  node)))
     (rudel-add-group group)))
 
-(defmethod rudel-find-node ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-find-node ((this rudel-infinote-client-connection)
 			    which &optional test key)
   "Find node WHICH in the node list of THIS.
 WHICH is compared to the result of KEY using TEST."
@@ -194,15 +193,15 @@ WHICH is compared to the result of KEY using TEST."
 	  :key  (or key #'rudel-id)
 	  :test (or test #'=))))
 
-(defmethod rudel-add-node ((this rudel-infinote-client-connection) node)
+(cl-defmethod rudel-add-node ((this rudel-infinote-client-connection) node)
   "Add NODE to the list of nodes of THIS."
   (object-add-to-list this :nodes node))
 
-(defmethod rudel-remove-node ((this rudel-infinote-client-connection) node)
+(cl-defmethod rudel-remove-node ((this rudel-infinote-client-connection) node)
   "Remove NODE from the list of nodes of THIS."
   (object-remove-from-list this :nodes node))
 
-(defmethod rudel-make-and-add-node ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-make-and-add-node ((this rudel-infinote-client-connection)
 				    id parent-id name type)
   ;; TODO the backend does the creation
   (with-slots (session) this
@@ -247,12 +246,12 @@ WHICH is compared to the result of KEY using TEST."
 	  (rudel-add-document session node)))))
   )
 
-(defmethod rudel-send ((this rudel-infinote-client-connection) xml)
+(cl-defmethod rudel-send ((this rudel-infinote-client-connection) xml)
   ""
   (with-slots (transport) this
     (rudel-send transport xml)))
 
-(defmethod rudel-receive ((this rudel-infinote-client-connection) xml)
+(cl-defmethod rudel-receive ((this rudel-infinote-client-connection) xml)
   ""
   (pcase (xml-node-name xml)
     ;;
@@ -275,22 +274,22 @@ WHICH is compared to the result of KEY using TEST."
 
     ;;
     (_
-     (when (next-method-p)
-       (call-next-method)))) ;; TODO what is actually called here?
+     (when (cl-next-method-p)
+       (cl-call-next-method)))) ;; TODO what is actually called here?
   )
 
-(defmethod rudel-disconnect ((this rudel-infinote-client-connection)) ;; TODO maybe we could automatically delegate to the transport
+(cl-defmethod rudel-disconnect ((this rudel-infinote-client-connection)) ;; TODO maybe we could automatically delegate to the transport
   ""
   (with-slots (transport) this
     (rudel-disconnect transport)))
 
-(defmethod rudel-wait ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-wait ((this rudel-infinote-client-connection)
 		       &optional progress-callback)
   "Block until THIS is done with the session setup."
   (let ((group (rudel-get-group this "InfDirectory")))
     (rudel-state-wait group '(idle) '() progress-callback)))
 
-(defmethod rudel-publish ((this rudel-infinote-client-connection) document)
+(cl-defmethod rudel-publish ((this rudel-infinote-client-connection) document)
   ""
   ;; Create a new adopted context for DOCUMENT.
   ;(rudel-add-context this document)
@@ -317,7 +316,7 @@ WHICH is compared to the result of KEY using TEST."
     )
 ;; TODO should be a method of the directory group
 
-(defmethod rudel-subscribe-to ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-subscribe-to ((this rudel-infinote-client-connection)
 			       document)
   ""
   ;; Create a new adopted context for DOCUMENT.
@@ -344,7 +343,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; list of subscribed users of DOCUMENT.
   )
 
-(defmethod rudel-unsubscribe-from ((_this rudel-infinote-client-connection)
+(cl-defmethod rudel-unsubscribe-from ((_this rudel-infinote-client-connection)
 				   document)
   ""
   ;; Delete the jupiter context for DOCUMENT.
@@ -363,7 +362,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; the list of subscribed users of DOCUMENT.
   )
 
-(defmethod rudel-subscribe-session ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-subscribe-session ((this rudel-infinote-client-connection)
 				    name method id)
   ""
   ;; TODO this makes sense for document sessions only, but we want to
@@ -383,7 +382,7 @@ WHICH is compared to the result of KEY using TEST."
       (oset document :group group))) ;; TODO temp
   )
 
-(defmethod rudel-local-insert ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-local-insert ((this rudel-infinote-client-connection)
 			       document position data)
   ""
   (rudel-local-operation
@@ -394,7 +393,7 @@ WHICH is compared to the result of KEY using TEST."
 		   :data data))
   )
 
-(defmethod rudel-local-delete ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-local-delete ((this rudel-infinote-client-connection)
 			       document position length)
   ""
   (rudel-local-operation
@@ -405,7 +404,7 @@ WHICH is compared to the result of KEY using TEST."
 		   :to   (+ position length)))
   )
 
-(defmethod rudel-local-operation ((this rudel-infinote-client-connection)
+(cl-defmethod rudel-local-operation ((this rudel-infinote-client-connection)
 				  document operation)
   "Handle OPERATION performed on DOCUMENT by sending a message through THIS connection."
   ;; Find jupiter context for DOCUMENT.
@@ -422,7 +421,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; (jupiter-local-operation context operation))
   )
 
-(defmethod rudel-remote-operation ((_this rudel-infinote-client-connection)
+(cl-defmethod rudel-remote-operation ((_this rudel-infinote-client-connection)
 				   document user
 				   _remote-revision _local-revision
 				   operation)

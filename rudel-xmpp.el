@@ -70,14 +70,13 @@
   "Transport backend works by transporting XMPP messages through
 XMPP connections.")
 
-(defmethod initialize-instance ((this rudel-xmpp-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-xmpp-backend) _slots)
   "Initialize slots and set version of THIS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-xmpp-transport-version))
 
-(defmethod rudel-ask-connect-info ((_this rudel-xmpp-backend)
+(cl-defmethod rudel-ask-connect-info ((_this rudel-xmpp-backend)
 				   &optional info)
   "Augment INFO by reading a hostname and a port number."
   ;; Read server host and port.
@@ -92,7 +91,7 @@ XMPP connections.")
 		  :jid  jid)
 	    info)))
 
-(defmethod rudel-make-connection ((this rudel-xmpp-backend)
+(cl-defmethod rudel-make-connection ((this rudel-xmpp-backend)
 				  info info-callback
 				  &optional progress-callback)
   "Connect to an XMPP server using the information in INFO.
@@ -146,7 +145,7 @@ called repeatedly to report progress."
   ()
   "Initial state of new XMPP connections.")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-new) to jid)
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-new) to jid)
   "Switch to \"negotiate-stream\" state."
   (list 'negotiate-stream to jid (list 'sasl-start jid to)))
 
@@ -162,7 +161,7 @@ called repeatedly to report progress."
 negotiation."))
   "Stream negotiation state.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-negotiate-stream)
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-negotiate-stream)
 			to jid success-state)
   "Send opening stream tag constructed with TO and JID."
   ;; Store the name of the successor state in case of successful
@@ -198,7 +197,7 @@ id=\"%s\">"
 	   jid))
   nil)
 
-(defmethod rudel-leave ((this rudel-xmpp-state-negotiate-stream))
+(cl-defmethod rudel-leave ((this rudel-xmpp-state-negotiate-stream))
   "Stop assembling based on opening stream tag."
   ;; One the stream is negotiated, assemble data based on complete XML
   ;; trees rather than the opening stream tag.
@@ -206,7 +205,7 @@ id=\"%s\">"
     (rudel-set-assembly-function transport #'rudel-xml-assemble-tags)
     (rudel-set-generate-function transport #'xml->string)))
 
-(defmethod rudel-accept ((this rudel-xmpp-state-negotiate-stream) xml)
+(cl-defmethod rudel-accept ((this rudel-xmpp-state-negotiate-stream) xml)
   ""
   (cond
    ;; Stream negotiation error.
@@ -234,7 +233,7 @@ id=\"%s\">"
   ()
   "")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-authenticated))
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-authenticated))
   ""
   ;; Switch to negotiate-stream telling it to switch to established in
   ;; case the negotiation succeeds.
@@ -249,7 +248,7 @@ id=\"%s\">"
   ()
   "")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-authentication-failed))
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-authentication-failed))
   ""
   'we-finalize)
 
@@ -263,7 +262,7 @@ id=\"%s\">"
 negotiation and the negotiation of the actual stream are
 complete.")
 
-(defmethod rudel-accept ((this rudel-xmpp-state-established) xml)
+(cl-defmethod rudel-accept ((this rudel-xmpp-state-established) xml)
   "Store XML in buffer of THIS for later processing."
   (with-slots (shelve-buffer) this
     (push xml shelve-buffer))
@@ -279,7 +278,7 @@ complete.")
 negotiation and the negotiation of the actual stream are
 complete.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-idle))
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-idle))
   "Process data previously shelved in (the transport owning) THIS."
   (with-slots (filter shelve-buffer) this
     (when filter
@@ -288,7 +287,7 @@ complete.")
     (setq shelve-buffer nil))
   nil)
 
-(defmethod rudel-accept ((this rudel-xmpp-state-idle) xml)
+(cl-defmethod rudel-accept ((this rudel-xmpp-state-idle) xml)
   ""
   (with-slots (filter) this
     (when filter
@@ -303,7 +302,7 @@ complete.")
   ()
   "")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-we-finalize))
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-we-finalize))
   ""
   ;; We send the closing tag, </stream:stream>, of the stream
   ;; document. This has be processed as string, not XML.
@@ -323,7 +322,7 @@ complete.")
   ()
   "")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-they-finalize))
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-they-finalize))
   ""
   (rudel-close this)
   nil)
@@ -368,11 +367,10 @@ Authentication mechanisms can add more states to this list.")
  the current for processing in a successor state."))
   "")
 
-(defmethod initialize-instance ((this rudel-xmpp-transport) _slots)
+(cl-defmethod initialize-instance ((this rudel-xmpp-transport) _slots)
   "Initialize THIS and register states."
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Register states.
   (rudel-register-states this rudel-xmpp-states)
@@ -385,24 +383,23 @@ Authentication mechanisms can add more states to this list.")
      (lambda (data)
        (rudel-accept this data)))))
 
-(defmethod rudel-register-state ((this rudel-xmpp-transport)
+(cl-defmethod rudel-register-state ((this rudel-xmpp-transport)
 				 _symbol state)
   "Associate THIS to STATE before registering STATE."
   ;; Associate THIS connection to STATE.
   (oset state :transport this)
 
   ;; Register the modified STATE.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
   )
 
-(defmethod rudel-start ((this rudel-xmpp-transport))
+(cl-defmethod rudel-start ((this rudel-xmpp-transport))
   "Start processing by THIS.
 Starting the transport can lead to immediate processing of
 previously shelved data"
   (rudel-switch this 'idle))
 
-(defmethod rudel-close ((this rudel-xmpp-transport))
+(cl-defmethod rudel-close ((this rudel-xmpp-transport))
   "Close the XMPP connection used by THIS."
   (unless (member (rudel-current-state this)
 		  '(we-finalize they-finalize disconnected))
@@ -410,8 +407,8 @@ previously shelved data"
 
   (rudel-state-wait this '(disconnected))
 
-  (when (next-method-p)
-    (call-next-method)) ;; TODO does this call rudel-close again?
+  (when (cl-next-method-p)
+    (cl-call-next-method)) ;; TODO does this call rudel-close again?
   )
 
 

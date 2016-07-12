@@ -53,7 +53,7 @@
   ()
   "Objects of this class represent deletions in buffers.")
 
-(defmethod jupiter-transform ((this jupiter-delete) other)
+(cl-defmethod jupiter-transform ((this jupiter-delete) other)
   "Transform other using THIS.
 OTHER is destructively modified or replaced."
   (cond
@@ -165,10 +165,10 @@ OTHER is destructively modified or replaced."
 	     (object-class other))))
   other)
 
-(defmethod object-print ((this jupiter-delete) &rest _strings)
+(cl-defmethod object-print ((this jupiter-delete) &rest _strings)
   "Add from, to and length to string representation of THIS."
   (with-slots (from to length) this
-    (call-next-method
+    (cl-call-next-method
      this
      (format " from %d" from)
      (format " to %d" to)

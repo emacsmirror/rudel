@@ -58,10 +58,9 @@
   "Main class of the Rudel Wave backend. Creates wave client
 connections.")
 
-(defmethod initialize-instance ((this rudel-wave-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-wave-backend) _slots)
   "Initialize slots of THIS with SLOTS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-wave-version))
 

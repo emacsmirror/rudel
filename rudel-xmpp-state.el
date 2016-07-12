@@ -61,19 +61,19 @@
 machine of which uses the state object."))
   "Base class for XMPP state classes.")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state) &rest _args)
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state) &rest _args)
   "Default behavior is to stay in the newly entered state."
   nil)
 
-(defmethod rudel-leave ((_this rudel-xmpp-state))
+(cl-defmethod rudel-leave ((_this rudel-xmpp-state))
   "Default behavior is to do nothing when leaving a state.")
 
 ;; TODO choose one
-(defmethod rudel-accept ((_this rudel-xmpp-state) _xml)
+(cl-defmethod rudel-accept ((_this rudel-xmpp-state) _xml)
   "Default behavior is to accept XML without taking action."
   nil)
 
-(defmethod rudel-accept ((_this rudel-xmpp-state) xml)
+(cl-defmethod rudel-accept ((_this rudel-xmpp-state) xml)
   ""
   (let ((name (xml-node-name xml)))
     (pcase name

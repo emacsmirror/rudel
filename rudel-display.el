@@ -45,7 +45,7 @@
 ;;; Display functions for basic objects
 ;;
 
-(defmethod rudel-display-string ((this rudel-user)
+(cl-defmethod rudel-display-string ((this rudel-user)
 				 &optional use-images _align)
   "Return a textual representation of THIS for user interface purposes.
 When USE-IMAGES is non-nil, add an icon that indicates a user to
@@ -62,7 +62,7 @@ a width equal to that number."
      'face (list :background color)))
   )
 
-(defmethod rudel-display-string ((this rudel-document)
+(cl-defmethod rudel-display-string ((this rudel-document)
 				 &optional use-images _align)
   "Return a textual representation of THIS for user interface purposes.
 When USE-IMAGES is non-nil, add an icon that indicates a document

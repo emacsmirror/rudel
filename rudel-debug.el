@@ -39,6 +39,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-generic)
 (require 'eieio)
 (require 'data-debug)
 (require 'eieio-datadebug)
@@ -179,10 +180,10 @@
 ;;; Utility functions
 ;;
 
-(defgeneric rudel-debug-target (object)
+(cl-defgeneric rudel-debug-target (object)
   "Return debug stream name for OBJECT.")
 
-(defmethod rudel-debug-target ((this eieio-default-superclass))
+(cl-defmethod rudel-debug-target ((this eieio-default-superclass))
   "Default implementation simply uses the object name of THIS."
   (object-name-string this))
 
@@ -239,7 +240,7 @@ TAG and LABEL determine the logging style."
 (defvar rudel-debug-old-state nil
   "Saves state of state machines across one function call.")
 
-(defmethod rudel-switch :before
+(cl-defmethod rudel-switch :before
   ((this rudel-state-machine) _state &rest _)
   "Store name of STATE for later printing."
   (with-slots (state) this
@@ -247,7 +248,7 @@ TAG and LABEL determine the logging style."
 	  (if state (object-name-string state) "#start")))
   )
 
-(defmethod rudel-switch :after
+(cl-defmethod rudel-switch :after
   ((this rudel-state-machine) _state &rest arguments)
   "Log STATE and ARGUMENTS to debug stream."
   (with-slots (state) this
@@ -267,7 +268,7 @@ TAG and LABEL determine the logging style."
 ;;; Debugging functions for `rudel-transport-filter'
 ;;
 
-(defmethod rudel-debug-target ((this rudel-transport-filter))
+(cl-defmethod rudel-debug-target ((this rudel-transport-filter))
   "Find target of filter THIS by looking at underlying transport."
   (with-slots (transport) this
     (rudel-debug-target transport)))
@@ -276,7 +277,7 @@ TAG and LABEL determine the logging style."
 ;;; Debugging functions for `rudel-assembling-transport-filter'
 ;;
 
-(defmethod rudel-set-assembly-function :before
+(cl-defmethod rudel-set-assembly-function :before
   ((this rudel-assembling-transport-filter) function)
   "Log change of assembly function to FUNCTION."
   (with-slots (socket assembly-function) this
@@ -289,7 +290,7 @@ TAG and LABEL determine the logging style."
 	     (symbol-name function))))
   )
 
-(defmethod rudel-set-filter ((this rudel-assembling-transport-filter)
+(cl-defmethod rudel-set-filter ((this rudel-assembling-transport-filter)
 			     filter1)
   "Log DATA as it goes through THIS."
   (with-slots (filter) this
@@ -301,7 +302,7 @@ TAG and LABEL determine the logging style."
                     data)
                    (funcall filter1 data)))))
 
-(defmethod rudel-send :before
+(cl-defmethod rudel-send :before
   ((this rudel-assembling-transport-filter) data)
   "Log DATA as it goes through THIS."
   (rudel-debug-write this :sent "RAW" data nil))
@@ -310,7 +311,7 @@ TAG and LABEL determine the logging style."
 ;;; Debugging function `rudel-parsing-transport-filter'
 ;;
 
-(defmethod rudel-set-parse-function :before
+(cl-defmethod rudel-set-parse-function :before
   ((this rudel-parsing-transport-filter) function)
   "Log parse function change to FUNCTION."
   (with-slots (parse-function) this
@@ -323,7 +324,7 @@ TAG and LABEL determine the logging style."
 	     (symbol-name function))))
   )
 
-(defmethod rudel-set-generate-function :before
+(cl-defmethod rudel-set-generate-function :before
   ((this rudel-parsing-transport-filter) function)
   "Log generate function change to FUNCTION."
   (with-slots (generate-function) this
@@ -336,7 +337,7 @@ TAG and LABEL determine the logging style."
 	     (symbol-name function))))
   )
 
-(defmethod rudel-set-filter ((this rudel-parsing-transport-filter)
+(cl-defmethod rudel-set-filter ((this rudel-parsing-transport-filter)
 			     filter1)
   "Log DATA as it goes through THIS."
   (with-slots (filter) this
@@ -348,7 +349,7 @@ TAG and LABEL determine the logging style."
                     (format "%s" data) data)
                    (funcall filter1 data)))))
 
-(defmethod rudel-send :before
+(cl-defmethod rudel-send :before
   ((this rudel-parsing-transport-filter) string-or-data)
   "Log STRING-OR-DATA as it goes through THIS."
   (let ((formatted (cond
@@ -372,7 +373,7 @@ TAG and LABEL determine the logging style."
 ;;; Socket transport debugging
 ;;
 
-(defmethod rudel-set-filter ((this rudel-socket-transport)
+(cl-defmethod rudel-set-filter ((this rudel-socket-transport)
 			     filter)
   "Log DATA as it goes through THIS."
   (oset
@@ -381,7 +382,7 @@ TAG and LABEL determine the logging style."
      (rudel-debug-write this :received "SOCKET" data)
      (funcall filter data))))
 
-(defmethod rudel-send :before ((this rudel-socket-transport)
+(cl-defmethod rudel-send :before ((this rudel-socket-transport)
 			       data)
   "Log DATA verbatim as it is sent through the socket of THIS."
   (rudel-debug-write this :sent "SOCKET" data nil))

@@ -36,6 +36,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'rudel-operations)
@@ -53,7 +54,7 @@ the same operations."
   :abstract t)
 
 ;; This one really could use multiple dispatch
-(defgeneric jupiter-transform ((this jupiter-operation) other)
+(cl-defgeneric jupiter-transform ((this jupiter-operation) other)
   "Transform OTHER such that the effect of applying it after THIS are equal to applying OTHER before THIS unmodified.
 In general, OTHER is destructively modified or replaced.")
 

@@ -75,7 +75,7 @@
   ""
   :abstract t)
 
-(defmethod rudel-accept ((this rudel-infinote-group-state) xml)
+(cl-defmethod rudel-accept ((this rudel-infinote-group-state) xml)
   "Dispatch XML to appropriate handler method based on content."
   (let ((type (xml-node-name xml)))
     (pcase type
@@ -127,7 +127,7 @@ domain: `%s', code: `%s'"
 message.")
 ;; TODO can all groups receive <session-close/> or just document groups?
 
-(defmethod rudel-accept ((_this rudel-infinote-group-state-closed) _xml)
+(cl-defmethod rudel-accept ((_this rudel-infinote-group-state-closed) _xml)
   "Simply ignore all further messages."
   nil)
 
@@ -160,16 +160,15 @@ sessions. Groups are basically modeled as named state
 machines. Subclasses have to provide their own states."
   :abstract t)
 
-(defmethod rudel-register-state ((this rudel-infinote-group) _symbol state)
+(cl-defmethod rudel-register-state ((this rudel-infinote-group) _symbol state)
   "Set the :group slot of STATE to THIS."
   ;; Associate THIS connection to STATE.
   (oset state :group this)
 
   ;;
-  (when (next-method-p)
-    (call-next-method)))
+  (cl-call-next-method))
 
-(defmethod rudel-send ((this rudel-infinote-group) data)
+(cl-defmethod rudel-send ((this rudel-infinote-group) data)
   "Send DATA through the connection associated to THIS."
   (with-slots (connection) this
     (rudel-send connection
@@ -194,19 +193,19 @@ side. This is used to identify messages directed at us."))
   "Objects of this class inject sequence number into messages
 sent via `rudel-send'.")
 
-(defmethod rudel-send ((this rudel-infinote-sequence-number-group)
+(cl-defmethod rudel-send ((this rudel-infinote-sequence-number-group)
 		       data &optional no-sequence-number)
   "Add a sequence number to DATA and send it.
 After sending, increment the sequence number counter.
 If NO-SEQUENCE-NUMBER is non-nil, do not add a sequence number
 and do not increment the sequence number counter."
   (if no-sequence-number
-      (call-next-method this data)
+      (cl-call-next-method this data)
     (with-slots ((seq-num :next-sequence-number)) this
       (let ((data       (xml-node-name data))
 	    (attributes (xml-node-attributes data))
 	    (children   (xml-node-children data)))
-	(call-next-method
+	(cl-call-next-method
 	 this
 	 (append
 	  (list

@@ -54,7 +54,7 @@
 	 "The user object belonging to the local side."))
   "Super class of infinote document classes.")
 
-(defmethod rudel-add-user ((this rudel-infinote-document) user)
+(cl-defmethod rudel-add-user ((this rudel-infinote-document) user)
   "Add USER to THIS document.
 The :session-user slot of user is set to the session user. The
 session user is looked up and created if necessary."
@@ -75,11 +75,11 @@ session user is looked up and created if necessary."
 	(oset user :session-user session-user))
 
       ;; This actually adds the user to THIS.
-      (call-next-method this user) ;; TODO the next method should return the user
+      (cl-call-next-method this user) ;; TODO the next method should return the user
       user))
   )
 
-(defmethod rudel-set-self ((this rudel-infinote-document) user)
+(cl-defmethod rudel-set-self ((this rudel-infinote-document) user)
   "Set USER as self user of THIS.
 If the session associated to THIS does not have a self user, the
 session user object corresponding to USER is set as self user of

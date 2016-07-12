@@ -114,14 +114,13 @@ service type TYPE."
    (priority     :initform primary))
   "")
 
-(defmethod initialize-instance ((this rudel-zeroconf-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-zeroconf-backend) _slots)
   "Initialize slots of THIS with SLOTS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-zeroconf-version))
 
-(defmethod rudel-discover ((_this rudel-zeroconf-backend))
+(cl-defmethod rudel-discover ((_this rudel-zeroconf-backend))
   "Return a list of session information property lists for Zeroconf-advertised sessions."
   (mapcar
    #'rudel-zeroconf-service->plist
@@ -136,7 +135,7 @@ service type TYPE."
        rudel-zeroconf-service-types)))))
   )
 
-(defmethod rudel-advertise ((_this rudel-session-initiation-backend) info)
+(cl-defmethod rudel-advertise ((_this rudel-session-initiation-backend) info)
   "Use Zeroconf to advertise the session described by INFO to other users."
   (let ((name              (plist-get info :name))
 	(transport-backend (plist-get info :transport-backend))
@@ -149,7 +148,7 @@ service type TYPE."
 	     transport-backend protocol-backend name host port data)))
   t)
 
-(defmethod rudel-withdraw ((_this rudel-session-initiation-backend))
+(cl-defmethod rudel-withdraw ((_this rudel-session-initiation-backend))
   "Withdraw Zeroconf record."
   (error "Not implemented, yet"))
 

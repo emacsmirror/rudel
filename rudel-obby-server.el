@@ -74,7 +74,7 @@
   "State in which new connections start out."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-server-state-new))
+(cl-defmethod rudel-enter ((this rudel-obby-server-state-new))
   "Sends welcome messages to the client and starts the session
 timeout timer."
   ;; Send greeting sequence to the client.
@@ -95,12 +95,12 @@ timeout timer."
   "Encryption negotiation state."
   :method-invocation-order :c3)
 
-(defmethod rudel-enter ((this rudel-obby-server-state-encryption-negotiate))
+(cl-defmethod rudel-enter ((this rudel-obby-server-state-encryption-negotiate))
   "Send net6 'encryption' message requesting to not enable encryption."
   (rudel-send this "net6_encryption" "0")
   nil)
 
-(defmethod rudel-obby/net6_encryption_ok
+(cl-defmethod rudel-obby/net6_encryption_ok
   ((this rudel-obby-server-state-encryption-negotiate))
   "Handle net6 'encryption_ok' message.
 Even if the client requests an encrypted connection, we cancel
@@ -108,7 +108,7 @@ the negotiation."
   (rudel-send this "net6_encryption_failed")
   'before-join)
 
-(defmethod rudel-obby/net6_encryption_failed
+(cl-defmethod rudel-obby/net6_encryption_failed
   ((_this rudel-obby-server-state-encryption-negotiate))
   "Handle net6 'encryption_failed' message.
 No action has to be taken, since the client simply proceeds after
@@ -125,7 +125,7 @@ failed encryption negotiation."
   "Waiting for client request joining the session."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/net6_client_login
+(cl-defmethod rudel-obby/net6_client_login
   ((this rudel-obby-server-state-before-join) username color
    &optional _global-password _user-password)
   "Handle net6 'client_login' message."
@@ -244,7 +244,7 @@ stateless in this case) operations are performed without leaving
 the idle state."
   :method-invocation-order :c3)
 
-(defmethod rudel-obby/obby_user_colour
+(cl-defmethod rudel-obby/obby_user_colour
   ((this rudel-obby-server-state-idle) color-)
   "Handle obby 'user_colour' message.
 This method is called when the connected user requests a change
@@ -264,7 +264,7 @@ of her color to COLOR."
 			 (rudel-obby-format-color color)))))
   nil)
 
-(defmethod rudel-obby/obby_document_create
+(cl-defmethod rudel-obby/obby_document_create
   ((this rudel-obby-server-state-idle)
    doc-id name encoding content)
   "Handle obby 'document_create' message."
@@ -326,7 +326,7 @@ of her color to COLOR."
     nil)
   )
 
-(defmethod rudel-obby/obby_document/subscribe
+(cl-defmethod rudel-obby/obby_document/subscribe
   ((this rudel-obby-server-state-idle) document user-id)
   "Handle 'subscribe' submessage of obby 'document' message."
   (with-parsed-arguments ((user-id number))
@@ -379,7 +379,7 @@ of her color to COLOR."
     nil)
   )
 
-(defmethod rudel-obby/obby_document/unsubscribe
+(cl-defmethod rudel-obby/obby_document/unsubscribe
   ((this rudel-obby-server-state-idle) document user-id)
   "Handle 'unsubscribe' submessage of 'obby_document' message."
   (with-parsed-arguments ((user-id number))
@@ -409,7 +409,7 @@ of her color to COLOR."
     nil)
   )
 
-(defmethod rudel-obby/obby_document/record
+(cl-defmethod rudel-obby/obby_document/record
   ((this rudel-obby-server-state-idle)
    document local-revision remote-revision action &rest arguments)
   "Handle 'record' submessages of 'obby_document' message."
@@ -422,7 +422,7 @@ of her color to COLOR."
 	     arguments)))
   )
 
-(defmethod rudel-obby/obby_document/record/ins
+(cl-defmethod rudel-obby/obby_document/record/ins
   ((this rudel-obby-server-state-idle)
    document local-revision remote-revision position data)
   "Handle 'ins' submessage of 'record' submessages of 'obby_document' message."
@@ -439,7 +439,7 @@ of her color to COLOR."
     nil)
   )
 
-(defmethod rudel-obby/obby_document/record/del
+(cl-defmethod rudel-obby/obby_document/record/del
   ((this rudel-obby-server-state-idle)
    document local-revision remote-revision position length)
   "Handle 'del' submessage of 'record' submessages of 'obby_document' message."
@@ -501,11 +501,10 @@ connected to the server. This object handles all direct
 communication with the client, while broadcast messages are
 handled by the server.")
 
-(defmethod initialize-instance ((this rudel-obby-client) _slots)
+(cl-defmethod initialize-instance ((this rudel-obby-client) _slots)
   "Initialize slots of THIS, register states and install filter."
   ;; Initialize slots of THIS
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Register states.
   (rudel-register-states this rudel-obby-server-connection-states)
@@ -535,35 +534,35 @@ handled by the server.")
                             (`close
                              (rudel-close this)))))))
 
-(defmethod rudel-register-state ((this rudel-obby-client) _symbol state)
+(cl-defmethod rudel-register-state ((this rudel-obby-client) _symbol state)
   "Register SYMBOL and STATE and set connection slot of STATE."
   ;; Associate THIS connection to STATE.
   (oset state :connection this)
 
   ;; Register STATE.
-  (call-next-method))
+  (cl-call-next-method))
 
-(defmethod rudel-end ((this rudel-obby-client))
+(cl-defmethod rudel-end ((this rudel-obby-client))
   ""
   (rudel-disconnect this))
 
-(defmethod rudel-close ((this rudel-obby-client))
+(cl-defmethod rudel-close ((this rudel-obby-client))
   ""
   (with-slots (server) this
     (rudel-remove-client server this)))
 
-(defmethod rudel-send ((this rudel-obby-client) &rest args)
+(cl-defmethod rudel-send ((this rudel-obby-client) &rest args)
   "Send ARGS through the transport of THIS."
   (with-slots (transport) this
     (rudel-send transport args)))
 
-(defmethod rudel-broadcast ((this rudel-obby-client)
+(cl-defmethod rudel-broadcast ((this rudel-obby-client)
 			    receivers name &rest args)
   "Broadcast message NAME with arguments ARGS to RECEIVERS."
   (with-slots (server) this
     (apply #'rudel-broadcast server receivers name args)))
 
-(defmethod rudel-remote-operation ((this rudel-obby-client)
+(cl-defmethod rudel-remote-operation ((this rudel-obby-client)
 				   document
 				   local-revision remote-revision
 				   operation)
@@ -617,7 +616,7 @@ handled by the server.")
       (rudel-remote-operation document user transformed)))
   )
 
-(defmethod rudel-subscribed-clients-not-self ((this rudel-obby-client)
+(cl-defmethod rudel-subscribed-clients-not-self ((this rudel-obby-client)
 					      document)
   "Return a list of clients subscribed to DOCUMENT excluding THIS."
   (with-slots (clients) (oref this :server)
@@ -665,11 +664,10 @@ that joins the associated session.")
 transformation context objects."))
   "Class rudel-obby-server ")
 
-(defmethod initialize-instance ((this rudel-obby-server) _slots)
+(cl-defmethod initialize-instance ((this rudel-obby-server) _slots)
   "Initialize slots of THIS and install a dispatch function."
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Create a hash-table to store the contexts.
   (with-slots (contexts) this
@@ -682,11 +680,11 @@ transformation context objects."))
      (lambda (client-transport)
        (rudel-add-client this client-transport)))))
 
-(defmethod rudel-end ((this rudel-obby-server))
+(cl-defmethod rudel-end ((this rudel-obby-server))
   ""
   (rudel-disconnect this))
 
-(defmethod rudel-broadcast ((this rudel-obby-server)
+(cl-defmethod rudel-broadcast ((this rudel-obby-server)
 			    receivers name &rest arguments)
   "Send a message of type NAME with arguments ARGUMENTS to RECEIVERS.
 
@@ -723,7 +721,7 @@ such objects derived from rudel-obby-client."
       (apply #'rudel-send receiver name arguments)))
   )
 
-(defmethod rudel-make-user ((this rudel-obby-server)
+(cl-defmethod rudel-make-user ((this rudel-obby-server)
 			    name client-id color encryption)
   ""
   (with-slots (next-user-id) this
@@ -737,7 +735,7 @@ such objects derived from rudel-obby-client."
       user))
   )
 
-(defmethod rudel-check-username-and-color ((this rudel-obby-server)
+(cl-defmethod rudel-check-username-and-color ((this rudel-obby-server)
 					   username color)
   "Check whether USERNAME and COLOR are valid.
 USERNAME must not be empty and must not be used by another
@@ -765,7 +763,7 @@ user. COLOR has to be sufficiently different from used colors."
     rudel-obby-error-color-in-use))
   )
 
-(defmethod rudel-add-client ((this rudel-obby-server)
+(cl-defmethod rudel-add-client ((this rudel-obby-server)
 			     client-transport)
   ""
   (with-slots (next-client-id clients) this
@@ -779,7 +777,7 @@ user. COLOR has to be sufficiently different from used colors."
     (cl-incf next-client-id))
   )
 
-(defmethod rudel-remove-client ((this rudel-obby-server)
+(cl-defmethod rudel-remove-client ((this rudel-obby-server)
 				client)
   ""
   (with-slots ((client-id :id) user) client
@@ -801,12 +799,12 @@ user. COLOR has to be sufficiently different from used colors."
   (object-remove-from-list this :clients client)
   )
 
-(defmethod rudel-find-context ((this rudel-obby-server) client document)
+(cl-defmethod rudel-find-context ((this rudel-obby-server) client document)
   "Return the jupiter context associated to (CLIENT DOCUMENT) in THIS."
   (with-slots (contexts) this
     (gethash (rudel-obby-context-key client document) contexts)))
 
-(defmethod rudel-add-context ((this rudel-obby-server) client document)
+(cl-defmethod rudel-add-context ((this rudel-obby-server) client document)
   "Add a jupiter context for (CLIENT DOCUMENT) to THIS."
   (with-slots (contexts) this
     (with-slots ((client-id :id)) client
@@ -817,7 +815,7 @@ user. COLOR has to be sufficiently different from used colors."
 	 contexts))))
   )
 
-(defmethod rudel-remove-context ((this rudel-obby-server) client document)
+(cl-defmethod rudel-remove-context ((this rudel-obby-server) client document)
   "Remove the jupiter context associated to (CLIENT DOCUMENT) from THIS."
   (with-slots (contexts) this
     (remhash
@@ -830,7 +828,7 @@ user. COLOR has to be sufficiently different from used colors."
     (with-slots ((doc-id :id)) document
       (list client-id doc-id))))
 
-(defmethod object-print ((this rudel-obby-server) &rest strings)
+(cl-defmethod object-print ((this rudel-obby-server) &rest strings)
   "Print THIS with number of clients."
   (with-slots (clients) this
     (apply #'call-next-method

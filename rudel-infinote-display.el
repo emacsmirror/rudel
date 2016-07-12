@@ -40,12 +40,12 @@
 
 (require 'rudel-infinote-user)
 
-(defmethod rudel-display-string ((this rudel-infinote-document-user)
+(cl-defmethod rudel-display-string ((this rudel-infinote-document-user)
 				 &optional _use-images)
   "Return a textual representation of THIS for user interface purposes."
   (with-slots ((name :object-name) status) this
     (concat
-     (call-next-method)
+     (cl-call-next-method)
 
      (pcase status
        (`active

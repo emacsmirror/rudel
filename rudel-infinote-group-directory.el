@@ -71,7 +71,7 @@ temporarily after receiving it from the server."))
 Initial state of the state machine of the infinote directory
 group.")
 
-(defmethod rudel-infinote/welcome
+(cl-defmethod rudel-infinote/welcome
   ((this rudel-infinote-directory-state-new) xml)
   "Handle infinote welcome message."
   ;; Temporarily store list of plugins and sequence
@@ -101,7 +101,7 @@ group.")
   ()
   "Idle state of the directory group.")
 
-(defmethod rudel-infinote/add-node
+(cl-defmethod rudel-infinote/add-node
   ((this rudel-infinote-directory-state-idle) xml)
   ""
   ;; TODO there can be a child:
@@ -118,13 +118,13 @@ group.")
       (rudel-add-node group id parent name type)))
   nil)
 
-(defmethod rudel-infinote/remove-node
+(cl-defmethod rudel-infinote/remove-node
   ((_this rudel-infinote-directory-state-idle) _xml)
   ""
   ;; (with-tag-attrs (id) xml ;; seq
     nil)
 
-(defmethod rudel-infinote/sync-in
+(cl-defmethod rudel-infinote/sync-in
   ((_this rudel-infinote-directory-state-idle) _xml)
   ""
   ;; TODO can contain child <subscribe group="group_name" method="method_name" />
@@ -144,7 +144,7 @@ group.")
   "Directory group state entered when the children of a node are
 explored.")
 
-(defmethod rudel-enter
+(cl-defmethod rudel-enter
   ((this rudel-infinote-directory-state-exploring) id)
   ""
   (rudel-send this
@@ -152,7 +152,7 @@ explored.")
 		  ((id  . ,(format "%d" id)))))
   nil)
 
-(defmethod rudel-infinote/explore-begin ;; TODO there should be another state
+(cl-defmethod rudel-infinote/explore-begin ;; TODO there should be another state
   ((this rudel-infinote-directory-state-exploring) xml)
   ""
   ;; <explore-begin total="13" seq="0"/>
@@ -161,7 +161,7 @@ explored.")
       (setq remaining-messages total))) ;; TODO in hex?
   nil)
 
-(defmethod rudel-infinote/add-node
+(cl-defmethod rudel-infinote/add-node
   ((this rudel-infinote-directory-state-exploring) xml)
   ;; TODO identical to idle state
   ""
@@ -174,7 +174,7 @@ explored.")
     (cl-decf remaining-messages))
   nil)
 
-(defmethod rudel-infinote/explore-end
+(cl-defmethod rudel-infinote/explore-end
   ((this rudel-infinote-directory-state-exploring) _xml)
   ""
   (with-slots (remaining-messages) this
@@ -199,7 +199,7 @@ explored.")
        "The id of the target node of the subscription."))
   "Directory group state entered when subscribing to a session.")
 
-(defmethod rudel-enter
+(cl-defmethod rudel-enter
   ((this rudel-infinote-directory-state-subscribing) id)
   "Send 'subscribe-session' message and store ID in THIS for later."
   (with-slots ((id1 :id)) this
@@ -209,7 +209,7 @@ explored.")
 		  ((id . ,(format "%d" id1))))))
   nil)
 
-(defmethod rudel-infinote/subscribe-session
+(cl-defmethod rudel-infinote/subscribe-session
   ((this rudel-infinote-directory-state-subscribing) xml)
   ""
   (with-slots ((id1 :id)) this
@@ -237,7 +237,7 @@ explored.")
   'idle)
 
 ;; TODO this message is used when the server requested the subscription?
-(defmethod rudel-leave ((this rudel-infinote-directory-state-subscribing))
+(cl-defmethod rudel-leave ((this rudel-infinote-directory-state-subscribing))
   "Acknowledge the subscription when leaving the state."
   (with-slots (id) this
     (when id
@@ -268,29 +268,28 @@ explored.")
   "Objects of this class represent infinote directory
 communication groups.")
 
-(defmethod initialize-instance ((this rudel-infinote-group-directory)
+(cl-defmethod initialize-instance ((this rudel-infinote-group-directory)
 				_slots)
   ""
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; Register states.
   (rudel-register-states
    this rudel-infinote-group-directory-states)
   )
 
-(defmethod rudel-add-node ((this rudel-infinote-group-directory)
+(cl-defmethod rudel-add-node ((this rudel-infinote-group-directory)
 			   id parent name type)
   ""
   (with-slots (connection) this
     (rudel-make-and-add-node connection id parent name type)))
 
-(defmethod rudel-remove-node ((_this rudel-infinote-group-directory))
+(cl-defmethod rudel-remove-node ((_this rudel-infinote-group-directory))
   ""
   (error "Removing nodes is not implemented"))
 
-(defmethod rudel-subscribe-session ((this rudel-infinote-group-directory)
+(cl-defmethod rudel-subscribe-session ((this rudel-infinote-group-directory)
 				    name method id)
   ""
   (with-slots (connection) this

@@ -78,7 +78,7 @@ directly installed into the underlying process and therefore has
 to be stored separately."))
   "Objects of this class use sockets to transport data.")
 
-(defmethod initialize-instance :after ((this rudel-socket-transport) _slots)
+(cl-defmethod initialize-instance :after ((this rudel-socket-transport) _slots)
   "Install process filter and sentinel for THIS."
   (with-slots (socket) this
     (set-process-filter
@@ -102,17 +102,17 @@ to be stored separately."))
                     ((or `closed `failed `exit `finished)
                      (funcall sentinel 'close)))))))))
 
-(defmethod rudel-send ((this rudel-socket-transport) data)
+(cl-defmethod rudel-send ((this rudel-socket-transport) data)
   "Send DATA through THIS."
   (with-slots (socket) this
     (process-send-string socket data)))
 
-(defmethod rudel-close ((this rudel-socket-transport))
+(cl-defmethod rudel-close ((this rudel-socket-transport))
   "Close THIS."
   (with-slots (socket) this
     (delete-process socket)))
 
-(defmethod rudel-start ((this rudel-socket-transport))
+(cl-defmethod rudel-start ((this rudel-socket-transport))
   "Start THIS after it has been suspended."
   (with-slots (socket) this
     (continue-process socket)))
@@ -137,12 +137,12 @@ The dispatch function has to accept a single argument which will
 be a transport object representing the incoming connection."))
   "")
 
-(defmethod rudel-close ((this rudel-socket-listener))
+(cl-defmethod rudel-close ((this rudel-socket-listener))
   "Make THIS stop listening for incoming connections."
   (with-slots (socket) this
     (delete-process socket)))
 
-(defmethod rudel-handle-connect ((this rudel-socket-listener) socket)
+(cl-defmethod rudel-handle-connect ((this rudel-socket-listener) socket)
   "Handle incoming connection SOCKET."
   (with-slots (dispatch) this
     (when dispatch
@@ -167,10 +167,9 @@ be a transport object representing the incoming connection."))
   "TCP transport backend.
 The transport backend is a factory for TCP transport objects.")
 
-(defmethod initialize-instance ((this rudel-tcp-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-tcp-backend) _slots)
   "Initialize slots and set version of THIS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-tcp-version))
 
@@ -180,7 +179,7 @@ The transport backend is a factory for TCP transport objects.")
 (defvar rudel-tcp-ask-connect-info-port-last nil
   "Last port read by TCP backend's `rudel-ask-connect-info'.")
 
-(defmethod rudel-ask-connect-info ((_this rudel-tcp-backend)
+(cl-defmethod rudel-ask-connect-info ((_this rudel-tcp-backend)
 				   &optional info)
   "Augment INFO by read a hostname and a port number."
   ;; Read server host and port.
@@ -203,7 +202,7 @@ The transport backend is a factory for TCP transport objects.")
 		  :port port)
 	    info)))
 
-(defmethod rudel-make-connection ((this rudel-tcp-backend)
+(cl-defmethod rudel-make-connection ((this rudel-tcp-backend)
 				  info info-callback
 				  &optional _progress-callback)
   "Connect to a TCP server using the information in INFO.
@@ -229,7 +228,7 @@ and :port."
      :socket socket))
   )
 
-(defmethod rudel-wait-for-connections ((this rudel-tcp-backend)
+(cl-defmethod rudel-wait-for-connections ((this rudel-tcp-backend)
 				       info info-callback)
   "Create TCP server according to INFO.
 INFO has to be a property list containing the key :port."

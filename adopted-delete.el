@@ -53,7 +53,7 @@
   ()
   "Objects of this class represent deletions in buffers.")
 
-(defmethod adopted-transform ((this adopted-delete) other)
+(cl-defmethod adopted-transform ((this adopted-delete) other)
   "Transform other using THIS.
 OTHER is destructively modified or replaced."
   (cond

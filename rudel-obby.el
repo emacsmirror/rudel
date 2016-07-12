@@ -85,14 +85,13 @@ multiple chunks.")
   "Main class of the Rudel obby backend. Creates obby client
 connections and creates obby servers.")
 
-(defmethod initialize-instance ((this rudel-obby-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-obby-backend) _slots)
   "Initialize slots of THIS with SLOTS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-obby-version))
 
-(defmethod rudel-ask-connect-info ((_this rudel-obby-backend)
+(cl-defmethod rudel-ask-connect-info ((_this rudel-obby-backend)
 				   &optional info)
   "Ask user for the information required to connect to an obby server."
   ;; Read server host and port.
@@ -123,7 +122,7 @@ connections and creates obby servers.")
 	    info))
   )
 
-(defmethod rudel-connect ((this rudel-obby-backend) transport
+(cl-defmethod rudel-connect ((this rudel-obby-backend) transport
 			  info info-callback
 			  &optional progress-callback)
   "Connect to an obby server using the information INFO.
@@ -227,7 +226,7 @@ Return the connection object."
     ;; The connection is now usable; return it.
     connection))
 
-(defmethod rudel-ask-host-info ((_this rudel-obby-backend)
+(cl-defmethod rudel-ask-host-info ((_this rudel-obby-backend)
 				&optional info)
   "Ask user for information required to host an obby session."
   ;; Read address and port unless they are already specified in INFO.
@@ -241,7 +240,7 @@ Return the connection object."
 	    info))
   )
 
-(defmethod rudel-host ((_this rudel-obby-backend) listener _info)
+(cl-defmethod rudel-host ((_this rudel-obby-backend) listener _info)
   "Host an obby session using the information INFO.
 Return the created server."
   ;; Before we start, we load the server functionality.
@@ -252,7 +251,7 @@ Return the created server."
    "obby-server"
    :listener listener))
 
-(defmethod rudel-make-document ((this rudel-obby-backend)
+(cl-defmethod rudel-make-document ((this rudel-obby-backend)
 				name session)
   "Make a new document in SESSION named NAME.
 Return the new document."
@@ -266,7 +265,7 @@ Return the new document."
 			   :suffix   1)))
   )
 
-(defmethod rudel-available-document-id ((_this rudel-obby-backend)
+(cl-defmethod rudel-available-document-id ((_this rudel-obby-backend)
 					session)
   "Return a document id, which is not in use in SESSION."
   ;; Look through some candidates until an unused id is hit.
@@ -305,7 +304,7 @@ otherwise.")
 	       ""))
   "Class rudel-obby-user ")
 
-(defmethod eieio-speedbar-description ((this rudel-obby-user))
+(cl-defmethod eieio-speedbar-description ((this rudel-obby-user))
   "Provide a speedbar description for THIS."
   (let ((connected  (oref this :connected))
 	(encryption (if (slot-boundp this :encryption)
@@ -316,7 +315,7 @@ otherwise.")
 	    (if encryption "Encryption" "Plain")))
   )
 
-(defmethod eieio-speedbar-object-buttonname ((this rudel-obby-user))
+(cl-defmethod eieio-speedbar-object-buttonname ((this rudel-obby-user))
   "Return a string to use as a speedbar button for THIS."
   (rudel-display-string this))
 
@@ -344,25 +343,24 @@ documents."))
   "Objects of the class rudel-obby-document represent shared
 documents in obby sessions.")
 
-(defmethod rudel-both-ids ((this rudel-obby-document))
+(cl-defmethod rudel-both-ids ((this rudel-obby-document))
   "Return a list consisting of document and owner id of THIS document."
   (with-slots ((doc-id :id) owner-id) this
     (list owner-id doc-id)))
 
-(defmethod rudel-unique-name ((this rudel-obby-document))
+(cl-defmethod rudel-unique-name ((this rudel-obby-document))
   "Generate a unique name for THIS based on the name and the suffix."
   (with-slots (suffix) this
-    (concat (when (next-method-p)
-	      (call-next-method))
+    (concat (cl-call-next-method)
 	    (when (> suffix 1)
 	      (format "<%d>" suffix))))
   )
 
-(defmethod eieio-speedbar-description ((this rudel-obby-document))
+(cl-defmethod eieio-speedbar-description ((this rudel-obby-document))
   "Construct a description for from the name of document object THIS."
   (format "Document %s" (object-name-string this)))
 
-(defmethod eieio-speedbar-object-buttonname ((this rudel-obby-document))
+(cl-defmethod eieio-speedbar-object-buttonname ((this rudel-obby-document))
   "Return a string to use as a speedbar button for OBJECT."
   (with-slots (subscribed) this
     (format "%-12s %s" (object-name-string this)

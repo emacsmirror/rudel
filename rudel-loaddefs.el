@@ -10,9 +10,11 @@
 
 (defmacro rudel--with-memoization (place &rest code) (declare (indent 1) (debug t)) (gv-letplace (getter setter) place `(or ,getter ,(macroexp-let2 nil val (macroexp-progn code) `(progn ,(funcall setter val) ,val)))))
 
-(defmethod rudel-get-factory :static ((this rudel-backend-factory) category) "Return the factory responsible for CATEGORY.\nIf there is no responsible factory, create one and return it." (rudel--with-memoization (gethash category (eieio-oref-default this 'factories)) (make-instance 'rudel-backend-factory)))
+(cl-defmethod rudel-get-factory ((this (subclass rudel-backend-factory)) category) "\
+Return the factory responsible for CATEGORY.
+If there is no responsible factory, create one and return it." (rudel--with-memoization (gethash category (eieio-oref-default this (quote factories))) (make-instance (quote rudel-backend-factory))))
 
-(defmethod rudel-add-backend ((this rudel-backend-factory) name class &optional replace) "\
+(cl-defmethod rudel-add-backend ((this rudel-backend-factory) name class &optional replace) "\
 Add factory class CLASS with name NAME to THIS.
 if REPLACE is non-nil, replace a registered implementation of the
 same name." (with-slots (backends) this (when (or (not (gethash name backends)) replace) (puthash name class backends))))
@@ -157,10 +159,9 @@ service type TYPE.
 ;;;;;;  "rudel-obby-state.el" "rudel-obby-util.el" "rudel-operations.el"
 ;;;;;;  "rudel-operators.el" "rudel-overlay.el" "rudel-pkg.el" "rudel-protocol.el"
 ;;;;;;  "rudel-speedbar.el" "rudel-state-machine.el" "rudel-transport-util.el"
-;;;;;;  "rudel-transport-util.el" "rudel-transport.el" "rudel-util.el"
-;;;;;;  "rudel-xml.el" "rudel-xmpp-debug.el" "rudel-xmpp-sasl.el"
-;;;;;;  "rudel-xmpp-state.el" "rudel-xmpp-tls.el" "rudel-xmpp-util.el"
-;;;;;;  "rudel.el") (0 0 0 0))
+;;;;;;  "rudel-transport.el" "rudel-util.el" "rudel-xml.el" "rudel-xmpp-debug.el"
+;;;;;;  "rudel-xmpp-sasl.el" "rudel-xmpp-state.el" "rudel-xmpp-tls.el"
+;;;;;;  "rudel-xmpp-util.el" "rudel.el") (0 0 0 0))
 
 ;;;***
 

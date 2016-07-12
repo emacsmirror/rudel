@@ -48,10 +48,10 @@
   ()
   "Operation, which does not change anything.")
 
-(defmethod rudel-apply ((_this adopted-nop) _object)
+(cl-defmethod rudel-apply ((_this adopted-nop) _object)
   "Applying THIS does not change OBJECT.")
 
-(defmethod adopted-transform ((_this adopted-nop) other)
+(cl-defmethod adopted-transform ((_this adopted-nop) other)
   "Transforming OTHER with THIS simply returns OTHER."
   other)
 

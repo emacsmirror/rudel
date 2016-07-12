@@ -79,7 +79,7 @@ node.")
 correspond to text documents or other content containing
 documents.")
 
-(defmethod rudel-unique-name ((this rudel-infinote-node))
+(cl-defmethod rudel-unique-name ((this rudel-infinote-node))
   "Return a unique name for THIS by forming a path from the root node."
   (with-slots (parent) this
     (concat

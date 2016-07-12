@@ -44,6 +44,7 @@
 ;;
 
 (require 'cl-lib)
+(require 'cl-generic)
 
 (require 'eieio)
 
@@ -74,25 +75,25 @@ event/subscription, but for Emacs, the notion of hooks seems more
 appropriate."
   :abstract t)
 
-(defmethod object-add-hook ((this rudel-hook-object)
+(cl-defmethod object-add-hook ((this rudel-hook-object)
 			    hook function &optional append)
   "Add FUNCTION to HOOK for THIS.
 If APPEND is non-nil FUNCTION becomes the last element in the
 list of hooks."
   (let ((value (slot-value this hook)))
     (unless (member function value)
-      (set-slot-value this hook
-		      (if append (append value (list function))
-			(cons function value)))))
+      (setf (slot-value this hook)
+            (if append (append value (list function))
+              (cons function value)))))
   )
 
-(defmethod object-remove-hook ((this rudel-hook-object)
+(cl-defmethod object-remove-hook ((this rudel-hook-object)
 			       hook function)
   "Remove FUNCTION from HOOK for THIS."
-  (set-slot-value this hook
-		  (remove function (slot-value this hook))))
+  (setf (slot-value this hook)
+        (remove function (slot-value this hook))))
 
-(defmethod object-run-hook-with-args ((this rudel-hook-object)
+(cl-defmethod object-run-hook-with-args ((this rudel-hook-object)
 				      hook &rest arguments)
   "Run HOOK of THIS with arguments ARGUMENTS."
   (mapc (lambda (f) (apply f this arguments)) (slot-value this hook)))
@@ -111,22 +112,19 @@ the slot that holds the reference to the target object."))
 the slots of some other object as if they were their own slots."
   :abstract t)
 
-(defmethod slot-missing ((this rudel-impersonator)
-			 slot-name operation &optional new-value)
+(cl-defmethod slot-missing ((this rudel-impersonator)
+                            slot-name operation &optional new-value)
   "Look up SLOT-NAME in the state machine associated to THIS."
   (let ((target (slot-value this (oref this impersonation-target-slot))))
-    (condition-case error
+    (condition-case nil
 	(pcase operation
 	  (`oref
 	   (slot-value target slot-name))
 
 	  (`oset
-	   (set-slot-value target slot-name new-value)))
+	   (setf (slot-value target slot-name) new-value)))
       (invalid-slot-name
-       (if (next-method-p)
-	   (call-next-method)
-	 (apply #'signal error)))))
-  )
+       (cl-call-next-method)))))
 
 
 ;;; Class rudel-delegator
@@ -143,11 +141,11 @@ call methods of some other object as if they were their own
 methods."
   :abstract t)
 
-(defmethod no-applicable-method ((this rudel-delegator)
-				 method &rest args)
+(cl-defmethod cl-no-applicable-method (method (this rudel-delegator)
+                                              &rest args)
   "Call METHOD on the target object instead of THIS."
   (let ((target (slot-value this (oref this delegation-target-slot))))
-    (apply method target (cdr args))))
+    (cl-generic-apply method (cons target args))))
 
 
 ;;; Fragmentation and assembling functions.

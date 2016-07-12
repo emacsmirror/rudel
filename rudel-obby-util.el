@@ -41,6 +41,7 @@
 ;;
 
 (require 'cl-lib)
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'jupiter)
@@ -53,27 +54,27 @@
 ;;; Message serialization
 ;;
 
-(defgeneric rudel-operation->message ((this jupiter-operation))
+(cl-defgeneric rudel-operation->message ((this jupiter-operation))
   "Generate a list obby message components from THIS operation.")
 
-(defmethod rudel-operation->message ((this jupiter-insert))
+(cl-defmethod rudel-operation->message ((this jupiter-insert))
   "Serialize THIS insert operation."
   (with-slots (from data) this
     (list "ins" (format "%x" from) data)))
 
-(defmethod rudel-operation->message ((this jupiter-delete))
+(cl-defmethod rudel-operation->message ((this jupiter-delete))
   "Serialize THIS delete operation."
   (with-slots (from length) this
     (list "del" (format "%x" from) (format "%x" length))))
 
-(defmethod rudel-operation->message ((this jupiter-compound))
+(cl-defmethod rudel-operation->message ((this jupiter-compound))
   "Serialize THIS compound operation."
   (with-slots (children) this
     (apply #'append
 	   (list "split" )
 	   (mapcar #'rudel-operation->message children))))
 
-(defmethod rudel-operation->message ((_this jupiter-nop))
+(cl-defmethod rudel-operation->message ((_this jupiter-nop))
   "Serialize THIS nop operation."
   (list "nop"))
 
@@ -137,16 +138,16 @@ construction of the name of the new operation. "
 ;;; Character <-> byte position conversion
 ;;
 
-(defgeneric rudel-obby-char->byte ((this jupiter-operation) buffer)
+(cl-defgeneric rudel-obby-char->byte ((this jupiter-operation) buffer)
   "Convert character positions and lengths in THIS to bytes.")
 
-(defmethod rudel-obby-char->byte ((this jupiter-insert) buffer)
+(cl-defmethod rudel-obby-char->byte ((this jupiter-insert) buffer)
   "Convert character positions and lengths in THIS insert to bytes."
   (with-slots (from) this
     (with-current-buffer buffer
       (setq from (- (position-bytes (+ from 1)) 1)))))
 
-(defmethod rudel-obby-char->byte ((this jupiter-delete) buffer)
+(cl-defmethod rudel-obby-char->byte ((this jupiter-delete) buffer)
  "Convert character positions and lengths in THIS delete to bytes."
   (with-slots (from to length) this
     (let ((old-from (+ from 1))
@@ -161,7 +162,7 @@ construction of the name of the new operation. "
 				   (- old-to   change-from))))))))
   )
 
-(defmethod rudel-obby-char->byte ((this jupiter-compound) buffer)
+(cl-defmethod rudel-obby-char->byte ((this jupiter-compound) buffer)
   "Convert character positions and lengths in THIS compound to bytes.."
   (with-slots (children) this
     (mapc
@@ -170,19 +171,19 @@ construction of the name of the new operation. "
      children))
   )
 
-(defmethod rudel-obby-char->byte ((_this jupiter-nop) _buffer)
+(cl-defmethod rudel-obby-char->byte ((_this jupiter-nop) _buffer)
   "Nothing to convert if THIS is a nop.")
 
-(defgeneric rudel-obby-byte->char ((this jupiter-operation) buffer)
+(cl-defgeneric rudel-obby-byte->char ((this jupiter-operation) buffer)
   "Convert byte positions and lengths in THIS to character positions.")
 
-(defmethod rudel-obby-byte->char ((this jupiter-insert) buffer)
+(cl-defmethod rudel-obby-byte->char ((this jupiter-insert) buffer)
   "Convert byte positions and lengths in THIS insert to character positions."
   (with-slots (from) this
     (with-current-buffer buffer
       (setq from (- (byte-to-position (+ from 1)) 1)))))
 
-(defmethod rudel-obby-byte->char ((this jupiter-delete) buffer)
+(cl-defmethod rudel-obby-byte->char ((this jupiter-delete) buffer)
   "Convert byte positions and lengths in THIS delete to character positions."
   (with-slots (from to length) this
     (let ((old-from   from)
@@ -192,7 +193,7 @@ construction of the name of the new operation. "
 	      to   (- (byte-to-position (+ old-from old-length 1)) 1)))))
   )
 
-(defmethod rudel-obby-byte->char ((this jupiter-compound) buffer)
+(cl-defmethod rudel-obby-byte->char ((this jupiter-compound) buffer)
   "Convert byte positions and lengths in THIS compound to character positions."
   (with-slots (children) this
     (mapc
@@ -201,7 +202,7 @@ construction of the name of the new operation. "
      children))
   )
 
-(defmethod rudel-obby-byte->char ((_this jupiter-nop) _buffer)
+(cl-defmethod rudel-obby-byte->char ((_this jupiter-nop) _buffer)
   "Nothing to convert if THIS is a nop.")
 
 

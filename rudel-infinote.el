@@ -64,14 +64,13 @@
 			     group-undo)))
   "")
 
-(defmethod initialize-instance ((this rudel-infinote-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-infinote-backend) _slots)
   ""
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-infinote-version))
 
-(defmethod rudel-ask-connect-info ((_this rudel-infinote-backend)
+(cl-defmethod rudel-ask-connect-info ((_this rudel-infinote-backend)
 				   &optional info)
   ""
   ;; Read desired username and color
@@ -85,7 +84,7 @@
      info))
   )
 
-(defmethod rudel-connect ((_this rudel-infinote-backend) transport
+(cl-defmethod rudel-connect ((_this rudel-infinote-backend) transport
 			  info _info-callback
 			  &optional progress-callback)
   "Connect to an infinote server using the information INFO.
@@ -112,13 +111,13 @@ Return the connection object."
     connection)
   )
 
-(defmethod rudel-make-document ((_this rudel-infinote-backend)
+(cl-defmethod rudel-make-document ((_this rudel-infinote-backend)
 				name _encoding session)
   ""
   (rudel-infinote-text-document name
 				:session session))
 
-(defmethod rudel-make-node ((_this rudel-infinote-backend)
+(cl-defmethod rudel-make-node ((_this rudel-infinote-backend)
 			    type name id parent)
   "Create a node object according to TYPE, NAME, ID and PARENT.
 The new node will be named NAME and have id ID. It will be a
@@ -144,7 +143,7 @@ node will be the root node."
     (error "No such node type: `%s'" type)))
   )
 
-(defmethod rudel-make-group ((_this rudel-infinote-backend)
+(cl-defmethod rudel-make-group ((_this rudel-infinote-backend)
 			     type name method &optional node)
   "Create a new group according to TYPE, NAME and METHOD.
 The optional argument NODE can specify the node (usually a

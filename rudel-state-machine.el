@@ -43,6 +43,7 @@
 
 (require 'cl-lib)
 
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'rudel-errors)
@@ -105,13 +106,13 @@
   "A state that can be used in state machines."
   :abstract t)
 
-(defgeneric rudel-accept ((this rudel-state) &rest arguments)
+(cl-defgeneric rudel-accept ((this rudel-state) &rest arguments)
   "Executed when the machine receives an event while in state THIS.")
 
-(defgeneric rudel-enter ((this rudel-state) &rest arguments)
+(cl-defgeneric rudel-enter ((this rudel-state) &rest arguments)
   "Executed when the machine switches to state THIS.")
 
-(defgeneric rudel-leave ((this rudel-state))
+(cl-defgeneric rudel-leave ((this rudel-state))
   "Executed when the machine leaves state THIS.")
 
 
@@ -132,14 +133,13 @@ and STATE is an object of a class derived from rudel-state.")
 	   "The current state of the machine."))
   "A finite state machine.")
 
-(defmethod initialize-instance ((this rudel-state-machine) slots)
+(cl-defmethod initialize-instance ((this rudel-state-machine) slots)
   "Initialize slots of THIS skipping :start initarg."
   ;; Call the next method, passing only non-virtual initargs.
-  (when (next-method-p)
-    (call-next-method
-     this (rudel-state-machine-strip-initargs slots))))
+  (cl-call-next-method
+   this (rudel-state-machine-strip-initargs slots)))
 
-(defmethod initialize-instance :after ((this rudel-state-machine) slots)
+(cl-defmethod initialize-instance :after ((this rudel-state-machine) slots)
   "Set current state of THIS to a proper initial value.
 If a start state is specified using the :start init argument to
 the constructor, that state is used. If there is no such state,
@@ -174,16 +174,16 @@ that fails as well, the first state in the state list is used."
        this start (apply #'rudel-enter start args))))
   )
 
-(defmethod rudel-find-state ((this rudel-state-machine) name)
+(cl-defmethod rudel-find-state ((this rudel-state-machine) name)
   "Return state object for symbol NAME."
   (with-slots (states) this
     (cdr (assoc name states))))
 
-(defmethod rudel-register-state ((this rudel-state-machine) name state)
+(cl-defmethod rudel-register-state ((this rudel-state-machine) name state)
   "Register STATE and its NAME with THIS state machine."
   (object-add-to-list this :states (cons name state) t))
 
-(defmethod rudel-register-states ((this rudel-state-machine) states)
+(cl-defmethod rudel-register-states ((this rudel-state-machine) states)
   "Register STATES with THIS state machine.
 STATES is a list of cons cells whose car is a symbol - the name
 of the state - and whose cdr is a class."
@@ -193,7 +193,7 @@ of the state - and whose cdr is a class."
        this name (make-instance class (symbol-name name)))))
   )
 
-(defmethod rudel-current-state ((this rudel-state-machine) &optional object)
+(cl-defmethod rudel-current-state ((this rudel-state-machine) &optional object)
   "Return name and, optionally, state object of the current state of THIS.
 If OBJECT is non-nil, (NAME . OBJECT) is returned. Otherwise,
 just NAME."
@@ -204,7 +204,7 @@ just NAME."
 	state-symbol)))
   )
 
-(defmethod rudel-accept ((this rudel-state-machine) &rest arguments)
+(cl-defmethod rudel-accept ((this rudel-state-machine) &rest arguments)
   "Process an event described by ARGUMENTS."
   (with-slots (state) this
     ;; Let the current state decide which state is next.
@@ -225,7 +225,7 @@ just NAME."
 	(signal 'wrong-type-argument (list (type-of next)))))))
   )
 
-(defmethod rudel-switch ((this rudel-state-machine) next
+(cl-defmethod rudel-switch ((this rudel-state-machine) next
 			 &rest arguments)
   "Leave current state and switch to state NEXT.
 ARGUMENTS are passed to the `rudel-enter' method of the successor
@@ -272,7 +272,7 @@ state."
        this state (apply #'rudel-enter state arguments))))
   )
 
-(defmethod rudel--switch-to-return-value ((this rudel-state-machine)
+(cl-defmethod rudel--switch-to-return-value ((this rudel-state-machine)
 					  state next)
   "Switch from STATE to the next state indicated by NEXT.
 STATE is the current state.
@@ -290,7 +290,7 @@ NEXT can nil, a list or a `rudel-state' object."
     (rudel-switch this next)))
   )
 
-(defmethod object-print ((this rudel-state-machine) &rest strings)
+(cl-defmethod object-print ((this rudel-state-machine) &rest strings)
   "Add current state to the string representation of THIS."
   (if (slot-boundp this 'state)
       (with-slots (state) this
@@ -299,7 +299,7 @@ NEXT can nil, a list or a `rudel-state' object."
 	       (format " state: %s"
 		       (object-name-string state))
 	       strings))
-    (call-next-method this " state: #start" strings))
+    (cl-call-next-method this " state: #start" strings))
   )
 
 
@@ -330,17 +330,17 @@ between states."))
   "State machine objects of this class run hooks when they accept
 arguments and when they switch states.")
 
-(defmethod rudel-accept :before ((this rudel-hook-state-machine)
+(cl-defmethod rudel-accept :before ((this rudel-hook-state-machine)
 				 &rest arguments)
   "This method runs 'accept-hook' before ARGUMENTS are processed."
   (apply #'object-run-hook-with-args this 'accept-hook arguments))
 
-(defmethod rudel-switch :before ((this rudel-hook-state-machine) _next
+(cl-defmethod rudel-switch :before ((this rudel-hook-state-machine) _next
 				 &rest arguments)
   "This method stores ARGUMENTS for later processing."
   (oset this :last-args arguments))
 
-(defmethod rudel-set-state :before ((this rudel-hook-state-machine) next
+(cl-defmethod rudel-set-state :before ((this rudel-hook-state-machine) next
 				    &rest _arguments)
   "This method runs 'switch-hook' when switching states."
   (with-slots (last-args) this

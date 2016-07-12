@@ -76,13 +76,13 @@ acknowledged by the remote side."))
 concurrent modification activity, which is synchronized using the
 jupiter algorithm.")
 
-(defmethod jupiter-local-operation ((this jupiter-context) operation)
+(cl-defmethod jupiter-local-operation ((this jupiter-context) operation)
   "Store OPERATION in the operation log of THIS and increase local revision count."
   (with-slots (local-revision local-log) this
     (push (cons local-revision operation) local-log)
     (cl-incf local-revision)))
 
-(defmethod jupiter-remote-operation ((this jupiter-context)
+(cl-defmethod jupiter-remote-operation ((this jupiter-context)
 				     local-revision _remote-revision
 				     operation)
   "Transform OPERATION with revisions LOCAL-REVISION and REMOTE-REVISION using the local operations stored in THIS.
@@ -121,10 +121,10 @@ site is referring to."
     transformed-operation)
   )
 
-(defmethod object-print ((this jupiter-context) &rest _strings)
+(cl-defmethod object-print ((this jupiter-context) &rest _strings)
   "Add revisions and log length to string representation of THIS."
   (with-slots (local-revision remote-revision local-log) this
-    (call-next-method
+    (cl-call-next-method
      this
      (format " local %d" local-revision)
      (format " remote %d" remote-revision)

@@ -45,6 +45,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'rudel-backend)
@@ -58,13 +59,13 @@
   "Interface implemented by protocol backends."
   :abstract t)
 
-(defgeneric rudel-ask-connect-info ((this rudel-protocol-backend)
+(cl-defgeneric rudel-ask-connect-info ((this rudel-protocol-backend)
 				    &optional info)
   "Retrieve information for joining a session from user.
 When INFO is non-nil, augment INFO to produce new list.
 Return a property list that contains the collected information.")
 
-(defgeneric rudel-connect ((this rudel-protocol-backend) transport
+(cl-defgeneric rudel-connect ((this rudel-protocol-backend) transport
 			   info info-callback
 			   &optional progress-callback)
   "Create a new connection through TRANSPORT according to the data in INFO.
@@ -81,13 +82,13 @@ Implementations can rely on the fact that the property :session
 in INFO contains the `rudel-session' object to which the new
 connection will be associated.")
 
-(defgeneric rudel-ask-host-info ((this rudel-protocol-backend)
+(cl-defgeneric rudel-ask-host-info ((this rudel-protocol-backend)
 				 &optional info)
   "Retrieve information for hosting a session from user.
 When INFO is non-nil, augment INFO to produce new list.
 Return a property list that contains the collected information.")
 
-(defgeneric rudel-host ((this rudel-protocol-backend) backend
+(cl-defgeneric rudel-host ((this rudel-protocol-backend) backend
 			info)
   "Create a new session according to the property list INFO.
 BACKEND has to be an object of a class derived from
@@ -95,7 +96,7 @@ BACKEND has to be an object of a class derived from
 capability.
 The created session object is returned.")
 
-(defgeneric rudel-make-document ((this rudel-protocol-backend)
+(cl-defgeneric rudel-make-document ((this rudel-protocol-backend)
 				 name session)
   "Create a new document object named NAME for SESSION.")
 

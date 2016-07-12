@@ -48,10 +48,10 @@
   ()
   "Operation, which does not change anything.")
 
-(defmethod rudel-apply ((_this jupiter-nop) _object)
+(cl-defmethod rudel-apply ((_this jupiter-nop) _object)
   "Applying THIS does not change OBJECT.")
 
-(defmethod jupiter-transform ((_this jupiter-nop) other)
+(cl-defmethod jupiter-transform ((_this jupiter-nop) other)
   "Transforming OTHER with THIS simply returns OTHER."
   other)
 

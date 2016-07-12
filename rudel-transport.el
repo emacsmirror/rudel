@@ -40,6 +40,7 @@
 
 (require 'eieio)
 
+(require 'cl-generic)
 (require 'rudel-errors) ;; for `rudel-error'
 (require 'rudel-backend)
 
@@ -66,21 +67,21 @@
   ()
   "Interface for transport objects.")
 
-(defgeneric rudel-set-filter ((this rudel-transport) handler)
+(cl-defgeneric rudel-set-filter ((this rudel-transport) handler)
   "Install HANDLER as dispatcher for messages received by THIS.")
 
-(defgeneric rudel-set-sentinel ((this rudel-transport) handler)
+(cl-defgeneric rudel-set-sentinel ((this rudel-transport) handler)
   "Install HANDLER as dispatcher for state changes of THIS.")
 
-(defgeneric rudel-send ((this rudel-transport) data)
+(cl-defgeneric rudel-send ((this rudel-transport) data)
   "Send DATA through THIS transport object.")
 
-(defgeneric rudel-close ((this rudel-transport))
+(cl-defgeneric rudel-close ((this rudel-transport))
   "Close THIS.")
 
 ;; TODO we could get rid of this if we required implementations to
 ;; queue messages until a handler is installed
-(defgeneric rudel-start ((this rudel-transport))
+(cl-defgeneric rudel-start ((this rudel-transport))
   "Start THIS.")
 
 
@@ -94,12 +95,12 @@ Listener objects wait for incoming connections and create
 transport objects representing such connections."
 :abstract t)
 
-(defgeneric rudel-set-dispatcher ((this rudel-listener) handler)
+(cl-defgeneric rudel-set-dispatcher ((this rudel-listener) handler)
   "Install HANDLER as dispatch function for incoming connections.
 HANDLER has to accept a single argument which will be a transport
 object representing the incoming connection.")
 
-(defgeneric rudel-close ((this rudel-listener))
+(cl-defgeneric rudel-close ((this rudel-listener))
   "Cause THIS to stop listening for incoming connections.")
 
 
@@ -111,13 +112,13 @@ object representing the incoming connection.")
   "Interface implemented by transport backends."
   :abstract t)
 
-(defgeneric rudel-ask-connect-info ((this rudel-transport-backend)
+(cl-defgeneric rudel-ask-connect-info ((this rudel-transport-backend)
 				    &optional info)
   "Retrieve information for making a new connection.
 When INFO is non-nil, augment INFO to produce new list.
 Return a property list that contains the collected information.")
 
-(defgeneric rudel-make-connection ((this rudel-transport-backend)
+(cl-defgeneric rudel-make-connection ((this rudel-transport-backend)
 				   info info-callback
 				   &optional progress-callback)
   "Create a transport object according to INFO.
@@ -138,7 +139,7 @@ The returned transport object has to be in a stopped state in the
 sense that it does not attempt to dispatch any data to the filter
 function before `rudel-start' has been called.")
 
-(defgeneric rudel-wait-for-connections ((this rudel-transport-backend)
+(cl-defgeneric rudel-wait-for-connections ((this rudel-transport-backend)
 					info info-callback)
   "Create and return listener object according to INFO.
 INFO has to be a property list specifying desired properties of

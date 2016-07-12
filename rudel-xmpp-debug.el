@@ -52,7 +52,7 @@
 ;;; All XMPP states
 ;;
 
-(defmethod rudel-debug-target ((this rudel-xmpp-state))
+(cl-defmethod rudel-debug-target ((this rudel-xmpp-state))
   "Return debug target of the transport as debug target for THIS."
   (with-slots (transport) this
     (rudel-debug-target transport)))
@@ -61,7 +61,7 @@
 ;;; Handle base64 encoded data in SASL steps
 ;;
 
-(defmethod rudel-send ((this rudel-xmpp-state-sasl-mechanism-step)
+(cl-defmethod rudel-send ((this rudel-xmpp-state-sasl-mechanism-step)
 		       &rest args)
   "Delegate sending ARGS to the transport associated with THIS."
   ;; We need this primary method in order for the :after method below
@@ -70,7 +70,7 @@
   (with-slots (transport) this
     (apply #'rudel-send transport args)))
 
-(defmethod rudel-send :after
+(cl-defmethod rudel-send :after
   ((this rudel-xmpp-state-sasl-mechanism-step) xml)
   "Show base64-decoded version of XML."
   (when (and (eq (xml-node-name xml) 'response)
@@ -89,7 +89,7 @@
       ",")))
   )
 
-(defmethod rudel-accept :before
+(cl-defmethod rudel-accept :before
   ((this rudel-xmpp-state-sasl-mechanism-step) xml)
   "Show base64-decoded version of XML."
   (when (and (eq (xml-node-name xml) 'challenge)

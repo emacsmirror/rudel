@@ -52,13 +52,13 @@ slot :children. The value is computed on access."))
   "Objects of this class represent directory (inner) nodes in the
 Infinote tree.")
 
-(defmethod rudel-add-child ((this rudel-infinote-node-directory)
+(cl-defmethod rudel-add-child ((this rudel-infinote-node-directory)
 			    document)
   ""
   (with-slots (child-cache) this
     (push document child-cache))) ;; TODO object-add-to-list or add-to-list?
 
-(defmethod slot-missing ((this rudel-infinote-node-directory)
+(cl-defmethod slot-missing ((this rudel-infinote-node-directory)
 			 slot-name operation &optional _new-value) ;; TODO why not use slot-unbound?
   "Simulate slot :children. The value of the slot is fetched as
 necessary."
@@ -90,7 +90,7 @@ necessary."
 
    ;; Call next method
    (t
-    (call-next-method)))
+    (cl-call-next-method)))
   )
 
 (provide 'rudel-infinote-node-directory)

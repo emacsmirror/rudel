@@ -54,7 +54,7 @@
 number of child operation.")
 
 ;; TODO this has side effects. It can only be called once
-(defmethod rudel-apply ((this jupiter-compound) object)
+(cl-defmethod rudel-apply ((this jupiter-compound) object)
   "Apply THIS to BUFFER by applying the child operation."
   (with-slots (children) this
     (let ((child (car children))
@@ -70,17 +70,17 @@ number of child operation.")
 	(setq child (pop rest)))))
   )
 
-(defmethod jupiter-transform ((this jupiter-compound) other)
+(cl-defmethod jupiter-transform ((this jupiter-compound) other)
   "Transform OTHER using the child operations of THIS."
   (with-slots (children) this
     (dolist (child children) ;; TODO reverse children?
       (setq other (jupiter-transform child other)))
     other))
 
-(defmethod object-print ((this jupiter-compound) &rest _strings)
+(cl-defmethod object-print ((this jupiter-compound) &rest _strings)
   "Add number of children to string representation of THIS."
   (with-slots (children) this
-    (call-next-method
+    (cl-call-next-method
      this
      (format " children %d" (length children)))))
 

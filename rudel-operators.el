@@ -46,6 +46,7 @@
 ;;; Code:
 ;;
 
+(require 'cl-generic)
 (require 'eieio)
 
 (require 'rudel-overlay)
@@ -62,12 +63,12 @@
 applied."))
   "Provides operation methods which modify an associated document.")
 
-(defmethod rudel-insert ((this rudel-document-operators) position data)
+(cl-defmethod rudel-insert ((this rudel-document-operators) position data)
   "Insert DATA at POSITION into the document attached to THIS."
   (with-slots (document) this
     (rudel-insert document position data)))
 
-(defmethod rudel-delete ((this rudel-document-operators) position length)
+(cl-defmethod rudel-delete ((this rudel-document-operators) position length)
   "Delete a region of LENGTH characters at POSITION from the document attached to THIS."
   (with-slots (document) this
     (rudel-delete document position length)))
@@ -89,12 +90,12 @@ performed.")
   "Provides operation methods which affect an associated
 connection.")
 
-(defmethod rudel-insert ((this rudel-connection-operators) position data)
+(cl-defmethod rudel-insert ((this rudel-connection-operators) position data)
   "Notify the connection associated to THIS of the insertion of DATA at POSITION."
   (with-slots (connection document) this
     (rudel-local-insert connection document position data)))
 
-(defmethod rudel-delete ((this rudel-connection-operators) position length)
+(cl-defmethod rudel-delete ((this rudel-connection-operators) position length)
   "Notify the connection associated to THIS of a deletion of LENGTH at POSITION."
   (with-slots (connection document) this
     (rudel-local-delete connection document position length)))
@@ -116,7 +117,7 @@ operations are applied")
   "Provides operation methods which affect the overlays of a
 buffer.")
 
-(defmethod rudel-insert ((this rudel-overlay-operators) position data)
+(cl-defmethod rudel-insert ((this rudel-overlay-operators) position data)
   "Update the overlays associated to THIS to incorporate an insertion of DATA at POSITION."
   (with-slots (document user) this
     (with-slots (buffer) document
@@ -133,7 +134,7 @@ buffer.")
        buffer (+ position 1) (length data) user)))
   )
 
-(defmethod rudel-delete ((this rudel-overlay-operators) position length)
+(cl-defmethod rudel-delete ((this rudel-overlay-operators) position length)
   "Update the overlays associated to THIS to incorporate a deletion of LENGTH at POSITION."
   (with-slots (document user) this
     (with-slots (buffer) document
@@ -156,13 +157,13 @@ buffer.")
   "Provides operation methods which cause corresponding hooks to
 be called.")
 
-(defmethod rudel-insert ((this rudel-hook-operators) position data)
+(cl-defmethod rudel-insert ((this rudel-hook-operators) position data)
   "Call insert hook associated to THIS with POSITION and DATA."
   (with-slots (document user) this
     (with-slots (buffer) document
       (run-hook-with-args 'rudel-insert-hook buffer user position data))))
 
-(defmethod rudel-delete ((this rudel-hook-operators) position length)
+(cl-defmethod rudel-delete ((this rudel-hook-operators) position length)
   "Call delete hook associated to THIS with POSITION and LENGTH."
   (with-slots (document user) this
     (with-slots (buffer) document

@@ -48,6 +48,7 @@
 
 (require 'cl-lib)
 
+(require 'cl-generic)
 (require 'warnings)
 
 (require 'eieio)
@@ -71,7 +72,7 @@ symbol, that each describe one capability of the backend."))
   "Base class for backend classes."
   :abstract t)
 
-(defmethod rudel-capable-of-p ((this rudel-backend) capability)
+(cl-defmethod rudel-capable-of-p ((this rudel-backend) capability)
   "Return t if the backend THIS is capable of CAPABILITY."
   (with-slots (capabilities) this
     (member capability capabilities)))
@@ -89,6 +90,7 @@ symbol, that each describe one capability of the backend."))
 instantiation) or objects (after instantiation) for all backends
 known to the factory object.")
    (factories :type       hash-table
+              :initform   (make-hash-table :test #'eq)
 	      :allocation :class
 	      :documentation
 	      "Mapping of backend categories to responsible
@@ -96,13 +98,10 @@ factory objects."))
   "Factory class that holds an object for each known backend
 category. Objects manage backend implementation for one backend
 category each.")
-(oset-default 'rudel-backend-factory factories
-	      (make-hash-table :test #'eq))
 
-(defmethod initialize-instance ((this rudel-backend-factory) &rest _slots)
+(cl-defmethod initialize-instance ((this rudel-backend-factory) &rest _slots)
   "Initialize slots of THIS with SLOTS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
   (oset this backends (make-hash-table :test #'eq)))
 
 ;;;###rudel-autoload
@@ -117,7 +116,7 @@ category each.")
                ,val))))))
 
 ;;;###rudel-autoload
-(defmethod rudel-get-factory :static ((this rudel-backend-factory)
+(cl-defmethod rudel-get-factory ((this (subclass rudel-backend-factory))
 				      category)
   "Return the factory responsible for CATEGORY.
 If there is no responsible factory, create one and return it."
@@ -126,7 +125,7 @@ If there is no responsible factory, create one and return it."
    (make-instance 'rudel-backend-factory))) ;; category
 
 ;;;###rudel-autoload
-(defmethod rudel-add-backend ((this rudel-backend-factory)
+(cl-defmethod rudel-add-backend ((this rudel-backend-factory)
 			      name class &optional replace)
   "Add factory class CLASS with name NAME to THIS.
 if REPLACE is non-nil, replace a registered implementation of the
@@ -136,7 +135,7 @@ same name."
 	      replace)
       (puthash name class backends))))
 
-(defmethod rudel-get-backend ((this rudel-backend-factory) name)
+(cl-defmethod rudel-get-backend ((this rudel-backend-factory) name)
   "Return backend object for name NAME or nil if there is none.
 The returned backend is of the form (NAME . OBJECT).
 
@@ -151,7 +150,7 @@ Backends are loaded, if necessary."
 	(cons name backend))))
   )
 
-(defmethod rudel-all-backends ((this rudel-backend-factory)
+(cl-defmethod rudel-all-backends ((this rudel-backend-factory)
 			       &optional only-loaded)
   "Return a list of all backends registered with THIS.
 Each list element is of the form (NAME . CLASS-OR-OBJECT).
@@ -167,7 +166,7 @@ for which CLASS-OR-OBJECT is an object."
     backend-list)
   )
 
-(defmethod rudel-suitable-backends ((this rudel-backend-factory) predicate)
+(cl-defmethod rudel-suitable-backends ((this rudel-backend-factory) predicate)
   "Return a list of backends which satisfy PREDICATE.
 Each list element is of the form (NAME . OBJECT).
 Backends are loaded, if necessary."
@@ -184,7 +183,7 @@ Backends are loaded, if necessary."
     (rudel-all-backends this t))
   )
 
-(defmethod rudel-load-backends ((this rudel-backend-factory))
+(cl-defmethod rudel-load-backends ((this rudel-backend-factory))
   "Load backends in THIS factory if necessary.
 Loading errors are not reported explicitly, but can be detected
 by checking for backends that still are classes rather than

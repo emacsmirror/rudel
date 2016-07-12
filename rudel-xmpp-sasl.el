@@ -52,7 +52,7 @@
   ()
   "Start state of the SASL negotiation.")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-sasl-start)
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-sasl-start)
 			name server features)
   "Extract the list of supported mechanisms from FEATURES.
 Then switch to the try one state to try them in order."
@@ -87,7 +87,7 @@ Then switch to the try one state to try them in order."
   "State that selects a mechanism and switches to the mechanism
 start state for that mechanism.")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-sasl-try-one)
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-sasl-try-one)
 			name server mechanisms)
   "If Emacs support the first mechanism in MECHANISMS, try it, otherwise skip it.
 Mechanism are tried by switching to the mechanism start state.
@@ -124,7 +124,7 @@ When no mechanisms are left, switch to the authentication failed state."
 	      ""))
   "Start state of the negotiation for the selected mechanism.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-sasl-mechanism-start)
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-sasl-mechanism-start)
 			name1 server1 schema1 mechanism1 rest1)
   ""
   (with-slots (schema mechanism rest) this
@@ -186,7 +186,7 @@ When no mechanisms are left, switch to the authentication failed state."
   "Intermediate step of the negotiation for the selected
 mechanism.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-sasl-mechanism-step)
+(cl-defmethod rudel-enter ((this rudel-xmpp-state-sasl-mechanism-step)
 			name1 server1 schema1 client1 step1 rest1)
   "Store SCHEMA1, CLIENT1, STEP1 and REST1 for later use."
   (with-slots (name server schema client step rest) this
@@ -198,7 +198,7 @@ mechanism.")
 	  rest   rest1))
   nil)
 
-(defmethod rudel-accept ((this rudel-xmpp-state-sasl-mechanism-step) xml)
+(cl-defmethod rudel-accept ((this rudel-xmpp-state-sasl-mechanism-step) xml)
   "Interpret XML to decide how to proceed with the authentication mechanism."
   (pcase (xml-node-name xml)
     ;; Authentication mechanism failed.
@@ -277,7 +277,7 @@ mechanism.")
      nil)) ;; TODO send error or call-next-method?
   )
 
-(defmethod rudel-obtain-sasl-password
+(cl-defmethod rudel-obtain-sasl-password
   ((this rudel-xmpp-state-sasl-mechanism-step) prompt)
   "Replaces prompt function of the sasl library.
 This function adds all available context information to the

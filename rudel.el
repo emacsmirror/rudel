@@ -6,7 +6,7 @@
 ;; Keywords: rudel, collaboration
 ;; Version: 0.3
 ;; URL: http://rudel.sourceforge.net/
-;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cl-generic "0.3"))
 ;; X-RCS: $Id:$
 ;;
 ;; This file is part of Rudel.
@@ -57,6 +57,7 @@
 
 (require 'cl-lib)
 
+(require 'cl-generic)
 (require 'eieio)
 (require 'eieio-base)
 
@@ -195,12 +196,12 @@ rudel-server-session. Consequently, it consists of slots common
 to client and server sessions."
   :abstract t)
 
-(defmethod rudel-end ((this rudel-session))
+(cl-defmethod rudel-end ((this rudel-session))
   "Terminate THIS session performing all necessary cleanup."
   ;; Run the hook.
   (object-run-hook-with-args this 'end-hook))
 
-(defmethod rudel-add-user ((this rudel-session) user)
+(cl-defmethod rudel-add-user ((this rudel-session) user)
   "Add USER to the user list of THIS session.
 
 Runs object hook (see `rudel-hook-object') `add-user-hook' with
@@ -211,7 +212,7 @@ arguments THIS and USER."
   ;; Run the hook.
   (object-run-hook-with-args this 'add-user-hook user))
 
-(defmethod rudel-remove-user ((this rudel-session) user)
+(cl-defmethod rudel-remove-user ((this rudel-session) user)
   "Remove USER from the user list of THIS session.
 
 Runs object hook (see `rudel-hook-object') `remove-user-hook'
@@ -222,7 +223,7 @@ with arguments THIS and USER."
   ;; Run the hook.
   (object-run-hook-with-args this 'remove-user-hook user))
 
-(defmethod rudel-find-user ((this rudel-session)
+(cl-defmethod rudel-find-user ((this rudel-session)
 			    which &optional test key)
   "Find user WHICH in the user list.
 WHICH is compared to the result of KEY using TEST."
@@ -231,7 +232,7 @@ WHICH is compared to the result of KEY using TEST."
 	  :key  (or key  #'object-name-string)
 	  :test (or test #'string=))))
 
-(defmethod rudel-add-document ((this rudel-session) document)
+(cl-defmethod rudel-add-document ((this rudel-session) document)
   ""
   (unless (slot-boundp document :session)
     (oset document :session this))
@@ -242,7 +243,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; Run the hook.
   (object-run-hook-with-args this 'add-document-hook document))
 
-(defmethod rudel-remove-document ((this rudel-session) document)
+(cl-defmethod rudel-remove-document ((this rudel-session) document)
   "Remove DOCUMENT from THIS session, detaching it if necessary."
   ;; Detach document from its buffer when necessary.
   (rudel-maybe-detach-from-buffer document)
@@ -253,7 +254,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; Run the hook.
   (object-run-hook-with-args this 'remove-document-hook document))
 
-(defmethod rudel-find-document ((this rudel-session)
+(cl-defmethod rudel-find-document ((this rudel-session)
 				which &optional test key)
   "Find document WHICH in the document list.
 WHICH is compared to the result of KEY using TEST."
@@ -283,7 +284,7 @@ the local user"))
   "Objects represent a collaborative editing session from a
 client perspective.")
 
-(defmethod rudel-end ((this rudel-client-session))
+(cl-defmethod rudel-end ((this rudel-client-session))
   ;; Clean everything up
   (with-slots (connection users documents) this
     ;; Make sure all documents are detached from their buffers
@@ -296,11 +297,10 @@ client perspective.")
 	(error nil))))
 
   ;;
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
   )
 
-(defmethod rudel-unsubscribed-documents ((this rudel-client-session))
+(cl-defmethod rudel-unsubscribed-documents ((this rudel-client-session))
   "Return documents in THIS to which the self user is not subscribed."
   (with-slots (documents self) this
     (unless self
@@ -336,31 +336,31 @@ client perspective.")
 client protocols have to obey."
   :abstract t)
 
-(defgeneric rudel-disconnect ((this rudel-connection))
+(cl-defgeneric rudel-disconnect ((this rudel-connection))
   "Close the connection.")
 
-(defgeneric rudel-change-color- ((this rudel-connection) color) ;; TODO name
+(cl-defgeneric rudel-change-color- ((this rudel-connection) color) ;; TODO name
   "")
 
-(defgeneric rudel-publish ((this rudel-connection) document)
+(cl-defgeneric rudel-publish ((this rudel-connection) document)
   "")
 
-(defgeneric rudel-subscribe-to ((this rudel-connection) document)
+(cl-defgeneric rudel-subscribe-to ((this rudel-connection) document)
   "")
 
-(defgeneric rudel-unsubscribe-from ((this rudel-connection) document) ; TODO name should be rudel-unsubscribe
+(cl-defgeneric rudel-unsubscribe-from ((this rudel-connection) document) ; TODO name should be rudel-unsubscribe
   "")
 
-(defgeneric rudel-local-insert ((this rudel-connection))
+(cl-defgeneric rudel-local-insert ((this rudel-connection))
   "")
 
-(defgeneric rudel-local-delete ((this rudel-connection))
+(cl-defgeneric rudel-local-delete ((this rudel-connection))
   "")
 
-(defgeneric rudel-remote-insert ((this rudel-connection))
+(cl-defgeneric rudel-remote-insert ((this rudel-connection))
   "")
 
-(defgeneric rudel-remote-delete ((this rudel-connection))
+(cl-defgeneric rudel-remote-delete ((this rudel-connection))
   "")
 
 
@@ -389,7 +389,7 @@ collaborative editing session. Note that a participating user
 does not have to be connected to the session at any given time."
   :abstract t)
 
-(defmethod rudel-change-notify ((this rudel-user))
+(cl-defmethod rudel-change-notify ((this rudel-user))
   "Run change hook of THIS after slot values have changed."
   (object-run-hook-with-args this 'change-hook))
 
@@ -443,19 +443,19 @@ is detached from this document object."))
 collaborative editing session can subscribe to."
   :abstract t)
 
-(defmethod rudel-unique-name ((this rudel-document))
+(cl-defmethod rudel-unique-name ((this rudel-document))
   "Returns a suggested name for the buffer attached to THIS document."
   (object-name-string this))
 
-(defmethod rudel-suggested-buffer-name ((this rudel-document))
+(cl-defmethod rudel-suggested-buffer-name ((this rudel-document))
   "Returns a suggested name for the buffer attached to THIS document."
   (rudel-unique-name this))
 
-(defmethod rudel-attached-p ((this rudel-document))
+(cl-defmethod rudel-attached-p ((this rudel-document))
   (with-slots (buffer) this
     buffer))
 
-(defmethod rudel-attach-to-buffer ((this rudel-document) buffer)
+(cl-defmethod rudel-attach-to-buffer ((this rudel-document) buffer)
   "Attach THIS document to BUFFER"
   (with-slots ((doc-buffer buffer)) this
     ;; Set buffer slot of THIS to BUFFER and associated THIS with
@@ -492,7 +492,7 @@ collaborative editing session can subscribe to."
     (object-run-hook-with-args this 'attach-hook doc-buffer))
   )
 
-(defmethod rudel-detach-from-buffer ((this rudel-document))
+(cl-defmethod rudel-detach-from-buffer ((this rudel-document))
   "Detach document THIS from its buffer.
 Do nothing, if THIS is not attached to any buffer."
   (with-slots (buffer) this
@@ -531,7 +531,7 @@ Do nothing, if THIS is not attached to any buffer."
       (object-run-hook-with-args this 'detach-hook buffer-save)))
   )
 
-(defmethod rudel-maybe-detach-from-buffer ((this rudel-document))
+(cl-defmethod rudel-maybe-detach-from-buffer ((this rudel-document))
   ""
   ;; Only try to detach from BUFFER, if it is non-nil. BUFFER can be
   ;; nil, if the user did not subscribe to the document, or
@@ -539,7 +539,7 @@ Do nothing, if THIS is not attached to any buffer."
   (when (rudel-attached-p this)
     (rudel-detach-from-buffer this)))
 
-(defmethod rudel-add-user ((this rudel-document) user)
+(cl-defmethod rudel-add-user ((this rudel-document) user)
   "Add USER to the list of subscribed users of THIS.
 
 Runs object hook (see `rudel-hook-object') `subscribe-hook' with
@@ -550,7 +550,7 @@ arguments THIS and USER."
   ;; Run the hook.
   (object-run-hook-with-args this 'subscribe-hook user))
 
-(defmethod rudel-remove-user ((this rudel-document) user)
+(cl-defmethod rudel-remove-user ((this rudel-document) user)
   "Remove USER from the list of subscribed users of THIS.
 
 Runs object hook (see `rudel-hook-object') `unsubscribe-hook'
@@ -561,11 +561,11 @@ with arguments THIS and USER."
   ;; Run the hook.
   (object-run-hook-with-args this 'unsubscribe-hook user))
 
-(defmethod rudel-clear-users ((this rudel-document))
+(cl-defmethod rudel-clear-users ((this rudel-document))
   "Clear list of users subscribed to THIS."
   (oset this :subscribed nil))
 
-(defmethod rudel-find-user ((this rudel-document)
+(cl-defmethod rudel-find-user ((this rudel-document)
 			    which &optional test key)
   "Find user WHICH in the list of subscribed users.
 WHICH is compared to the result of KEY using TEST."
@@ -574,7 +574,7 @@ WHICH is compared to the result of KEY using TEST."
 	  :key  (or key  #'object-name-string)
 	  :test (or test #'string=))))
 
-(defmethod rudel-insert ((this rudel-document) position data)
+(cl-defmethod rudel-insert ((this rudel-document) position data)
   "Insert DATA at POSITION into the buffer attached to THIS.
 When POSITION is nil `point-max' is used to determine the
 insertion position.
@@ -591,7 +591,7 @@ Modification hooks are disabled during the insertion."
 	  (insert data)))))
   )
 
-(defmethod rudel-delete ((this rudel-document) position length)
+(cl-defmethod rudel-delete ((this rudel-document) position length)
   "Delete a region of LENGTH character at POSITION from the buffer attached to THIS.
 Modification hooks are disabled during the insertion."
   (with-slots (buffer) this
@@ -601,7 +601,7 @@ Modification hooks are disabled during the insertion."
 	  (delete-region (+ position 1) (+ position length 1))))))
   )
 
-(defmethod rudel-local-operation ((this rudel-document) operation)
+(cl-defmethod rudel-local-operation ((this rudel-document) operation)
   "Apply the local operation OPERATION to THIS."
   (with-slots (session buffer) this
     (with-slots (connection (user self)) session
@@ -623,7 +623,7 @@ Modification hooks are disabled during the insertion."
 	(rudel-apply operation operators))))
   )
 
-(defmethod rudel-remote-operation ((this rudel-document) user operation)
+(cl-defmethod rudel-remote-operation ((this rudel-document) user operation)
   "Apply the remote operation OPERATION performed by USER to THIS."
   (dolist (operators (append
 
@@ -643,7 +643,7 @@ Modification hooks are disabled during the insertion."
     (rudel-apply operation operators))
   )
 
-(defmethod rudel-chunks ((this rudel-document))
+(cl-defmethod rudel-chunks ((this rudel-document))
   "Return a list of text chunks of the associated buffer.
 Each element in the chunk is a list structured like this (START
 END AUTHOR). START and END are numbers, AUTHOR is of type (or

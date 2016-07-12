@@ -225,7 +225,7 @@ This only works if PROCESS has been created by
   "Objects of this class provide socket transports with START TLS
 capability.")
 
-(defmethod initialize-instance :after
+(cl-defmethod initialize-instance :after
   ((this rudel-start-tls-transport) _slots)
   "Repair filter of the process owned by THIS."
   ;; The superclass `rudel-socket-transport' installs its filter
@@ -236,7 +236,7 @@ capability.")
     (process-put socket :old-filter (process-filter socket))
     (set-process-filter socket #'rudel-tls-wait-init)))
 
-(defmethod rudel-enable-encryption ((this rudel-start-tls-transport))
+(cl-defmethod rudel-enable-encryption ((this rudel-start-tls-transport))
   "Try to enable TLS encryption on THIS transport."
   (with-slots (socket) this
     (rudel-tls-start-tls socket)))
@@ -252,10 +252,9 @@ capability.")
 The transport backend is a factory for transport objects that
 support STARTTLS behavior.")
 
-(defmethod initialize-instance ((this rudel-start-tls-backend) _slots)
+(cl-defmethod initialize-instance ((this rudel-start-tls-backend) _slots)
   "Initialize slots and set version of THIS."
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (oset this :version rudel-tls-version)
 
@@ -268,7 +267,7 @@ support STARTTLS behavior.")
 (defvar rudel-tls-ask-connect-info-port-last nil
   "Last port read by TLS backend's `rudel-ask-connect-info'.")
 
-(defmethod rudel-ask-connect-info ((_this rudel-start-tls-backend)
+(cl-defmethod rudel-ask-connect-info ((_this rudel-start-tls-backend)
 				   &optional info)
   "Augment INFO by read a hostname and a port number."
   ;; Read server host and port.
@@ -291,7 +290,7 @@ support STARTTLS behavior.")
 		  :port port)
 	    info)))
 
-(defmethod rudel-make-connection ((this rudel-start-tls-backend)
+(cl-defmethod rudel-make-connection ((this rudel-start-tls-backend)
 				  info info-callback
 				  &optional _progress-callback)
   "Connect to a START-TLS server using the information in INFO.

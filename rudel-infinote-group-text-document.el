@@ -52,7 +52,7 @@
   ()
   "")
 
-(defmethod rudel-infinote/request/insert
+(cl-defmethod rudel-infinote/request/insert
   ((this rudel-infinote-group-text-document-state-idle)
    user xml)
   ""
@@ -66,7 +66,7 @@
       :data     (or text "\n")))) ;; TODO is this correct?
   nil)
 
-(defmethod rudel-infinote/request/insert-caret
+(cl-defmethod rudel-infinote/request/insert-caret
   ((this rudel-infinote-group-text-document-state-idle)
    user xml)
   ""
@@ -88,7 +88,7 @@
       :from position)))
   nil)
 
-(defmethod rudel-infinote/request/delete
+(cl-defmethod rudel-infinote/request/delete
   ((this rudel-infinote-group-text-document-state-idle)
    user xml)
   ""
@@ -102,7 +102,7 @@
       :length length)))
   nil)
 
-(defmethod rudel-infinote/request/delete-caret
+(cl-defmethod rudel-infinote/request/delete-caret
   ((this rudel-infinote-group-text-document-state-idle)
    user xml)
   ""
@@ -124,13 +124,13 @@
       :from position)))
   nil)
 
-(defmethod rudel-infinote/request/no-op
+(cl-defmethod rudel-infinote/request/no-op
   ((_this rudel-infinote-group-text-document-state-idle)
    _user _xml)
   ""
   nil)
 
-(defmethod rudel-infinote/request/move
+(cl-defmethod rudel-infinote/request/move
   ((this rudel-infinote-group-text-document-state-idle)
    user xml)
   ""
@@ -152,22 +152,22 @@
       :length length)))
   nil)
 
-(defmethod rudel-infinote/request/undo
+(cl-defmethod rudel-infinote/request/undo
   ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
-(defmethod rudel-infinote/request/undo-caret
+(cl-defmethod rudel-infinote/request/undo-caret
   ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
-(defmethod rudel-infinote/request/redo
+(cl-defmethod rudel-infinote/request/redo
   ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
-(defmethod rudel-infinote/request/redo-caret
+(cl-defmethod rudel-infinote/request/redo-caret
   ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
@@ -181,7 +181,7 @@
   ()
   "")
 
-(defmethod rudel-infinote/sync-segment ;; TODO text documents only?
+(cl-defmethod rudel-infinote/sync-segment ;; TODO text documents only?
   ((this rudel-infinote-group-text-document-state-synchronizing) xml)
   ""
   (with-slots (remaining-items document) this
@@ -208,7 +208,7 @@
       (cl-decf remaining-items)))
   nil)
 
-(defmethod rudel-infinote/request/delete
+(cl-defmethod rudel-infinote/request/delete
   ((_this rudel-infinote-group-text-document-state-synchronizing) _xml)
   ""
 ;; <delete pos="pos"><segment author="user_id">text</segment>[...]</delete>
@@ -252,19 +252,18 @@
   ((parent :type rudel-infinote-node-directory-child))
   "")
 
-(defmethod initialize-instance
+(cl-defmethod initialize-instance
   ((this rudel-infinote-group-text-document) _slots)
   ""
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   ;; We have our own states, register them.
   (oset this :states nil)
   (rudel-register-states
    this rudel-infinote-group-text-document-states))
 
-(defmethod rudel-remote-operation
+(cl-defmethod rudel-remote-operation
   ((this rudel-infinote-group-text-document) user operation)
   ""
   (with-slots (document) this

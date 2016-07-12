@@ -53,7 +53,7 @@
   ()
   "Objects of this class represent insertions into buffers.")
 
-(defmethod adopted-transform ((this adopted-insert) other)
+(cl-defmethod adopted-transform ((this adopted-insert) other)
   "Transform OTHER using THIS."
   (cond
 

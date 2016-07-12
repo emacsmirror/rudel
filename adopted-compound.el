@@ -54,7 +54,7 @@
 number of child operation.")
 
 ;; TODO this has side effects. It can only be called once
-(defmethod rudel-apply ((this adopted-compound) object)
+(cl-defmethod rudel-apply ((this adopted-compound) object)
   "Apply THIS to BUFFER by applying the child operation."
   (with-slots (children) this
     (let ((child (car children))
@@ -70,7 +70,7 @@ number of child operation.")
 	(setq child (pop rest)))))
   )
 
-(defmethod adopted-transform ((this adopted-compound) other)
+(cl-defmethod adopted-transform ((this adopted-compound) other)
   "Transform OTHER using the child operations of THIS."
   (with-slots (children) this
     (dolist (child children) ;; TODO reverse children?

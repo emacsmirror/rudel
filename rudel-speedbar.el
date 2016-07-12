@@ -41,11 +41,11 @@
 ;;; Class rudel-user methods
 ;;
 
-(defmethod eieio-speedbar-description ((this rudel-user))
+(cl-defmethod eieio-speedbar-description ((this rudel-user))
   "Provide a speedbar description for OBJ."
   (format "User %s" (object-name-string this)))
 
-(defmethod eieio-speedbar-object-buttonname ((this rudel-user))
+(cl-defmethod eieio-speedbar-object-buttonname ((this rudel-user))
   "Return a string to use as a speedbar button for OBJECT."
   (format "%s" (object-name-string this)))
 
@@ -53,11 +53,11 @@
 ;;; Class rudel-document methods
 ;;
 
-(defmethod eieio-speedbar-description ((this rudel-document))
+(cl-defmethod eieio-speedbar-description ((this rudel-document))
   "Construct a description for from the name of document object THIS."
   (format "Document %s" (object-name-string this)))
 
-(defmethod eieio-speedbar-object-buttonname ((this rudel-document))
+(cl-defmethod eieio-speedbar-object-buttonname ((this rudel-document))
   "Return a string to use as a speedbar button for OBJECT."
   (rudel-unique-name this))
 

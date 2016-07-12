@@ -46,7 +46,7 @@
   ()
   "State used to enable TLS encryption for a connection.")
 
-(defmethod rudel-enter ((_this rudel-xmpp-state-tls-start))
+(cl-defmethod rudel-enter ((_this rudel-xmpp-state-tls-start))
   "Enable TLS encryption for the connection associated with THIS."
   (require 'rudel-tls)
   ;; something like this: (rudel-tls-start-tls transport)

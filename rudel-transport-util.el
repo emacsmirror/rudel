@@ -98,7 +98,7 @@ transport changes."))
 transform a bidirectional data stream as it passes through them."
   :abstract t)
 
-(defmethod slot-missing ((this rudel-transport-filter)
+(cl-defmethod slot-missing ((this rudel-transport-filter)
 			 slot-name operation &optional new-value)
   "Make slots of underlying transport available as virtual slots of THIS."
   (cond
@@ -117,7 +117,7 @@ transform a bidirectional data stream as it passes through them."
     (set-slot-value (oref this :transport) slot-name new-value)))
   )
 
-(defmethod no-applicable-method ((this rudel-transport-filter)
+(cl-defmethod no-applicable-method ((this rudel-transport-filter)
 				 method &rest args)
   "Make methods of underlying transport callable as virtual methods of THIS."
   (apply method (oref this :transport) (cdr args)))
@@ -152,12 +152,11 @@ are sent unmodified."))
   "Objects of this class assemble received message fragments into
 complete messages by calling an assembly function.")
 
-(defmethod initialize-instance ((this rudel-assembling-transport-filter)
+(cl-defmethod initialize-instance ((this rudel-assembling-transport-filter)
 				_slots)
   "Initialize THIS using SLOTS and install suitable handlers."
   ;; Initialize slots.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (with-slots (transport) this
     ;; Install a handler for received data that assembles messages
@@ -183,7 +182,7 @@ complete messages by calling an assembly function.")
                                       (when sentinel
                                         (funcall sentinel event)))))))
 
-(defmethod rudel-send ((this rudel-assembling-transport-filter) data)
+(cl-defmethod rudel-send ((this rudel-assembling-transport-filter) data)
   "Send DATA using the transport of THIS."
   (with-slots (transport fragment-function) this
     (if fragment-function
@@ -219,11 +218,10 @@ object to transform it into a string representation."))
 string representations and structured representations by calling
 a pair of one parse and one generate function.")
 
-(defmethod initialize-instance ((this rudel-parsing-transport-filter) _slots)
+(cl-defmethod initialize-instance ((this rudel-parsing-transport-filter) _slots)
   "Initialize THIS using SLOTS and install suitable handlers."
   ;; Initialize slots.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (with-slots (transport) this
     ;; Install a handler for received data that parses messages into
@@ -245,7 +243,7 @@ a pair of one parse and one generate function.")
                                       (when sentinel
                                         (funcall sentinel event)))))))
 
-(defmethod rudel-send ((this rudel-parsing-transport-filter) message)
+(cl-defmethod rudel-send ((this rudel-parsing-transport-filter) message)
   "Apply generate function to MESSAGE, pass result to transport of THIS."
   (with-slots (transport generate-function) this
     (rudel-send transport (funcall generate-function message))))
@@ -260,7 +258,7 @@ a pair of one parse and one generate function.")
 receive their data from underlying transports. Instead data is
 injected by calling `rudel-inject'.")
 
-(defmethod rudel-inject ((this rudel-injecting-transport-filter) data)
+(cl-defmethod rudel-inject ((this rudel-injecting-transport-filter) data)
   "Inject DATA as if it was received from an underlying transport."
   (with-slots (filter) this
     (when filter
@@ -292,12 +290,11 @@ stopped."))
   "Objects of this class are transport filters that can queue
 incoming and outgoing data and process it later.")
 
-(defmethod initialize-instance ((this rudel-buffering-transport-filter)
+(cl-defmethod initialize-instance ((this rudel-buffering-transport-filter)
 				_slots)
   "Initialize slots of THIS and install filter in underlying transport."
   ;; Initialize slots.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (with-slots (transport) this
     ;; Install `rudel-handle' as filter in underlying transport.
@@ -311,7 +308,7 @@ incoming and outgoing data and process it later.")
                                       (when sentinel
                                         (funcall sentinel event)))))))
 
-(defmethod rudel-send ((this rudel-buffering-transport-filter) data)
+(cl-defmethod rudel-send ((this rudel-buffering-transport-filter) data)
   "Send DATA through THIS, queueing when necessary."
   (with-slots (transport stopped queue-out) this
     (if stopped
@@ -320,7 +317,7 @@ incoming and outgoing data and process it later.")
       ;; Otherwise send DATA right away.
       (rudel-send transport data))))
 
-(defmethod rudel-stop ((this rudel-buffering-transport-filter))
+(cl-defmethod rudel-stop ((this rudel-buffering-transport-filter))
   "Stop THIS, queue incoming and out going data."
   (with-slots (stopped) this
     ;; The filter cannot be stopped if it already is stopped.
@@ -331,7 +328,7 @@ incoming and outgoing data and process it later.")
     (setq stopped t))
   )
 
-(defmethod rudel-start ((this rudel-buffering-transport-filter))
+(cl-defmethod rudel-start ((this rudel-buffering-transport-filter))
   "Start THIS, process queued incoming and outgoing data."
   (with-slots (stopped queue-in queue-out filter) this
     ;; Send queued outgoing data.
@@ -347,7 +344,7 @@ incoming and outgoing data and process it later.")
 	  queue-out nil
 	  stopped   nil)))
 
-(defmethod rudel-handle ((this rudel-buffering-transport-filter) data)
+(cl-defmethod rudel-handle ((this rudel-buffering-transport-filter) data)
   "Handle DATA."
   (with-slots (stopped queue-in filter) this
     (if stopped
@@ -396,12 +393,11 @@ queued data even if it is smaller than a complete chunk."))
 sent through them until certain amounts of data are available for
 transmission.")
 
-(defmethod initialize-instance ((this rudel-collecting-transport-filter)
+(cl-defmethod initialize-instance ((this rudel-collecting-transport-filter)
 				_slots)
   "Initialize slots of THIS and setup filter of underlying transport."
   ;; Initialize slots of THIS.
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (with-slots (transport) this
     ;; Install a filter in the underlying transport.
@@ -417,7 +413,7 @@ transmission.")
                                       (when sentinel
                                         (funcall sentinel event)))))))
 
-(defmethod rudel-send ((this rudel-collecting-transport-filter) data)
+(cl-defmethod rudel-send ((this rudel-collecting-transport-filter) data)
   "Send or enqueue DATA."
   (with-slots (transport queue queued-size flush-size) this
     ;; Enqueue new data.
@@ -432,14 +428,14 @@ transmission.")
       (rudel-flush this)))
   )
 
-(defmethod rudel-flush ((this rudel-collecting-transport-filter))
+(cl-defmethod rudel-flush ((this rudel-collecting-transport-filter))
   "Transmit all data queued in THIS immediately."
   (with-slots (transport queue queued-size) this
     (rudel-send transport (mapconcat #'identity (nreverse queue) ""))
     (setq queue       nil
 	  queued-size 0)))
 
-(defmethod rudel-maybe-start-timer
+(cl-defmethod rudel-maybe-start-timer
   ((this rudel-collecting-transport-filter))
   "Start timer that runs `rudel-flush' when it expires."
   ;; If necessary, create a timer that runs `rudel-flush' when it
@@ -452,7 +448,7 @@ transmission.")
                      (rudel-flush this)
                      (oset this :timer nil)))))))
 
-(defmethod rudel-maybe-cancel-timer
+(cl-defmethod rudel-maybe-cancel-timer
   ((this rudel-collecting-transport-filter))
   "Cancel the flush timer of this."
   (with-slots (timer) this
@@ -478,11 +474,10 @@ multiple chunks.")
 	     "TODO"))
   "TODO")
 
-(defmethod initialize-instance
+(cl-defmethod initialize-instance
   ((this rudel-progress-reporting-transport-filter) _slots)
   "TODO"
-  (when (next-method-p)
-    (call-next-method))
+  (cl-call-next-method)
 
   (with-slots (reporter) this
     (setq reporter (make-progress-reporter "Sending data " 0.0 1.0)))
@@ -494,7 +489,7 @@ multiple chunks.")
                                     (when filter
                                       (funcall filter data)))))))
 
-(defmethod rudel-send ((this rudel-progress-reporting-transport-filter)
+(cl-defmethod rudel-send ((this rudel-progress-reporting-transport-filter)
 		       data)
   "TODO"
   (with-slots (transport reporter) this
