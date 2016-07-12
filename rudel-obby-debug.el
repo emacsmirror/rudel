@@ -1,6 +1,6 @@
-;;; rudel-obby-debug.el --- Debugging functions for obby backend
+;;; rudel-obby-debug.el --- Debugging functions for obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, obby, debugging

@@ -1,6 +1,6 @@
-;;; rudel-infinote.el --- Infinote backend for Rudel
+;;; rudel-infinote.el --- Infinote backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, gobby, infinote, protocol
@@ -64,14 +64,14 @@
 			     group-undo)))
   "")
 
-(defmethod initialize-instance ((this rudel-infinote-backend) slots)
+(defmethod initialize-instance ((this rudel-infinote-backend) _slots)
   ""
   (when (next-method-p)
     (call-next-method))
 
   (oset this :version rudel-infinote-version))
 
-(defmethod rudel-ask-connect-info ((this rudel-infinote-backend)
+(defmethod rudel-ask-connect-info ((_this rudel-infinote-backend)
 				   &optional info)
   ""
   ;; Read desired username and color
@@ -85,8 +85,8 @@
      info))
   )
 
-(defmethod rudel-connect ((this rudel-infinote-backend) transport
-			  info info-callback
+(defmethod rudel-connect ((_this rudel-infinote-backend) transport
+			  info _info-callback
 			  &optional progress-callback)
   "Connect to an infinote server using the information INFO.
 Return the connection object."
@@ -112,13 +112,13 @@ Return the connection object."
     connection)
   )
 
-(defmethod rudel-make-document ((this rudel-infinote-backend)
-				name encoding session)
+(defmethod rudel-make-document ((_this rudel-infinote-backend)
+				name _encoding session)
   ""
   (rudel-infinote-text-document name
 				:session session))
 
-(defmethod rudel-make-node ((this rudel-infinote-backend)
+(defmethod rudel-make-node ((_this rudel-infinote-backend)
 			    type name id parent)
   "Create a node object according to TYPE, NAME, ID and PARENT.
 The new node will be named NAME and have id ID. It will be a
@@ -144,7 +144,7 @@ node will be the root node."
     (error "No such node type: `%s'" type)))
   )
 
-(defmethod rudel-make-group ((this rudel-infinote-backend)
+(defmethod rudel-make-group ((_this rudel-infinote-backend)
 			     type name method &optional node)
   "Create a new group according to TYPE, NAME and METHOD.
 The optional argument NODE can specify the node (usually a

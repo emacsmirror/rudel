@@ -1,4 +1,4 @@
-;;; rudel.el --- A collaborative editing framework for Emacs
+;;; rudel.el --- A collaborative editing framework for Emacs  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -6,7 +6,7 @@
 ;; Keywords: rudel, collaboration
 ;; Version: 0.3
 ;; URL: http://rudel.sourceforge.net/
-;; Package-Requires: ((cl-lib "0.5"))
+;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
 ;; X-RCS: $Id:$
 ;;
 ;; This file is part of Rudel.
@@ -308,6 +308,7 @@ client perspective.")
 
     (cl-remove-if
      (lambda (document)
+       ;; FIXME: Move this use of the slot to after the class that defines it.
        (with-slots (subscribed) document
 	 (memq self subscribed)))
      documents))
@@ -456,7 +457,7 @@ collaborative editing session can subscribe to."
 
 (defmethod rudel-attach-to-buffer ((this rudel-document) buffer)
   "Attach THIS document to BUFFER"
-  (with-slots ((doc-buffer :buffer)) this
+  (with-slots ((doc-buffer buffer)) this
     ;; Set buffer slot of THIS to BUFFER and associated THIS with
     ;; BUFFER.
     (setq doc-buffer buffer)
@@ -603,7 +604,7 @@ Modification hooks are disabled during the insertion."
 (defmethod rudel-local-operation ((this rudel-document) operation)
   "Apply the local operation OPERATION to THIS."
   (with-slots (session buffer) this
-    (with-slots (connection (user :self)) session
+    (with-slots (connection (user self)) session
       (dolist (operators (list
 
 			   ;; Update overlays
@@ -726,7 +727,7 @@ If BUFFER is nil, use the current buffer."
 
 (defun rudel-handle-buffer-change (from to length)
   "Handle buffer change at range FROM to TO with length LENGTH by relaying them to the document object of the buffer.
-See after-change-functions for more information."
+See `after-change-functions' for more information."
   (when (rudel-buffer-has-document-p)
     (let ((document (rudel-buffer-document))
 	  (text)) ; TODO with-rudel-buffer-document?
@@ -891,7 +892,7 @@ will be prompted for."
 
     ;; Reset the global session variable when the session ends.
     (object-add-hook session 'end-hook
-		     (lambda (session)
+		     (lambda (_session)
 		       (setq rudel-current-session nil)))
 
     ;; Run the hook.
@@ -977,7 +978,7 @@ Not all backends support this operation."
       (error "Backend `%s' cannot change colors"
 	     (object-name-string backend)))
 
-    (with-slots ((name :object-name) color) self
+    (with-slots ((name object-name) color) self
       ;; Ask the user for a new color.
       (setq color (read-color "New Color: " t))
 
@@ -1022,7 +1023,7 @@ When called interactively, DOCUMENT is prompted for interactively."
 	 (buffer (funcall rudel-allocate-buffer-function name)))
     (rudel-attach-to-buffer document buffer)
 
-    (let ((connection (oref (oref document :session) :connection)))
+    (let ((connection (oref (oref document session) connection)))
       (rudel-subscribe-to connection document))
 
     ;; Show the new buffer.

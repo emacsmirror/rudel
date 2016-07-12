@@ -1,4 +1,4 @@
-;;; rudel-infinote-group-text-document.el --- Communication group used by text documents
+;;; rudel-infinote-group-text-document.el --- Communication group used by text documents  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -125,8 +125,8 @@
   nil)
 
 (defmethod rudel-infinote/request/no-op
-  ((this rudel-infinote-group-text-document-state-idle)
-   user xml)
+  ((_this rudel-infinote-group-text-document-state-idle)
+   _user _xml)
   ""
   nil)
 
@@ -153,22 +153,22 @@
   nil)
 
 (defmethod rudel-infinote/request/undo
-  ((this rudel-infinote-group-text-document-state-idle) xml)
+  ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
 (defmethod rudel-infinote/request/undo-caret
-  ((this rudel-infinote-group-text-document-state-idle) xml)
+  ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
 (defmethod rudel-infinote/request/redo
-  ((this rudel-infinote-group-text-document-state-idle) xml)
+  ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
 (defmethod rudel-infinote/request/redo-caret
-  ((this rudel-infinote-group-text-document-state-idle) xml)
+  ((_this rudel-infinote-group-text-document-state-idle) _xml)
   ""
   nil)
 
@@ -184,7 +184,7 @@
 (defmethod rudel-infinote/sync-segment ;; TODO text documents only?
   ((this rudel-infinote-group-text-document-state-synchronizing) xml)
   ""
-  (with-slots (remaining-items) this
+  (with-slots (remaining-items document) this
     (with-tag-attrs ((author-id author number)
 		     (text      text))         xml
       (let ((author (rudel-find-user
@@ -209,7 +209,7 @@
   nil)
 
 (defmethod rudel-infinote/request/delete
-  ((this rudel-infinote-group-text-document-state-synchronizing) xml)
+  ((_this rudel-infinote-group-text-document-state-synchronizing) _xml)
   ""
 ;; <delete pos="pos"><segment author="user_id">text</segment>[...]</delete>
 ;;
@@ -227,10 +227,10 @@
 ;; look at the document and which transformations were required to
 ;; transform the request to the current state before the operation is
 ;; actually executed.
-  (with-tag-attrs (position pos number) xml
-    (do-tag-children (child xml)
-	(with-tag-attrs (author author number) xml)
-      ))
+  ;; (with-tag-attrs (position pos number) xml
+  ;;   (do-tag-children (child xml)
+  ;;     (with-tag-attrs (author author number) xml)
+  ;;     ))
   nil)
 
 
@@ -253,7 +253,7 @@
   "")
 
 (defmethod initialize-instance
-  ((this rudel-infinote-group-text-document) slots)
+  ((this rudel-infinote-group-text-document) _slots)
   ""
   ;; Initialize slots of THIS.
   (when (next-method-p)

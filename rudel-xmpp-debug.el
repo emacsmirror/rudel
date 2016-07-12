@@ -1,4 +1,4 @@
-;;; rudel-xmpp-debug.el --- Debugging functions for the Rudel XMPP backend
+;;; rudel-xmpp-debug.el --- Debugging functions for the Rudel XMPP backend  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

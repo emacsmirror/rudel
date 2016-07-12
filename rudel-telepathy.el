@@ -1,6 +1,6 @@
-;;; rudel-telepathy.el --- A telepathy backend for Rudel
+;;; rudel-telepathy.el --- A telepathy backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, telepathy, backend
@@ -58,7 +58,7 @@
   ((capabilities :initform '()))
   "Class rudel-telepathy-backend ")
 
-(defmethod initialize-instance ((this rudel-telepathy-backend) slots)
+(defmethod initialize-instance ((this rudel-telepathy-backend) _slots)
   "Initialize slots of THIS according to SLOTS."
   (when (next-method-p)
     (call-next-method))

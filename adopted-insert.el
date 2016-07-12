@@ -1,4 +1,4 @@
-;;; adopted-insert.el --- Adopted insert operation
+;;; adopted-insert.el --- Adopted insert operation  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

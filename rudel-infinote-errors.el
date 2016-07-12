@@ -1,6 +1,6 @@
-;;; rudel-infinote-errors.el --- Error data used in the infinote Rudel backend
+;;; rudel-infinote-errors.el --- Error data used in the infinote Rudel backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, infinote, errors
@@ -43,8 +43,6 @@
 ;;
 
 ;; rudel-infinote-no-such-node
-
-(intern "rudel-infinote-no-such-node")
 
 (put 'rudel-infinote-no-such-node 'error-conditions
      '(error

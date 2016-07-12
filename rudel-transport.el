@@ -1,6 +1,6 @@
-;;; rudel-transport.el --- Rudel transport interface and backend
+;;; rudel-transport.el --- Rudel transport interface and backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, backend, transport

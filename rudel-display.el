@@ -1,6 +1,6 @@
-;;; rudel-display.el --- Display functions for Rudel objects
+;;; rudel-display.el --- Display functions for Rudel objects  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, display, icons, text, representation
@@ -46,7 +46,7 @@
 ;;
 
 (defmethod rudel-display-string ((this rudel-user)
-				 &optional use-images align)
+				 &optional use-images _align)
   "Return a textual representation of THIS for user interface purposes.
 When USE-IMAGES is non-nil, add an icon that indicates a user to
 the text representation.
@@ -63,7 +63,7 @@ a width equal to that number."
   )
 
 (defmethod rudel-display-string ((this rudel-document)
-				 &optional use-images align)
+				 &optional use-images _align)
   "Return a textual representation of THIS for user interface purposes.
 When USE-IMAGES is non-nil, add an icon that indicates a document
 to the text representation.

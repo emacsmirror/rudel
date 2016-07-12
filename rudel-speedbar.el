@@ -1,6 +1,6 @@
-;;; rudel-speedbar.el --- Speedbar rendering of Rudel objects
+;;; rudel-speedbar.el --- Speedbar rendering of Rudel objects  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration, speedbar
@@ -79,7 +79,7 @@
 
 (defvar rudel-current-session)
 
-(defun rudel-speedbar-toplevel-buttons (dir)
+(defun rudel-speedbar-toplevel-buttons (_dir) ;; FIXME: Use `dir'!
   "Return a list of objects to display in speedbar.
 Argument DIR is the directory from which to derive the list of objects."
   (when rudel-current-session

@@ -1,6 +1,6 @@
-;;; rudel-obby-errors.el --- Error data used in the obby Rudel backend
+;;; rudel-obby-errors.el --- Error data used in the obby Rudel backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, errors
@@ -44,8 +44,6 @@
 
 ;; rudel-obby-invalid-username
 
-(intern "rudel-obby-invalid-username")
-
 (put 'rudel-obby-invalid-username 'error-conditions
      '(error
        rudel-error rudel-join-error
@@ -55,8 +53,6 @@
      "Invalid username")
 
 ;; rudel-obby-username-in-use
-
-(intern "rudel-obby-username-in-use")
 
 (put 'rudel-obby-username-in-use 'error-conditions
      '(error
@@ -68,8 +64,6 @@
 
 ;; rudel-obby-invalid-color
 
-(intern "rudel-obby-invalid-color")
-
 (put 'rudel-obby-invalid-color 'error-conditions
      '(error
        rudel-error rudel-join-error
@@ -79,8 +73,6 @@
      "Invalid color")
 
 ;; rudel-obby-color-in-use
-
-(intern "rudel-obby-color-in-use")
 
 (put 'rudel-obby-color-in-use 'error-conditions
      '(error

@@ -140,43 +140,27 @@ service type TYPE.
 
 ;;;***
 
-;;;### (autoloads nil nil ("adopted-compound.el" "adopted-compound.el"
-;;;;;;  "adopted-delete.el" "adopted-delete.el" "adopted-insert.el"
-;;;;;;  "adopted-insert.el" "adopted-nop.el" "adopted-nop.el" "adopted-operation.el"
-;;;;;;  "adopted-operation.el" "adopted.el" "adopted.el" "jupiter-compound.el"
-;;;;;;  "jupiter-compound.el" "jupiter-delete.el" "jupiter-delete.el"
-;;;;;;  "jupiter-insert.el" "jupiter-insert.el" "jupiter-nop.el"
-;;;;;;  "jupiter-nop.el" "jupiter-operation.el" "jupiter-operation.el"
-;;;;;;  "jupiter.el" "jupiter.el" "rudel-autoloads.el" "rudel-chat.el"
-;;;;;;  "rudel-chat.el" "rudel-color.el" "rudel-color.el" "rudel-debug.el"
-;;;;;;  "rudel-display.el" "rudel-display.el" "rudel-errors.el" "rudel-errors.el"
-;;;;;;  "rudel-hooks.el" "rudel-hooks.el" "rudel-icons.el" "rudel-icons.el"
-;;;;;;  "rudel-infinote-client.el" "rudel-infinote-display.el" "rudel-infinote-display.el"
-;;;;;;  "rudel-infinote-document.el" "rudel-infinote-document.el"
-;;;;;;  "rudel-infinote-errors.el" "rudel-infinote-errors.el" "rudel-infinote-group-directory.el"
-;;;;;;  "rudel-infinote-group-directory.el" "rudel-infinote-group-document.el"
+;;;### (autoloads nil nil ("adopted-compound.el" "adopted-delete.el"
+;;;;;;  "adopted-insert.el" "adopted-nop.el" "adopted-operation.el"
+;;;;;;  "adopted.el" "jupiter-compound.el" "jupiter-delete.el" "jupiter-insert.el"
+;;;;;;  "jupiter-nop.el" "jupiter-operation.el" "jupiter.el" "rudel-autoloads.el"
+;;;;;;  "rudel-chat.el" "rudel-color.el" "rudel-debug.el" "rudel-display.el"
+;;;;;;  "rudel-errors.el" "rudel-hooks.el" "rudel-icons.el" "rudel-infinote-client.el"
+;;;;;;  "rudel-infinote-display.el" "rudel-infinote-document.el"
+;;;;;;  "rudel-infinote-errors.el" "rudel-infinote-group-directory.el"
 ;;;;;;  "rudel-infinote-group-document.el" "rudel-infinote-group-text-document.el"
-;;;;;;  "rudel-infinote-group-text-document.el" "rudel-infinote-group.el"
 ;;;;;;  "rudel-infinote-group.el" "rudel-infinote-node-directory.el"
-;;;;;;  "rudel-infinote-node-directory.el" "rudel-infinote-node.el"
-;;;;;;  "rudel-infinote-node.el" "rudel-infinote-state.el" "rudel-infinote-state.el"
-;;;;;;  "rudel-infinote-text-document.el" "rudel-infinote-text-document.el"
-;;;;;;  "rudel-infinote-user.el" "rudel-infinote-user.el" "rudel-infinote-util.el"
-;;;;;;  "rudel-infinote-util.el" "rudel-interactive.el" "rudel-mode.el"
-;;;;;;  "rudel-obby-client.el" "rudel-obby-debug.el" "rudel-obby-debug.el"
-;;;;;;  "rudel-obby-display.el" "rudel-obby-display.el" "rudel-obby-errors.el"
-;;;;;;  "rudel-obby-errors.el" "rudel-obby-server.el" "rudel-obby-state.el"
+;;;;;;  "rudel-infinote-node.el" "rudel-infinote-state.el" "rudel-infinote-text-document.el"
+;;;;;;  "rudel-infinote-user.el" "rudel-infinote-util.el" "rudel-interactive.el"
+;;;;;;  "rudel-mode.el" "rudel-obby-client.el" "rudel-obby-debug.el"
+;;;;;;  "rudel-obby-display.el" "rudel-obby-errors.el" "rudel-obby-server.el"
 ;;;;;;  "rudel-obby-state.el" "rudel-obby-util.el" "rudel-operations.el"
-;;;;;;  "rudel-operations.el" "rudel-operators.el" "rudel-operators.el"
-;;;;;;  "rudel-overlay.el" "rudel-overlay.el" "rudel-pkg.el" "rudel-protocol.el"
-;;;;;;  "rudel-protocol.el" "rudel-speedbar.el" "rudel-speedbar.el"
-;;;;;;  "rudel-state-machine.el" "rudel-state-machine.el" "rudel-transport-util.el"
-;;;;;;  "rudel-transport-util.el" "rudel-transport.el" "rudel-transport.el"
-;;;;;;  "rudel-util.el" "rudel-xml.el" "rudel-xml.el" "rudel-xmpp-debug.el"
-;;;;;;  "rudel-xmpp-debug.el" "rudel-xmpp-sasl.el" "rudel-xmpp-state.el"
-;;;;;;  "rudel-xmpp-state.el" "rudel-xmpp-tls.el" "rudel-xmpp-tls.el"
-;;;;;;  "rudel-xmpp-util.el" "rudel-xmpp-util.el" "rudel.el" "rudel.el")
-;;;;;;  (0 0 0 0))
+;;;;;;  "rudel-operators.el" "rudel-overlay.el" "rudel-pkg.el" "rudel-protocol.el"
+;;;;;;  "rudel-speedbar.el" "rudel-state-machine.el" "rudel-transport-util.el"
+;;;;;;  "rudel-transport-util.el" "rudel-transport.el" "rudel-util.el"
+;;;;;;  "rudel-xml.el" "rudel-xmpp-debug.el" "rudel-xmpp-sasl.el"
+;;;;;;  "rudel-xmpp-state.el" "rudel-xmpp-tls.el" "rudel-xmpp-util.el"
+;;;;;;  "rudel.el") (0 0 0 0))
 
 ;;;***
 

@@ -1,6 +1,6 @@
-;;; rudel-obby-state.el --- Base class for states used in the obby backend
+;;; rudel-obby-state.el --- Base class for states used in the obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, obby, state machine
@@ -62,11 +62,11 @@ state."))
   "Base class for state classes used in the obby backend."
   :abstract t)
 
-(defmethod rudel-enter ((this rudel-obby-state))
+(defmethod rudel-enter ((_this rudel-obby-state))
   "Default behavior is doing nothing when entering a state."
   nil)
 
-(defmethod rudel-leave ((this rudel-obby-state))
+(defmethod rudel-leave ((_this rudel-obby-state))
   "Default behavior is doing nothing when leaving a state.")
 
 (defmethod rudel-accept ((this rudel-obby-state) message)

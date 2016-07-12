@@ -1,4 +1,4 @@
-;;; rudel-tls.el --- Start TLS protocol.
+;;; rudel-tls.el --- Start TLS protocol.  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2008, 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -226,7 +226,7 @@ This only works if PROCESS has been created by
 capability.")
 
 (defmethod initialize-instance :after
-  ((this rudel-start-tls-transport) slots)
+  ((this rudel-start-tls-transport) _slots)
   "Repair filter of the process owned by THIS."
   ;; The superclass `rudel-socket-transport' installs its filter
   ;; directly onto the socket in its `initialize-instance' :after
@@ -252,7 +252,7 @@ capability.")
 The transport backend is a factory for transport objects that
 support STARTTLS behavior.")
 
-(defmethod initialize-instance ((this rudel-start-tls-backend) slots)
+(defmethod initialize-instance ((this rudel-start-tls-backend) _slots)
   "Initialize slots and set version of THIS."
   (when (next-method-p)
     (call-next-method))
@@ -268,7 +268,7 @@ support STARTTLS behavior.")
 (defvar rudel-tls-ask-connect-info-port-last nil
   "Last port read by TLS backend's `rudel-ask-connect-info'.")
 
-(defmethod rudel-ask-connect-info ((this rudel-start-tls-backend)
+(defmethod rudel-ask-connect-info ((_this rudel-start-tls-backend)
 				   &optional info)
   "Augment INFO by read a hostname and a port number."
   ;; Read server host and port.
@@ -293,7 +293,7 @@ support STARTTLS behavior.")
 
 (defmethod rudel-make-connection ((this rudel-start-tls-backend)
 				  info info-callback
-				  &optional progress-callback)
+				  &optional _progress-callback)
   "Connect to a START-TLS server using the information in INFO.
 INFO has to be a property list containing the keys :host
 and :port."

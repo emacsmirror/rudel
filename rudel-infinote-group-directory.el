@@ -1,4 +1,4 @@
-;;; rudel-infinote-group-directory.el --- Infinote directory group
+;;; rudel-infinote-group-directory.el --- Infinote directory group  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -79,7 +79,7 @@ group.")
   ;; of the connection object and the sequence-number should be used
   ;; by all groups to identify server replies.
   (with-slots (sequence-number plugins) this
-    (with-tag-attrs ((version  protocol-version number)
+    (with-tag-attrs (;; (version  protocol-version number)
 		     (sequence sequence-id      number)) xml
       (setq sequence-number sequence
 	    plugins         (mapcar
@@ -119,18 +119,17 @@ group.")
   nil)
 
 (defmethod rudel-infinote/remove-node
-  ((this rudel-infinote-directory-state-idle) xml)
+  ((_this rudel-infinote-directory-state-idle) _xml)
   ""
-  (with-tag-attrs (id) xml ;; seq
-    nil))
+  ;; (with-tag-attrs (id) xml ;; seq
+    nil)
 
 (defmethod rudel-infinote/sync-in
-  ((this rudel-infinote-directory-state-idle) xml)
+  ((_this rudel-infinote-directory-state-idle) _xml)
   ""
   ;; TODO can contain child <subscribe group="group_name" method="method_name" />
-  (with-tag-attrs (id parent name type group method) xml ;; optional? seq
+  ;; (with-tag-attrs (id parent name type group method) xml ;; optional? seq
     nil)
-  )
 
 
 ;;; Class rudel-infinote-directory-state-exploring
@@ -176,7 +175,7 @@ explored.")
   nil)
 
 (defmethod rudel-infinote/explore-end
-  ((this rudel-infinote-directory-state-exploring) xml)
+  ((this rudel-infinote-directory-state-exploring) _xml)
   ""
   (with-slots (remaining-messages) this
     (unless (zerop remaining-messages)
@@ -270,7 +269,7 @@ explored.")
 communication groups.")
 
 (defmethod initialize-instance ((this rudel-infinote-group-directory)
-				slots)
+				_slots)
   ""
   ;; Initialize slots of THIS.
   (when (next-method-p)
@@ -287,7 +286,7 @@ communication groups.")
   (with-slots (connection) this
     (rudel-make-and-add-node connection id parent name type)))
 
-(defmethod rudel-remove-node ((this rudel-infinote-group-directory))
+(defmethod rudel-remove-node ((_this rudel-infinote-group-directory))
   ""
   (error "Removing nodes is not implemented"))
 

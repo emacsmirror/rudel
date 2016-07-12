@@ -1,4 +1,4 @@
-;;; rudel-obby-util.el --- Miscellaneous functions for the Rudel obby backend
+;;; rudel-obby-util.el --- Miscellaneous functions for the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -73,7 +73,7 @@
 	   (list "split" )
 	   (mapcar #'rudel-operation->message children))))
 
-(defmethod rudel-operation->message ((this jupiter-nop))
+(defmethod rudel-operation->message ((_this jupiter-nop))
   "Serialize THIS nop operation."
   (list "nop"))
 
@@ -152,7 +152,7 @@ construction of the name of the new operation. "
     (let ((old-from (+ from 1))
 	  (old-to   (+ to   1)))
       (with-current-buffer buffer
-	(pcase-let ((`(,change-from ,change-to string)
+	(pcase-let ((`(,change-from ,_change-to ,string)
                      rudel-buffer-change-workaround-data))
 	  (setq from   (- (position-bytes old-from) 1)
 		length (string-bytes
@@ -170,7 +170,7 @@ construction of the name of the new operation. "
      children))
   )
 
-(defmethod rudel-obby-char->byte ((this jupiter-nop) buffer)
+(defmethod rudel-obby-char->byte ((_this jupiter-nop) _buffer)
   "Nothing to convert if THIS is a nop.")
 
 (defgeneric rudel-obby-byte->char ((this jupiter-operation) buffer)
@@ -201,7 +201,7 @@ construction of the name of the new operation. "
      children))
   )
 
-(defmethod rudel-obby-byte->char ((this jupiter-nop) buffer)
+(defmethod rudel-obby-byte->char ((_this jupiter-nop) _buffer)
   "Nothing to convert if THIS is a nop.")
 
 

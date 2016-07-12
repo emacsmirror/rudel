@@ -1,4 +1,4 @@
-;;; rudel-infinote-util.el --- Miscellaneous functions for infinote backend
+;;; rudel-infinote-util.el --- Miscellaneous functions for infinote backend  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -71,7 +71,7 @@
 	   '(split)
 	   (mapcar #'rudel-operation->xml children))))
 
-(defmethod rudel-operation->xml ((this adopted-nop))
+(defmethod rudel-operation->xml ((_this adopted-nop))
   "Serialize THIS nop operation."
   `(nop))
 

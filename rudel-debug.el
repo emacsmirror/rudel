@@ -388,6 +388,6 @@ TAG and LABEL determine the logging style."
 
 (provide 'rudel-debug)
 ;; Local Variables:
-;; no-byte-compile: t
+;; no-byte-compile: nil
 ;; End:
 ;;; rudel-debug.el ends here

@@ -1,4 +1,4 @@
-;;; jupiter-delete.el --- Jupiter delete operation
+;;; jupiter-delete.el --- Jupiter delete operation  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -165,7 +165,7 @@ OTHER is destructively modified or replaced."
 	     (object-class other))))
   other)
 
-(defmethod object-print ((this jupiter-delete) &rest strings)
+(defmethod object-print ((this jupiter-delete) &rest _strings)
   "Add from, to and length to string representation of THIS."
   (with-slots (from to length) this
     (call-next-method

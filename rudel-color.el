@@ -1,4 +1,4 @@
-;;; rudel-color.el --- Color manipulation functions for Rudel
+;;; rudel-color.el --- Color manipulation functions for Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

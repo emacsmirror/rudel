@@ -1,4 +1,4 @@
-;;; rudel-overlay.el --- Overlay functions for Rudel
+;;; rudel-overlay.el --- Overlay functions for Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -225,7 +225,7 @@ AUTHOR has to be an object of type rudel-author-child."
 	  (rudel-make-author-overlay buffer position end author))))))
   )
 
-(defun rudel-update-author-overlay-after-delete (buffer position length author)
+(defun rudel-update-author-overlay-after-delete (buffer position _length _author)
   "Update author overlays in BUFFER to incorporate a deletion of length LENGTH at POSITION by AUTHOR.
 POSITION refers to an Emacs buffer position.
 AUTHOR has to be an object of type rudel-author-child."

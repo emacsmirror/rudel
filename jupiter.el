@@ -1,6 +1,6 @@
-;;; jupiter.el --- An implementation of the Jupiter algorithm
+;;; jupiter.el --- An implementation of the Jupiter algorithm  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, jupiter, algorithm, distributed, integrity
@@ -83,7 +83,7 @@ jupiter algorithm.")
     (cl-incf local-revision)))
 
 (defmethod jupiter-remote-operation ((this jupiter-context)
-				     local-revision remote-revision
+				     local-revision _remote-revision
 				     operation)
   "Transform OPERATION with revisions LOCAL-REVISION and REMOTE-REVISION using the local operations stored in THIS.
 LOCAL-REVISION is the local revision of THIS context, the remote
@@ -121,7 +121,7 @@ site is referring to."
     transformed-operation)
   )
 
-(defmethod object-print ((this jupiter-context) &rest strings)
+(defmethod object-print ((this jupiter-context) &rest _strings)
   "Add revisions and log length to string representation of THIS."
   (with-slots (local-revision remote-revision local-log) this
     (call-next-method

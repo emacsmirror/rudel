@@ -1,6 +1,6 @@
-;;; rudel-infinote-node-directory.el --- Infinote directory node class
+;;; rudel-infinote-node-directory.el --- Infinote directory node class  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, document, directory
@@ -59,7 +59,7 @@ Infinote tree.")
     (push document child-cache))) ;; TODO object-add-to-list or add-to-list?
 
 (defmethod slot-missing ((this rudel-infinote-node-directory)
-			 slot-name operation &optional new-value) ;; TODO why not use slot-unbound?
+			 slot-name operation &optional _new-value) ;; TODO why not use slot-unbound?
   "Simulate slot :children. The value of the slot is fetched as
 necessary."
   (cond

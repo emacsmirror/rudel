@@ -1,4 +1,4 @@
-;;; rudel-xmpp-state.el --- Base class for states used in XMPP connections
+;;; rudel-xmpp-state.el --- Base class for states used in XMPP connections  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -61,19 +61,19 @@
 machine of which uses the state object."))
   "Base class for XMPP state classes.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state) &rest args)
+(defmethod rudel-enter ((_this rudel-xmpp-state) &rest _args)
   "Default behavior is to stay in the newly entered state."
   nil)
 
-(defmethod rudel-leave ((this rudel-xmpp-state))
+(defmethod rudel-leave ((_this rudel-xmpp-state))
   "Default behavior is to do nothing when leaving a state.")
 
 ;; TODO choose one
-(defmethod rudel-accept ((this rudel-xmpp-state) xml)
+(defmethod rudel-accept ((_this rudel-xmpp-state) _xml)
   "Default behavior is to accept XML without taking action."
   nil)
 
-(defmethod rudel-accept ((this rudel-xmpp-state) xml)
+(defmethod rudel-accept ((_this rudel-xmpp-state) xml)
   ""
   (let ((name (xml-node-name xml)))
     (pcase name

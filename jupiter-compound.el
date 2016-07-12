@@ -1,4 +1,4 @@
-;;; jupiter-compound.el --- Jupiter compound operation
+;;; jupiter-compound.el --- Jupiter compound operation  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -77,7 +77,7 @@ number of child operation.")
       (setq other (jupiter-transform child other)))
     other))
 
-(defmethod object-print ((this jupiter-compound) &rest strings)
+(defmethod object-print ((this jupiter-compound) &rest _strings)
   "Add number of children to string representation of THIS."
   (with-slots (children) this
     (call-next-method

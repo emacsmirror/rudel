@@ -1,6 +1,6 @@
-;;; rudel-xmpp-tls.el --- TLS support for XMPP connections
+;;; rudel-xmpp-tls.el --- TLS support for XMPP connections  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, tls, encryption
@@ -46,7 +46,7 @@
   ()
   "State used to enable TLS encryption for a connection.")
 
-(defmethod rudel-enter ((this rudel-xmpp-state-tls-start))
+(defmethod rudel-enter ((_this rudel-xmpp-state-tls-start))
   "Enable TLS encryption for the connection associated with THIS."
   (require 'rudel-tls)
   ;; something like this: (rudel-tls-start-tls transport)
@@ -59,6 +59,8 @@
 (defvar rudel-xmpp-tls-states
   '((start-tls . rudel-xmpp-state-tls-start))
   "")
+
+(defvar rudel-xmpp-states)
 
 (dolist (state rudel-xmpp-tls-states)
   (add-to-list 'rudel-xmpp-states state))

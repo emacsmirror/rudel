@@ -1,6 +1,6 @@
-;;; rudel-operations.el --- Rudel domain operations
+;;; rudel-operations.el --- Rudel domain operations  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, operations
@@ -123,7 +123,7 @@ end of buffer"))
     (rudel-insert object from data)))
 
 (defmethod slot-missing ((this rudel-insert-op)
-			 slot-name operation &optional new-value)
+			 slot-name operation &optional _new-value)
   "Simulate read-only slots :length and :to."
   (cond
    ;; Slot :length

@@ -1,4 +1,4 @@
-;;; adopted-delete.el --- Adopted delete operation
+;;; adopted-delete.el --- Adopted delete operation  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

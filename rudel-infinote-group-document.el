@@ -1,4 +1,4 @@
-;;; rudel-infinote-group-document.el --- Infinote document group
+;;; rudel-infinote-group-document.el --- Infinote document group  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -56,7 +56,7 @@
   "")
 
 (defmethod rudel-infinote/sync-begin
-  ((this rudel-infinote-group-document-state-idle) xml)
+  ((_this rudel-infinote-group-document-state-idle) xml)
   "Handle 'sync-begin' message."
   (with-tag-attrs ((num-messages num-messages number)) xml
     ;; Switch to synchronizing state.
@@ -68,8 +68,8 @@
   (with-tag-attrs ((id        id        number)
 		   name
 		   status
-		   (caret     caret     number)
-		   (selection selection number)
+		   ;; (caret     caret     number)
+		   ;; (selection selection number)
 		   (hue       hue       number)) xml
     (if (rudel-find-user this id #'= #'rudel-id)
 	;; If the user is already subscribed to the document,
@@ -78,7 +78,7 @@
 	 '(rudel infinote)
 	 (format
 	  "User with id %d is already subscribed to document `%s'"
-	  id (object-name-string (oref this :document)))
+	  id (object-name-string (oref this document)))
 	 :warning)
 
       ;; Otherwise, construct the document user object and add it to
@@ -99,10 +99,10 @@
   ((this rudel-infinote-group-document-state-idle) xml)
   ""
   (with-tag-attrs ((id        id        number)
-		   name
+		   ;; name
 		   status
-		   (caret     caret     number)
-		   (selection selection number)
+		   ;; (caret     caret     number)
+		   ;; (selection selection number)
 		   (hue       hue       number)) xml
     (let ((user (rudel-find-user this id #'= #'rudel-id)))
       (if (not user)
@@ -190,7 +190,7 @@
   nil)
 
 (defmethod rudel-infinote/session-close
-  ((this rudel-infinote-group-document-state-idle) xml)
+  ((_this rudel-infinote-group-document-state-idle) _xml)
   "Handle 'session-close' message."
   ;; Switch to closed state.
   'closed)
@@ -238,12 +238,12 @@
   ((this rudel-infinote-group-document-state-synchronizing) xml)
   "Create a user object and add it to the document."
   ;; TODO send sync-error if remaining-items is already zero
-  (with-slots (remaining-items) this
+  (with-slots (remaining-items document) this
     (with-tag-attrs ((id        id        number)
 		     name
 		     status
-		     (caret     caret     number)
-		     (selection selection number)
+		     ;; (caret     caret     number)
+		     ;; (selection selection number)
 		     (hue       hue       number)) xml
       (let ((user (rudel-infinote-document-user
 		   name
@@ -261,11 +261,11 @@
   nil)
 
 (defmethod rudel-infinote/sync-request
-  ((this rudel-infinote-group-document-state-synchronizing) xml)
+  ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-request' message."
   (with-slots (remaining-items) this
-    (with-tag-attrs (user time) xml
-      ) ;; TODO
+    ;; (with-tag-attrs (user time) xml
+    ;;   )  ;; TODO
 
     ;; Expect one less synchronization item.
     (cl-decf remaining-items))
@@ -273,11 +273,11 @@
   nil)
 
 (defmethod rudel-infinote/sync-segment ;; TODO text documents only?
-  ((this rudel-infinote-group-document-state-synchronizing) xml)
+  ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-segment' message."
   (with-slots (remaining-items) this
-    (with-tag-attrs (author) xml
-      ) ;; TODO
+    ;; (with-tag-attrs (author) xml
+    ;;   ) ;; TODO
 
     ;; Expect one less synchronization item.
     (cl-decf remaining-items))
@@ -285,7 +285,7 @@
   nil)
 
 (defmethod rudel-infinote/sync-end
-  ((this rudel-infinote-group-document-state-synchronizing) xml)
+  ((this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-end' message."
   (with-slots (all-items remaining-items) this
     (if (= remaining-items 0)
@@ -314,7 +314,7 @@
   'idle)
 
 (defmethod rudel-infinote/sync-cancel
-  ((this rudel-infinote-group-document-state-synchronizing) xml)
+  ((_this rudel-infinote-group-document-state-synchronizing) _xml)
   "Handle 'sync-cancel' message."
   ;; Stay in this state.
   'idle)
@@ -361,8 +361,8 @@ expect a 'user-join' or 'user-rejoin' message in response.")
   (with-tag-attrs ((id        id        number)
 		   name
 		   status
-		   (caret     caret     number)
-		   (selection selection number)
+		   ;; (caret     caret     number)
+		   ;; (selection selection number)
 		   (hue       hue       number)) xml
     ;; In the joining state, the join message has to refer to our own
     ;; user. Therefore, we obtain the self user object from the
@@ -398,8 +398,8 @@ expect a 'user-join' or 'user-rejoin' message in response.")
   (with-tag-attrs ((id        id        number)
 		   name
 		   status
-		   (caret     caret     number)
-		   (selection selection number)
+		   ;; (caret     caret     number)
+		   ;; (selection selection number)
 		   (hue       hue       number)) xml
     (let ((user (rudel-find-user this id #'= #'rudel-id)))
       ;; When we did not find the self user or the document user or
@@ -452,7 +452,7 @@ expect a 'user-join' or 'user-rejoin' message in response.")
   "")
 
 (defmethod initialize-instance ((this rudel-infinote-group-document)
-				slots)
+				_slots)
   ""
   ;; Initialize slots of THIS.
   (when (next-method-p)

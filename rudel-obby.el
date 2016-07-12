@@ -1,4 +1,4 @@
-;;; rudel-obby.el --- An obby backend for Rudel
+;;; rudel-obby.el --- An obby backend for Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -85,14 +85,14 @@ multiple chunks.")
   "Main class of the Rudel obby backend. Creates obby client
 connections and creates obby servers.")
 
-(defmethod initialize-instance ((this rudel-obby-backend) slots)
+(defmethod initialize-instance ((this rudel-obby-backend) _slots)
   "Initialize slots of THIS with SLOTS."
   (when (next-method-p)
     (call-next-method))
 
   (oset this :version rudel-obby-version))
 
-(defmethod rudel-ask-connect-info ((this rudel-obby-backend)
+(defmethod rudel-ask-connect-info ((_this rudel-obby-backend)
 				   &optional info)
   "Ask user for the information required to connect to an obby server."
   ;; Read server host and port.
@@ -134,7 +134,7 @@ Return the connection object."
   ;; Create the network process
   (let* ((session    (plist-get info :session))
 	 (host       (plist-get info :host)) ;; Just as name
-	 (encryption (plist-get info :encryption))
+	 ;; (encryption (plist-get info :encryption))
 	 (connection (rudel-obby-connection
 		      host
 		      :session   session
@@ -227,7 +227,7 @@ Return the connection object."
     ;; The connection is now usable; return it.
     connection))
 
-(defmethod rudel-ask-host-info ((this rudel-obby-backend)
+(defmethod rudel-ask-host-info ((_this rudel-obby-backend)
 				&optional info)
   "Ask user for information required to host an obby session."
   ;; Read address and port unless they are already specified in INFO.
@@ -241,7 +241,7 @@ Return the connection object."
 	    info))
   )
 
-(defmethod rudel-host ((this rudel-obby-backend) listener info)
+(defmethod rudel-host ((_this rudel-obby-backend) listener _info)
   "Host an obby session using the information INFO.
 Return the created server."
   ;; Before we start, we load the server functionality.
@@ -266,7 +266,7 @@ Return the new document."
 			   :suffix   1)))
   )
 
-(defmethod rudel-available-document-id ((this rudel-obby-backend)
+(defmethod rudel-available-document-id ((_this rudel-obby-backend)
 					session)
   "Return a document id, which is not in use in SESSION."
   ;; Look through some candidates until an unused id is hit.

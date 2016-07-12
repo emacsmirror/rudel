@@ -1,4 +1,4 @@
-;;; rudel-infinote-display.el --- Display functions for infinote users
+;;; rudel-infinote-display.el --- Display functions for infinote users  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -41,7 +41,7 @@
 (require 'rudel-infinote-user)
 
 (defmethod rudel-display-string ((this rudel-infinote-document-user)
-				 &optional use-images)
+				 &optional _use-images)
   "Return a textual representation of THIS for user interface purposes."
   (with-slots ((name :object-name) status) this
     (concat

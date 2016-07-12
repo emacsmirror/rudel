@@ -1,6 +1,6 @@
-;;; rudel-infinote-state.el --- Base classes for infinote states
+;;; rudel-infinote-state.el --- Base classes for infinote states  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinotes, states
@@ -54,14 +54,14 @@
 	       ""))
   "Base class for infinote state classes.")
 
-(defmethod rudel-enter ((this rudel-infinote-state))
+(defmethod rudel-enter ((_this rudel-infinote-state))
   ""
   nil)
 
-(defmethod rudel-leave ((this rudel-infinote-state))
+(defmethod rudel-leave ((_this rudel-infinote-state))
   "")
 
-(defmethod rudel-accept ((this rudel-infinote-state) xml)
+(defmethod rudel-accept ((_this rudel-infinote-state) _xml)
   ""
   nil)
 

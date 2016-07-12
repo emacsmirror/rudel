@@ -1,4 +1,4 @@
-;;; rudel-state-machine.el --- A simple state machine for Rudel
+;;; rudel-state-machine.el --- A simple state machine for Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -335,13 +335,13 @@ arguments and when they switch states.")
   "This method runs 'accept-hook' before ARGUMENTS are processed."
   (apply #'object-run-hook-with-args this 'accept-hook arguments))
 
-(defmethod rudel-switch :before ((this rudel-hook-state-machine) next
+(defmethod rudel-switch :before ((this rudel-hook-state-machine) _next
 				 &rest arguments)
   "This method stores ARGUMENTS for later processing."
   (oset this :last-args arguments))
 
 (defmethod rudel-set-state :before ((this rudel-hook-state-machine) next
-				    &rest arguments)
+				    &rest _arguments)
   "This method runs 'switch-hook' when switching states."
   (with-slots (last-args) this
     (apply #'object-run-hook-with-args

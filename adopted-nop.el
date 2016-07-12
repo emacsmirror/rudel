@@ -1,6 +1,6 @@
-;;; adopted-nop.el --- Adopted no operation
+;;; adopted-nop.el --- Adopted no operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, nop
@@ -48,10 +48,10 @@
   ()
   "Operation, which does not change anything.")
 
-(defmethod rudel-apply ((this adopted-nop) object)
+(defmethod rudel-apply ((_this adopted-nop) _object)
   "Applying THIS does not change OBJECT.")
 
-(defmethod adopted-transform ((this adopted-nop) other)
+(defmethod adopted-transform ((_this adopted-nop) other)
   "Transforming OTHER with THIS simply returns OTHER."
   other)
 

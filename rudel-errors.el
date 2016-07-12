@@ -1,6 +1,6 @@
-;;; rudel-errors.el --- Error data used in Rudel
+;;; rudel-errors.el --- Error data used in Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, errors, conditions
@@ -43,8 +43,6 @@
 
 ;; rudel-incomplete-info
 
-(intern "rudel-incomplete-info")
-
 (put 'rudel-incomplete-info 'error-conditions
      '(error
        rudel-error rudel-incomplete-info))
@@ -54,8 +52,6 @@
 
 ;; rudel-join-error
 
-(intern "rudel-join-error")
-
 (put 'rudel-join-error 'error-conditions
      '(error
        rudel-error rudel-join-error))
@@ -64,8 +60,6 @@
      "Could not join session")
 
 ;; rudel-host-error
-
-(intern "rudel-host-error")
 
 (put 'rudel-host-error 'error-conditions
      '(error

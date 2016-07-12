@@ -1,4 +1,4 @@
-;;; rudel-xml.el --- XML processing functions used by Rudel
+;;; rudel-xml.el --- XML processing functions used by Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -132,7 +132,7 @@ ATTRS is structured as follows:
 ATTRS   ::= (BINDING*)
 BINDING ::= VAR | (VAR ATTR) | (VAR ATTR TYPE)
 VAR is a symbol. ATTR is a symbol whose symbol-name is used as
-tag name. TYPE can be 'number."
+tag name. TYPE can be `number'."
   (declare (indent 2)
 	   (debug (listp form &rest form)))
   (let* ((node-var (make-symbol "node-var"))

@@ -1,4 +1,4 @@
-;;; rudel-backend.el --- A generic backend management mechanism for Rudel
+;;; rudel-backend.el --- A generic backend management mechanism for Rudel  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

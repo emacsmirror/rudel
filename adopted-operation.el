@@ -1,4 +1,4 @@
-;;; adopted-operation.el --- Base class for Adopted operations
+;;; adopted-operation.el --- Base class for Adopted operations  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;

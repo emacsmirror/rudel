@@ -1,4 +1,4 @@
-;;; rudel-session-initiation.el --- Session discovery and advertising functions
+;;; rudel-session-initiation.el --- Session discovery and advertising functions  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -265,14 +265,14 @@ user select a suitable backend and asking for connect information
 required by the chosen backend.")
 
 (defmethod initialize-instance ((this rudel-ask-protocol-backend)
-				slots)
+				_slots)
   "Set backend version."
   (when (next-method-p)
     (call-next-method))
 
   (oset this :version rudel-ask-protocol-version))
 
-(defmethod rudel-discover ((this rudel-ask-protocol-backend))
+(defmethod rudel-discover ((_this rudel-ask-protocol-backend))
   "\"Discover\" sessions by asking the user about the backend to use and the connect info."
   (let ((protocol-backend  (rudel-backend-choose
 			    'protocol
@@ -312,14 +312,14 @@ required by the chosen backend.")
 configured using customization.")
 
 (defmethod initialize-instance ((this rudel-configured-sessions-backend)
-				slots)
+				_slots)
   "Set backend version."
   (when (next-method-p)
     (call-next-method))
 
   (oset this :version rudel-configured-sessions-version))
 
-(defmethod rudel-discover ((this rudel-configured-sessions-backend))
+(defmethod rudel-discover ((_this rudel-configured-sessions-backend))
   "\"Discover\" sessions the has configured."
   ;; Iterate over all configured sessions in order to make
   ;; adjustments.

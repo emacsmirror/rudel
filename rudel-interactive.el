@@ -128,7 +128,7 @@ the name as string."
   ;; is used.
   (unless users
     (if rudel-current-session
-	(setq users (oref rudel-current-session :users))
+	(setq users (oref rudel-current-session users))
       (error "No user list and no active Rudel session")))
   (unless prompt
     (setq prompt "User: "))
@@ -150,7 +150,7 @@ If RETURN. is 'object, return the backend object; Otherwise
 return the name as string."
   (unless documents
     (if rudel-current-session
-	(setq documents (oref rudel-current-session :documents))
+	(setq documents (oref rudel-current-session documents))
       (error "No document list and no active Rudel session")))
   (unless documents
     (error "No documents")) ; TODO error is a bit harsh

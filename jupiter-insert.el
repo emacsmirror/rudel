@@ -1,4 +1,4 @@
-;;; jupiter-insert.el --- Jupiter insert operation
+;;; jupiter-insert.el --- Jupiter insert operation  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -152,7 +152,7 @@
 	     (object-class other))))
   other)
 
-(defmethod object-print ((this jupiter-insert) &rest strings)
+(defmethod object-print ((this jupiter-insert) &rest _strings)
   "Add from, to, length and data to string representation of THIS."
   (with-slots (from to length data) this
     (call-next-method

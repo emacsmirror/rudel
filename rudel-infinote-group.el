@@ -1,4 +1,4 @@
-;;; rudel-infinote-group.el --- Common aspects of infinote communication groups
+;;; rudel-infinote-group.el --- Common aspects of infinote communication groups  -*- lexical-binding:t -*-
 ;;
 ;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
 ;;
@@ -127,7 +127,7 @@ domain: `%s', code: `%s'"
 message.")
 ;; TODO can all groups receive <session-close/> or just document groups?
 
-(defmethod rudel-accept ((this rudel-infinote-group-state-closed) xml)
+(defmethod rudel-accept ((_this rudel-infinote-group-state-closed) _xml)
   "Simply ignore all further messages."
   nil)
 
@@ -160,7 +160,7 @@ sessions. Groups are basically modeled as named state
 machines. Subclasses have to provide their own states."
   :abstract t)
 
-(defmethod rudel-register-state ((this rudel-infinote-group) symbol state)
+(defmethod rudel-register-state ((this rudel-infinote-group) _symbol state)
   "Set the :group slot of STATE to THIS."
   ;; Associate THIS connection to STATE.
   (oset state :group this)
