@@ -4,7 +4,7 @@
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration
-;; Version: 0.3
+;; Version: 0.3.1
 ;; URL: http://rudel.sourceforge.net/
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cl-generic "0.3"))
 ;; X-RCS: $Id:$
