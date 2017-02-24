@@ -117,8 +117,8 @@ transform a bidirectional data stream as it passes through them."
     (set-slot-value (oref this :transport) slot-name new-value)))
   )
 
-(cl-defmethod no-applicable-method ((this rudel-transport-filter)
-				 method &rest args)
+(cl-defmethod cl-no-applicable-method (method
+                                       (this rudel-transport-filter) &rest args)
   "Make methods of underlying transport callable as virtual methods of THIS."
   (apply method (oref this :transport) (cdr args)))
 
