@@ -1,6 +1,6 @@
 ;;; rudel-state-machine.el --- A simple state machine for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, fsm
@@ -294,7 +294,7 @@ NEXT can nil, a list or a `rudel-state' object."
   "Add current state to the string representation of THIS."
   (if (slot-boundp this 'state)
       (with-slots (state) this
-	(apply #'call-next-method
+	(apply #'cl-call-next-method
 	       this
 	       (format " state: %s"
 		       (object-name-string state))

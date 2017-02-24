@@ -1,6 +1,6 @@
 ;;; rudel-obby-server.el --- Server component of the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2017 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, server
@@ -831,7 +831,7 @@ user. COLOR has to be sufficiently different from used colors."
 (cl-defmethod object-print ((this rudel-obby-server) &rest strings)
   "Print THIS with number of clients."
   (with-slots (clients) this
-    (apply #'call-next-method
+    (apply #'cl-call-next-method
 	   this
 	   (format " clients: %d"
 		   (length clients))
