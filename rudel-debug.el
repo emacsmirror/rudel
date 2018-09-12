@@ -1,6 +1,6 @@
 ;;; rudel-debug.el --- Debugging functions for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2018 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, debugging
@@ -43,7 +43,7 @@
 (require 'eieio)
 (require 'data-debug)
 (require 'eieio-datadebug)
-
+(require 'rudel)
 (require 'rudel-util)
 (require 'rudel-state-machine)
 (require 'rudel-transport-util)
@@ -119,15 +119,15 @@
 ;;; Advice stuff
 ;;
 
-(defadvice rudel-join-session (after rudel-debug last activate)
+(advice-add 'rudel-join-session :after #'rudel--debug-join-session)
+(defun rudel--debug-join-session (&rest _)
   "Run data-debug inspection on newly created session objects."
-  (require 'rudel-debug)
   (rudel-adebug-session))
 
-(defadvice rudel-host-session (after rudel-debug last activate)
+(advice-add 'rudel-host-session :around #'rudel--debug-host-session)
+(defun rudel--debug-host-session (orig-fun &rest args)
   "Run data-debug inspection on newly created server objects."
-  (require 'rudel-debug)
-  (rudel-adebug-server ad-return-value))
+  (rudel-adebug-server (apply orig-fun args)))
 
 
 ;;; Network functions
@@ -202,10 +202,8 @@
 	 (string      (cond
 		       ((stringp data)
 			data)
-		       ((object-p data)
-			(object-print data))
 		       (t
-			(prin1-to-string data)))))
+			(cl-prin1-to-string data)))))
     (with-current-buffer buffer
       (goto-char 0)
       (insert prefix
@@ -355,12 +353,8 @@ TAG and LABEL determine the logging style."
   (let ((formatted (cond
 		    ((stringp string-or-data)
 		     string-or-data)
-
-		    ((object-p string-or-data)
-		     (object-print string-or-data))
-
 		    (t
-		     (format "%s" string-or-data)))))
+		     (cl-prin1-to-string string-or-data)))))
     (rudel-debug-write
      this
      :sent
@@ -376,8 +370,7 @@ TAG and LABEL determine the logging style."
 (cl-defmethod rudel-set-filter ((this rudel-socket-transport)
 			     filter)
   "Log DATA as it goes through THIS."
-  (oset
-   this :filter
+  (setf (slot-value this :filter)
    (lambda (data)
      (rudel-debug-write this :received "SOCKET" data)
      (funcall filter data))))

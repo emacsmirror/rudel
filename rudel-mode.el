@@ -1,6 +1,6 @@
 ;;; rudel-mode.el --- Global and buffer-local Rudel minor modes  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2018 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, mode
@@ -320,38 +320,39 @@ subscriptions mode; otherwise, turn it off."
   rudel-header-subscriptions-minor-mode
   :group 'rudel)
 
-(defadvice global-rudel-header-subscriptions-mode
-  (around track-subscriptions activate)
+;; FIXME: This should be part of global-rudel-header-subscriptions-mode
+;; rather than being relegated to a hook.
+(add-hook 'global-rudel-header-subscriptions-mode-hook
+          #'rudel--global-hsm-tracking)
+(defun rudel--global-hsm-tracking ()
   "Start/stop tracking subscriptions when the mode is (de)activated."
-  (let ((value ad-do-it))
-    (if value
+  (if global-rudel-header-subscriptions-mode
 
-	;; Add handlers to session start and end hooks and run the
-	;; start handler on already started sessions.
-	(progn
+      ;; Add handlers to session start and end hooks and run the
+      ;; start handler on already started sessions.
+      (progn
 
-	  ;; Go through all existing sessions.
-	  (mapc #'rudel-header-subscriptions--session-start
-		(when rudel-current-session
-		  (list rudel-current-session)))
+	;; Go through all existing sessions.
+	(mapc #'rudel-header-subscriptions--session-start
+	      (when rudel-current-session
+		(list rudel-current-session)))
 
-	  ;; Watch for new/ended sessions.
-	  (add-hook 'rudel-session-start-hook
-		    #'rudel-header-subscriptions--session-start)
-	  (add-hook 'rudel-session-end-hook
-		    #'rudel-header-subscriptions--session-end))
+	;; Watch for new/ended sessions.
+	(add-hook 'rudel-session-start-hook
+		  #'rudel-header-subscriptions--session-start)
+	(add-hook 'rudel-session-end-hook
+		  #'rudel-header-subscriptions--session-end))
 
-      ;; Remove handlers from session start and end hooks and run the
-      ;; end handler on active sessions.
-      (mapc #'rudel-header-subscriptions--session-end
-	    (when rudel-current-session
-	      (list rudel-current-session)))
+    ;; Remove handlers from session start and end hooks and run the
+    ;; end handler on active sessions.
+    (mapc #'rudel-header-subscriptions--session-end
+	  (when rudel-current-session
+	    (list rudel-current-session)))
 
-      (remove-hook 'rudel-session-start-hook
-		   #'rudel-header-subscriptions--session-start)
-      (remove-hook 'rudel-session-end-hook
-		   #'rudel-header-subscriptions--session-end)))
-  )
+    (remove-hook 'rudel-session-start-hook
+		 #'rudel-header-subscriptions--session-start)
+    (remove-hook 'rudel-session-end-hook
+		 #'rudel-header-subscriptions--session-end)))
 
 
 ;;; Mode line indication of buffer state

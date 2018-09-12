@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group.el --- Common aspects of infinote communication groups  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2018 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -111,7 +111,7 @@ domain: `%s', code: `%s'"
 	      (display-warning
 	       '(rudel infinote)
 	       (format "%s: no method (%s: %s): `%s/%s'; arguments: %s"
-		       (object-print this) (car error) (cdr error)
+		       (cl-prin1-to-string this) (car error) (cdr error)
 		       "rudel-infinote" name arguments)
 	       :warning)
 	      nil)))))))

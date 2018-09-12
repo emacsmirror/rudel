@@ -1,6 +1,6 @@
 ;;; rudel-obby-client.el --- Client functions of the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2011, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2018 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, client
@@ -443,7 +443,7 @@ failure."))
 	       (display-warning
 		'(rudel obby)
 		(format "%s: no method (%s: %s): `%s:%s'; arguments: %s"
-			(object-print this) (car error) (cdr error)
+			(cl-prin1-to-string this) (car error) (cdr error)
 			"rudel-obby/obby_document/record/" action arguments)
 		:debug)
 		nil)))
