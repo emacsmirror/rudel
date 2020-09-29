@@ -1,10 +1,10 @@
 ;;; rudel.el --- A collaborative editing framework for Emacs  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2018 Free Software Foundation, Inc.
+;; Copyright (C) 2018-2020 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration
-;; Version: 0.3.1
+;; Version: 0.3.2
 ;; URL: http://rudel.sourceforge.net/
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5") (cl-generic "0.3") (cl-print "1.0"))
 ;; X-RCS: $Id:$
