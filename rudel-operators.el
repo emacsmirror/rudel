@@ -1,6 +1,6 @@
 ;;; rudel-operators.el --- Sets of modification operators for Rudel objects  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, operators
@@ -116,6 +116,8 @@ operations are applied")
 	     "The user object associated to operations."))
   "Provides operation methods which affect the overlays of a
 buffer.")
+
+(eieio-declare-slots buffer)          ;FIXME: (require 'rudel) creates a cycle!
 
 (cl-defmethod rudel-insert ((this rudel-overlay-operators) position data)
   "Update the overlays associated to THIS to incorporate an insertion of DATA at POSITION."

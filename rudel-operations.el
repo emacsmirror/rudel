@@ -1,6 +1,6 @@
 ;;; rudel-operations.el --- Rudel domain operations  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009, 2010, 2014, 2016, 2021 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, operations
@@ -91,13 +91,14 @@ end of buffer"))
   ""
   :abstract t)
 
+(eieio-declare-slots length to)
+
 (cl-defmethod slot-missing ((this rudel-range-operation)
 			 slot-name operation &optional new-value)
-  "Simulate slot :length"
+  "Simulate slot `length'"
   (cond
-   ;; Slot :length
-   ((or (eq slot-name :length)
-	(eq slot-name 'length))
+   ;; Slot `length'
+   ((eq slot-name 'length)
     (with-slots (from to) this
       (if (eq operation 'oref)
 	  (- to from)
@@ -125,17 +126,15 @@ end of buffer"))
 
 (cl-defmethod slot-missing ((this rudel-insert-op)
 			 slot-name operation &optional _new-value)
-  "Simulate read-only slots :length and :to."
+  "Simulate read-only slots `length' and `to'."
   (cond
-   ;; Slot :length
-   ((and (or (eq slot-name :length)
-	     (eq slot-name 'length))
+   ;; Slot `length'
+   ((and (eq slot-name 'length)
 	 (eq operation 'oref))
     (with-slots (data) this
       (length data)))
-   ;; Slot :to
-   ((and (or (eq slot-name :to)
-	     (eq slot-name 'to))
+   ;; Slot `to'
+   ((and (eq slot-name 'to)
 	 (eq operation 'oref))
     (with-slots (from length) this
       (+ from length)))

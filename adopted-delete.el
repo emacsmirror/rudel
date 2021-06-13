@@ -1,6 +1,6 @@
 ;;; adopted-delete.el --- Adopted delete operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, delete
@@ -45,119 +45,84 @@
 (require 'adopted-nop)
 
 
-;;; Class adopted-delete
-;;
+(cl-defmethod adopted-transform ((this adopted-delete) (other adopted-insert))
+  ;; Transform an insert operation
+  (with-slots ((this-from from) (this-to to) (this-length length)) this
+    (with-slots ((other-from from) (other-to to) (other-length length)) other
+      (cond
+       ;;
+       ;; <other>
+       ;;         <this>
+       ;;
+       ((<= other-to this-from))
 
-(defclass adopted-delete (adopted-operation
-			  rudel-delete-op)
-  ()
-  "Objects of this class represent deletions in buffers.")
+       ;;        <other>
+       ;; <this>
+       ((> other-from this-to)
+	(cl-decf other-from this-length))
 
-(cl-defmethod adopted-transform ((this adopted-delete) other)
-  "Transform other using THIS.
-OTHER is destructively modified or replaced."
-  (cond
+       ;;   <other>
+       ;; <  this  >
+       ((and (> other-from this-from) (< other-to this-to))
+	(setq other-from this-from))
+       )))
+  other)
 
-   ;;
-   ;; Transform an insert operation
-   ;;
-   ((adopted-insert-p other)
-    (with-slots ((this-from :from) (this-to :to) (this-length :length)) this
-      (with-slots ((other-from :from) (other-to :to) (other-length :length)) other
-	(cond
-	 ;;
-	 ;; <other>
-	 ;;         <this>
-	 ;;
-	 ((<= other-to this-from))
+(cl-defmethod adopted-transform ((this adopted-delete) (other adopted-delete))
+  ;; Transform a delete operation
+  (with-slots ((this-from from) (this-to to) (this-length length)) this
+    (with-slots ((other-from from) (other-to to) (other-length length)) other
+      (cond
 
-	 ;;        <other>
-	 ;; <this>
-	 ((> other-from this-to)
-	  (cl-decf other-from this-length))
+       ;;        <other>
+       ;; <this>
+       ;; OTHER deleted a region after the region deleted by
+       ;; THIS. Therefore OTHER has to be shifted by the length of
+       ;; the deleted region.
+       ((> other-from this-to)
+	(cl-decf other-from this-length)
+	(cl-decf other-to   this-length))
 
-	 ;;   <other>
-	 ;; <  this  >
-	 ((and (> other-from this-from) (< other-to this-to))
-	  (setq other-from this-from))
-	 )))
-    )
+       ;; <other>
+       ;;         <this>
+       ;; OTHER deleted a region before the region affected by
+       ;; THIS. That is not affected by THIS operation.
+       ((<= other-to this-from))
 
-   ;;
-   ;; Transform a delete operation
-   ;;
-   ((adopted-delete-p other)
-    (with-slots ((this-from :from) (this-to :to) (this-length :length)) this
-      (with-slots ((other-from :from) (other-to :to) (other-length :length)) other
-	(cond
+       ;; <  other  >
+       ;;   <this>
+       ((and (>= other-from this-from) (>= other-to this-to))
+	(cl-decf other-to this-length))
 
-	 ;;        <other>
-	 ;; <this>
-	 ;; OTHER deleted a region after the region deleted by
-	 ;; THIS. Therefore OTHER has to be shifted by the length of
-	 ;; the deleted region.
-	 ((> other-from this-to)
-	  (cl-decf other-from this-length)
-	  (cl-decf other-to   this-length))
+       ;; <other>
+       ;;    <this>
+       ((and (< other-from this-from) (< other-to this-to))
+	(cl-decf other-to (- other-to this-to)))
 
-	 ;; <other>
-	 ;;         <this>
-	 ;; OTHER deleted a region before the region affected by
-	 ;; THIS. That is not affected by THIS operation.
-	 ((<= other-to this-from))
+       ;;    <other>
+       ;; <this>
+       ;; The region deleted by OTHER overlaps with the region
+       ;; deleted by THIS, such that a part of the region of this is
+       ;; before the region of OTHER. The first part of the region
+       ;; deleted by OTHER has already been deleted. Therefore, the
+       ;; start of OTHER has to be shifted by the length of the
+       ;; overlap.
+       ((and (< other-from this-to) (> other-to this-to))
+	(setq other-from this-from)
+	(cl-incf other-to   (+ other-from (- other-to this-to))))
+       ;; (setq other-to (this-to - other-from))
 
-	 ;; <  other  >
-	 ;;   <this>
-	 ((and (>= other-from this-from) (>= other-to this-to))
-	  (cl-decf other-to this-length))
+       ;;   <other>
+       ;; <  this   >
+       ;; The region deleted by OTHER is completely contained in
+       ;; the region affected by THIS. Therefore, OTHER must not
+       ;; be executed.
+       ((and (>= other-from this-from) (<= other-to this-to))
+	(setq other (adopted-nop)))
 
-	 ;; <other>
-	 ;;    <this>
-	 ((and (< other-from this-from) (< other-to this-to))
-	  (cl-decf other-to (- other-to this-to)))
-
-	 ;;    <other>
-	 ;; <this>
-	 ;; The region deleted by OTHER overlaps with the region
-	 ;; deleted by THIS, such that a part of the region of this is
-	 ;; before the region of OTHER. The first part of the region
-	 ;; deleted by OTHER has already been deleted. Therefore, the
-	 ;; start of OTHER has to be shifted by the length of the
-	 ;; overlap.
-	 ((and (< other-from this-to) (> other-to this-to))
-	  (setq other-from this-from)
-	  (cl-incf other-to   (+ other-from (- other-to this-to))))
-	 ;; (setq other-to (this-to - other-from))
-
-	 ;;   <other>
-	 ;; <  this   >
-	 ;; The region deleted by OTHER is completely contained in
-	 ;; the region affected by THIS. Therefore, OTHER must not
-	 ;; be executed.
-	 ((and (>= other-from this-from) (<= other-to this-to))
-	  (setq other (adopted-nop "nop")))
-
-	 (t
-	  (error "logic error in adopted-delete::transform(adopted-delete)"))
-	 ))))
-
-   ;;
-   ;; Transform a compound operation
-   ;;
-   ((adopted-compound-p other) ;; TODO encapsulation violation
-    (with-slots (children) other
-      (dolist (child children)
-	(setf child (adopted-transform this child)))))
-
-   ;;
-   ;; Transform a nop operation
-   ;;
-   ((adopted-nop-p other))
-
-   ;; TODO this is for debugging
-   (t
-    (error "Cannot transform operation of type `%s'"
-	   (object-class other))))
+       (t
+	(error "logic error in adopted-delete::transform(adopted-delete)"))
+       )))
   other)
 
 (provide 'adopted-delete)

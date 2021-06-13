@@ -1,6 +1,6 @@
 ;;; rudel-hooks.el --- Hooks for Rudel events  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, hook
@@ -37,7 +37,6 @@
 ;;
 
 (require 'eieio)
-
 (require 'rudel-util) ;; for `object-add-hook', `object-remove-hook'
 
 
@@ -85,6 +84,8 @@ The arguments are the document and the buffer.")
 
 ;;; Handlers
 ;;
+
+(eieio-declare-slots users documents) ;FIXME: (require 'rudel) creates a cycle!
 
 (defun rudel-hooks--session-start (session)
   "Watch SESSION for added/removed users and documents."

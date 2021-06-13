@@ -1,6 +1,6 @@
 ;;; rudel-obby.el --- An obby backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, implementation
@@ -121,6 +121,10 @@ connections and creates obby servers.")
 				     user-password))
 	    info))
   )
+
+;; FIXME: Cyclic dependency with rudel-obby-client.
+(eieio-declare-slots error-symbol error-data reason)
+(eieio-declare-slots user-id)           ;FIXME: Move defclass before first use!
 
 (cl-defmethod rudel-connect ((this rudel-obby-backend) transport
 			  info info-callback
@@ -257,7 +261,7 @@ Return the created server."
 Return the new document."
   ;; Find an unused document id and create a document with that id.
   (let ((id (rudel-available-document-id this session)))
-    (with-slots (user-id) (oref session :self)
+    (with-slots (user-id) (slot-value session 'self)
       (rudel-obby-document name
 			   :session  session
 			   :id       id
@@ -270,7 +274,7 @@ Return the new document."
   "Return a document id, which is not in use in SESSION."
   ;; Look through some candidates until an unused id is hit.
   (let* ((used-ids (with-slots (documents) session
-		     (mapcar 'rudel-id documents)))
+		     (mapcar #'rudel-id documents)))
 	 (test-ids (number-sequence 0 (length used-ids))))
     (car (sort (cl-set-difference test-ids used-ids) #'<)))
   )
@@ -306,9 +310,9 @@ otherwise.")
 
 (cl-defmethod eieio-speedbar-description ((this rudel-obby-user))
   "Provide a speedbar description for THIS."
-  (let ((connected  (oref this :connected))
-	(encryption (if (slot-boundp this :encryption)
-			(oref this :encryption)
+  (let ((connected  (slot-value this 'connected))
+	(encryption (if (slot-boundp this 'encryption)
+			(slot-value this 'encryption)
 		      nil)))
     (format "User %s (%s, %s)" (object-name-string this)
 	    (if connected  "Online" "Offline")
@@ -345,7 +349,7 @@ documents in obby sessions.")
 
 (cl-defmethod rudel-both-ids ((this rudel-obby-document))
   "Return a list consisting of document and owner id of THIS document."
-  (with-slots ((doc-id :id) owner-id) this
+  (with-slots ((doc-id id) owner-id) this
     (list owner-id doc-id)))
 
 (cl-defmethod rudel-unique-name ((this rudel-obby-document))

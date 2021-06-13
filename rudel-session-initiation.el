@@ -1,6 +1,6 @@
 ;;; rudel-session-initiation.el --- Session discovery and advertising functions  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, session, initiation, service, discovery, advertising
@@ -259,8 +259,8 @@ advertise the session."
 
 ;;;###rudel-autoload
 (defclass rudel-ask-protocol-backend (rudel-session-initiation-backend)
-  ((capabilities :initform (discover))
-   (priority     :initform fallback))
+  ((capabilities :initform '(discover))
+   (priority     :initform 'fallback))
   "This fallback backend can \"discover\" sessions by letting the
 user select a suitable backend and asking for connect information
 required by the chosen backend.")
@@ -306,8 +306,8 @@ required by the chosen backend.")
 ;;;###rudel-autoload
 (defclass rudel-configured-sessions-backend
   (rudel-session-initiation-backend)
-  ((capabilities :initform (discover))
-   (priority     :initform primary))
+  ((capabilities :initform '(discover))
+   (priority     :initform 'primary))
   "This fallback backend can \"discover\" sessions the user has
 configured using customization.")
 

@@ -1,6 +1,6 @@
 ;;; rudel-interactive.el --- User interaction functions for Rudel.  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021 Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, user, interface, interaction
@@ -39,7 +39,7 @@
 ;;; Code:
 ;;
 (require 'rudel-backend) ;; for `rudel-backend-cons-p'
-
+(eieio-declare-slots users documents) ;FIXME: (require 'rudel) creates a cycle!
 
 ;;; Function for reading Rudel objects from the user.
 ;;
@@ -135,7 +135,7 @@ the name as string."
 
   ;; Construct a list of user name, read a name with completion and
   ;; return a user name of object.
-  (let* ((user-names (mapcar 'object-name-string users))
+  (let* ((user-names (mapcar #'object-name-string users))
 	 (user-name  (completing-read prompt user-names nil t)))
     (cond
      ((eq return 'object)

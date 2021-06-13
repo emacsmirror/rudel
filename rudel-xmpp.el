@@ -1,6 +1,6 @@
 ;;; rudel-xmpp.el --- XMPP transport backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, xmpp, transport, backend
@@ -262,6 +262,8 @@ id=\"%s\">"
 negotiation and the negotiation of the actual stream are
 complete.")
 
+(eieio-declare-slots shelve-buffer)     ;FIXME: Move defclass before first use!
+
 (cl-defmethod rudel-accept ((this rudel-xmpp-state-established) xml)
   "Store XML in buffer of THIS for later processing."
   (with-slots (shelve-buffer) this
@@ -407,8 +409,9 @@ previously shelved data"
 
   (rudel-state-wait this '(disconnected))
 
-  (when (cl-next-method-p)
-    (cl-call-next-method)) ;; TODO does this call rudel-close again?
+  (condition-case nil
+      (cl-call-next-method)
+    (cl-no-next-method nil)) ;; TODO does this call rudel-close again?
   )
 
 

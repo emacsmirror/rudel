@@ -1,6 +1,6 @@
 ;;; adopted-compound.el --- Adopted compound operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, compound
@@ -76,6 +76,13 @@ number of child operation.")
     (dolist (child children) ;; TODO reverse children?
       (setq other (adopted-transform child other)))
     other))
+
+(cl-defmethod adopted-transform (this (other adopted-compound))
+  ;; Transform a compound operation
+  (with-slots (children) other
+    (dolist (child children)
+      (adopted-transform this child)))
+  other)
 
 (provide 'adopted-compound)
 ;;; adopted-compound.el ends here

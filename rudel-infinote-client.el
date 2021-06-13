@@ -1,6 +1,6 @@
 ;;; rudel-infinote-client.el --- Client part of the infinote backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, client
@@ -55,6 +55,7 @@
 (require 'rudel-infinote-text-document)
 
 (require 'rudel-infinote-user)
+(require 'rudel-infinote-node)
 
 (require 'adopted)
 
@@ -114,7 +115,6 @@ side."))
   ;;
   (with-slots (session) this
     (let ((user (rudel-infinote-user
-		 "scymtym"
 		 :color  "red"
 		 ;:status 'active
 		 )))
@@ -125,14 +125,12 @@ side."))
 
     ;; The special 'InfDirectory' group is there from the beginning.
     (let ((directory-group (rudel-infinote-group-directory
-			    "InfDirectory"
 			    :publisher "you"))) ;; TODO use correct publisher name
       (rudel-add-group this directory-group)
 
       (require 'rudel-infinote-node-directory)
       (rudel-add-node this
 		      (rudel-infinote-node-directory
-		       "root"
 		       :id     0
 		       :parent nil
 		       :group  directory-group))
@@ -149,7 +147,7 @@ side."))
 
 (cl-defmethod rudel-add-group ((this rudel-infinote-client-connection) group)
   ""
-  (with-slots ((name :object-name) connection) group
+  (with-slots ((name object-name) connection) group
     ;;
     (setq connection this) ;; TODO encapsulation violation?
 
@@ -165,7 +163,7 @@ GROUP-OR-NAME is a `rudel-infinote-group' object or a string in
 which case it is the name of a group."
   (with-slots (groups) this
     (let ((name (cond
-		 ((rudel-infinote-group-child-p group-or-name)
+		 ((cl-typep group-or-name 'rudel-infinote-group)
 		  (object-name group-or-name))
 
 		 (t
@@ -274,8 +272,9 @@ WHICH is compared to the result of KEY using TEST."
 
     ;;
     (_
-     (when (cl-next-method-p)
-       (cl-call-next-method)))) ;; TODO what is actually called here?
+     (condition-case nil
+         (cl-call-next-method)
+       (cl-no-next-method nil)))) ;; TODO what is actually called here?
   )
 
 (cl-defmethod rudel-disconnect ((this rudel-infinote-client-connection)) ;; TODO maybe we could automatically delegate to the transport
@@ -328,7 +327,7 @@ WHICH is compared to the result of KEY using TEST."
   ;; Announce the subscription to the server and wait until the
   ;; subscription is finished
   (let ((group (rudel-get-group this "InfDirectory"))) ;; TODO (with-group?
-    (rudel-switch group 'subscribing (oref document :id))
+    (rudel-switch group 'subscribing (oref document id))
     (rudel-state-wait group '(idle) nil))
   ;; TODO responsibility of the group?
 
@@ -388,8 +387,7 @@ WHICH is compared to the result of KEY using TEST."
   (rudel-local-operation
    this
    document
-   (adopted-insert "insert"
-		   :from position
+   (adopted-insert :from position
 		   :data data))
   )
 
@@ -399,8 +397,7 @@ WHICH is compared to the result of KEY using TEST."
   (rudel-local-operation
    this
    document
-   (adopted-delete "delete"
-		   :from position
+   (adopted-delete :from position
 		   :to   (+ position length)))
   )
 
@@ -411,8 +408,8 @@ WHICH is compared to the result of KEY using TEST."
   ;;(let ((context (rudel-find-context this document)))
 
   ;; Notify the server of the operation
-  (let ((self (rudel-self (oref this :session))))
-    (with-slots (id group) document
+  (let ((self (rudel-self (oref this session))))
+    (with-slots (group) document
       (rudel-send group
 		  (rudel-infinote-embed-in-request
 		   self (rudel-operation->xml operation)))))

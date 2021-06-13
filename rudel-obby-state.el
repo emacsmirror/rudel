@@ -1,6 +1,6 @@
 ;;; rudel-obby-state.el --- Base class for states used in the obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009-2018 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, obby, state machine
@@ -143,8 +143,8 @@ obby 'document' messages."
   ;; warn.
   (with-parsed-arguments ((doc-id document-id))
     ;; Locate the document based on owner id and document id.
-    (let* ((container (slot-value (oref this :connection)
-				  (oref this document-container-slot)))
+    (let* ((container (slot-value (slot-value this 'connection)
+				  (slot-value this 'document-container-slot)))
 	   (document  (rudel-find-document container doc-id
 					   #'equal #'rudel-both-ids)))
       (if document

@@ -1,6 +1,6 @@
 ;;; rudel-speedbar.el --- Speedbar rendering of Rudel objects  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration, speedbar
@@ -37,6 +37,7 @@
 (require 'speedbar)
 (require 'eieio-speedbar)
 
+(eieio-declare-slots users documents)   ;FIXME: (require 'cl) creates a cycle!
 
 ;;; Class rudel-user methods
 ;;

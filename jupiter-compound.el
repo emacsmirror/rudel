@@ -1,6 +1,6 @@
 ;;; jupiter-compound.el --- Jupiter compound operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: jupiter, operation, compound
@@ -77,12 +77,12 @@ number of child operation.")
       (setq other (jupiter-transform child other)))
     other))
 
-(cl-defmethod object-print ((this jupiter-compound) &rest _strings)
-  "Add number of children to string representation of THIS."
-  (with-slots (children) this
-    (cl-call-next-method
-     this
-     (format " children %d" (length children)))))
+(cl-defmethod jupiter-transform (this (other jupiter-compound))
+  ;; Transform a compound operation
+  (with-slots (children) other
+    (dolist (child children)
+      (jupiter-transform this child)))
+  other)
 
 (provide 'jupiter-compound)
 ;;; jupiter-compound.el ends here

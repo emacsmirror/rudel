@@ -1,6 +1,6 @@
 ;;; jupiter-nop.el --- Jupiter no operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: jupiter, operation, nop
@@ -53,6 +53,9 @@
 
 (cl-defmethod jupiter-transform ((_this jupiter-nop) other)
   "Transforming OTHER with THIS simply returns OTHER."
+  other)
+
+(cl-defmethod jupiter-transform (_this (other jupiter-nop))
   other)
 
 (provide 'jupiter-nop)

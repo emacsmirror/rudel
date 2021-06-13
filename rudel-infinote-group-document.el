@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-document.el --- Infinote document group  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -70,7 +70,8 @@
 		   status
 		   ;; (caret     caret     number)
 		   ;; (selection selection number)
-		   (hue       hue       number)) xml
+		   (hue       hue       number))
+      xml
     (if (rudel-find-user this id #'= #'rudel-id)
 	;; If the user is already subscribed to the document,
 	;; display a warning and ignore the request.
@@ -103,7 +104,8 @@
 		   status
 		   ;; (caret     caret     number)
 		   ;; (selection selection number)
-		   (hue       hue       number)) xml
+		   (hue       hue       number))
+      xml
     (let ((user (rudel-find-user this id #'= #'rudel-id)))
       (if (not user)
 	  ;; We did not find the user, display a warning and give up.
@@ -339,10 +341,11 @@ expect a 'user-join' or 'user-rejoin' message in response.")
 (cl-defmethod rudel-enter
   ((this rudel-infinote-group-document-state-joining))
   ""
-  (let ((self (rudel-self (oref this :session))))
-    (with-slots ((name :object-name)
+  (let ((self (rudel-self (slot-value this 'session))))
+    (with-slots ((name object-name)
 		 color
-		 status) self
+		 status)
+	self
       (let ((hue (car (apply #'rudel-rgb->hsv
 			     (color-values color)))))
 	(rudel-send this
@@ -363,11 +366,12 @@ expect a 'user-join' or 'user-rejoin' message in response.")
 		   status
 		   ;; (caret     caret     number)
 		   ;; (selection selection number)
-		   (hue       hue       number)) xml
+		   (hue       hue       number))
+      xml
     ;; In the joining state, the join message has to refer to our own
     ;; user. Therefore, we obtain the self user object from the
     ;; session, update its slots and add it to the document.
-    (let ((self (rudel-self (oref this :session))))
+    (let ((self (rudel-self (slot-value this 'session))))
       ;; When we did not find the self user display a warning.
       (when (not self)
 	(display-warning
@@ -447,8 +451,8 @@ expect a 'user-join' or 'user-rejoin' message in response.")
 			      :type    rudel-infinote-document-child
 			      :documentation
 			      "")
-   (impersonation-target-slot :initform document)
-   (delegation-target-slot    :initform document))
+   (impersonation-target-slot :initform 'document)
+   (delegation-target-slot    :initform 'document))
   "")
 
 (cl-defmethod initialize-instance ((this rudel-infinote-group-document)

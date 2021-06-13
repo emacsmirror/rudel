@@ -1,6 +1,6 @@
 ;;; rudel-protocol.el --- Interface implemented by Rudel protocol backends  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, backend, protocol
@@ -66,13 +66,13 @@ When INFO is non-nil, augment INFO to produce new list.
 Return a property list that contains the collected information.")
 
 (cl-defgeneric rudel-connect ((this rudel-protocol-backend) transport
-			   info info-callback
-			   &optional progress-callback)
+			      info info-callback
+			      &optional progress-callback)
   "Create a new connection through TRANSPORT according to the data in INFO.
 TRANSPORT has to be an object of a class derived from `rudel-transport'.
 INFO has to be a property list.
 INFO-CALLBACK has to be a function of two arguments which will be
-bound to THIS and INFO. When called, INFO-CALLBACK should return
+bound to THIS and INFO.  When called, INFO-CALLBACK should return
 a modified version of the INFO argument in which no information
 is missing.
 When non-nil, PROGRESS-CALLBACK has to be a function that may be

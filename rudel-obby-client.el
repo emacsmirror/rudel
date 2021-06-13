@@ -1,6 +1,6 @@
 ;;; rudel-obby-client.el --- Client functions of the Rudel obby backend  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2018 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, obby, backend, client
@@ -54,6 +54,7 @@
 (require 'rudel-obby-errors)
 (require 'rudel-obby-util)
 (require 'rudel-obby-state)
+(require 'rudel-obby)
 
 
 ;;; Class rudel-obby-client-state-new
@@ -100,22 +101,24 @@
   "Second state of the encryption handshake."
   :method-invocation-order :c3)
 
+(eieio-declare-slots transport info contexts) ;FIXME: Move defclass before use!
+
 (cl-defmethod rudel-obby/net6_encryption_begin
   ((this rudel-obby-client-state-encryption-start))
   "Handle net6 'encryption_begin' message."
   ;; Start TLS encryption for the connection.
-  (let* ((connection     (oref this :connection))
-	 (info           (oref connection :info))
-	 (transport      (oref connection :transport))
-	 (root-transport (oref transport :root-transport)))
+  (let* ((connection     (slot-value this 'connection))
+	 (info           (slot-value connection 'info))
+	 (transport      (slot-value connection 'transport))
+	 (root-transport (slot-value transport 'root-transport)))
     (when (plist-get info :encryption)
-      (if (rudel-start-tls-transport-child-p root-transport)
+      (if (cl-typep root-transport 'rudel-start-tls-transport)
 	  (progn
 	    (rudel-enable-encryption root-transport)
 	    (sit-for 1))
 	(warn "An encrypted connection has been requested, but
-the selected transport `%s' does not support encryption"
-	      (object-class root-transport)))))
+the selected transport does not support encryption: %s"
+	      (cl-prin1-to-string root-transport)))))
 
   ;; The connection is now established
   'waiting-for-join-info)
@@ -181,7 +184,7 @@ session."
     (list 'session-synching count)))
 
 (cl-defmethod rudel-obby/net6_login_failed
-  ((_this rudel-obby-client-state-joining) reason)
+  ((this rudel-obby-client-state-joining) reason)
   "Handle net6 'login_failed' message."
   (with-parsed-arguments ((reason number))
     (with-slots (connection) this
@@ -330,7 +333,7 @@ failure."))
       (with-slots (session) connection
 	(let ((user (rudel-find-user session user-id
 				     #'= #'rudel-id)))
-	  (with-slots ((name :object-name) (color1 :color)) user
+	  (with-slots ((name object-name) (color1 color)) user
 	    ;; Set color in user object.
 	    (setq color1 color)
 
@@ -375,7 +378,7 @@ failure."))
 	  (if document
 	      (progn
 		(rudel-remove-document session document)
-		(with-slots ((name :object-name)) document
+		(with-slots ((name object-name)) document
 		  (message "Document removed: %s" name)))
 	    (display-warning
 	     '(rudel obby)
@@ -526,7 +529,7 @@ failure."))
 				    sender text)
   "Handle obby 'message' message"
   (with-parsed-arguments ((sender number))
-    (with-slots (session) (oref this :connection)
+    (with-slots (session) (slot-value this 'connection)
       (let ((sender (rudel-find-user session sender #'eq #'rudel-id)))
 	(rudel-chat-dispatch-message sender text))))
   nil)
@@ -650,12 +653,6 @@ a 'self' user object."))
 	'idle
       'we-finalized)))
 
-(cl-defmethod object-print ((this rudel-obby-client-state-session-synching)
-			 &rest _strings)
-  "Append number of remaining items to string representation."
-  (with-slots (remaining-items) this
-    (cl-call-next-method this (format " remaining: %d" remaining-items))))
-
 
 ;;; Class rudel-obby-client-state-subscribing
 ;;
@@ -674,10 +671,10 @@ a 'self' user object."))
 (cl-defmethod rudel-enter ((this rudel-obby-client-state-subscribing)
 			user document)
   "When entering this state, send a subscription request to the server."
-  (with-slots ((document1 :document)) this
+  (with-slots ((document1 document)) this
     (setq document1 document)
 
-    (with-slots ((doc-id :id) owner-id) document1
+    (with-slots ((doc-id id) owner-id) document1
       (with-slots (user-id) user
 	(rudel-send this "obby_document"
 		    (format "%x %x" owner-id doc-id)
@@ -738,8 +735,7 @@ a 'self' user object."))
 	(let ((user      (unless (zerop user-id)
 			   (rudel-find-user session user-id
 					    #'= #'rudel-id)))
-	      (operation (rudel-insert-op "bulk-insert"
-					  :from nil
+	      (operation (rudel-insert-op :from nil
 					  :data data)))
 	  (rudel-remote-operation document user operation)))
 
@@ -749,12 +745,6 @@ a 'self' user object."))
 	  'idle
 	nil)))
   )
-
-(cl-defmethod object-print ((this rudel-obby-client-state-document-synching)
-			 &rest _strings)
-  "Append number of remaining items to string representation."
-  (with-slots (remaining-bytes) this
-    (cl-call-next-method this (format " remaining: %d" remaining-bytes))))
 
 
 ;;; Class rudel-obby-client-state-we-finalized
@@ -775,7 +765,7 @@ a 'self' user object."))
   (with-slots (reason) this
     (setq reason reason1))
 
-  (with-slots (transport) (oref this :connection)
+  (with-slots (transport) (slot-value this 'connection)
     (rudel-close transport))
 
   'disconnected)
@@ -799,7 +789,7 @@ a 'self' user object."))
   (with-slots (reason) this
     (setq reason reason1))
 
-  (with-slots (transport) (oref this :connection)
+  (with-slots (transport) (slot-value this 'connection)
     (rudel-close transport))
 
   'disconnected)
@@ -915,8 +905,9 @@ documents."))
   (rudel-switch this 'we-finalized)
   (rudel-state-wait this '(disconnected) nil)
 
-  (when (cl-next-method-p)
-    (cl-call-next-method)))
+  (condition-case nil
+      (cl-call-next-method)
+    (cl-no-next-method nil)))
 
 (cl-defmethod rudel-close ((this rudel-obby-connection))
   "Cleanup after THIS has been disconnected."
@@ -930,12 +921,12 @@ documents."))
 (cl-defmethod rudel-find-context ((this rudel-obby-connection) document)
   "Return the jupiter context associated to DOCUMENT in THIS connection."
   (with-slots (contexts) this
-    (gethash (oref document :id) contexts)))
+    (gethash (slot-value document 'id) contexts)))
 
 (cl-defmethod rudel-add-context ((this rudel-obby-connection) document)
   "Add a jupiter context for DOCUMENT to THIS connection."
   (with-slots (contexts) this
-    (with-slots ((doc-name :object-name) (doc-id :id)) document
+    (with-slots ((doc-name object-name) (doc-id id)) document
       (puthash doc-id
 	       (jupiter-context (format "%s" doc-name))
 	       contexts)))
@@ -944,7 +935,7 @@ documents."))
 (cl-defmethod rudel-remove-context ((this rudel-obby-connection) document)
   "Remove the jupiter context associated to DOCUMENT from THIS connection."
   (with-slots (contexts) this
-    (remhash (oref document :id) contexts)))
+    (remhash (slot-value document 'id) contexts)))
 
 (cl-defmethod rudel-change-color- ((this rudel-obby-connection) color)
   ""
@@ -957,7 +948,7 @@ documents."))
   (rudel-add-context this document)
 
   ;; Announce the new document to the server.
-  (with-slots ((name :object-name) id buffer) document
+  (with-slots ((name object-name) id buffer) document
     (rudel-send this "obby_document_create"
 		(format "%x" id)
 		name
@@ -969,7 +960,7 @@ documents."))
 (cl-defmethod rudel-unpublish ((this rudel-obby-connection) document)
   "Remove DOCUMENT from the obby session THIS is connected to."
   ;; Request removal of DOCUMENT.
-  (with-slots ((doc-id :id) owner-id) document
+  (with-slots ((doc-id id) owner-id) document
       (rudel-send this "obby_document_remove"
 		  (format "%x %x" owner-id doc-id)))
 
@@ -1029,8 +1020,8 @@ documents."))
 
   ;; Announce the end of our subscription to the server.
   (with-slots (session) this
-    (with-slots (user-id) (oref session :self)
-      (with-slots ((doc-id :id) owner-id) document
+    (with-slots (user-id) (slot-value session 'self)
+      (with-slots ((doc-id id) owner-id) document
 	(rudel-send this "obby_document"
 		    (format "%x %x" owner-id doc-id)
 		    "unsubscribe"
@@ -1047,7 +1038,7 @@ documents."))
   (rudel-local-operation
    this
    document
-   (jupiter-insert "insert" :from position :data data)))
+   (jupiter-insert :from position :data data)))
 
 (cl-defmethod rudel-local-delete ((this rudel-obby-connection)
 			       document position length)
@@ -1055,7 +1046,7 @@ documents."))
   (rudel-local-operation
    this
    document
-   (jupiter-delete "delete" :from position :to (+ position length))))
+   (jupiter-delete :from position :to (+ position length))))
 
 (cl-defmethod rudel-local-operation ((this rudel-obby-connection)
 				  document operation)
@@ -1070,7 +1061,7 @@ documents."))
   (let ((context (rudel-find-context this document)))
 
     ;; Notify the server of the operation.
-    (with-slots (owner-id (doc-id :id)) document
+    (with-slots (owner-id (doc-id id)) document
       (with-slots (local-revision remote-revision) context
 	(apply #'rudel-send
 	       this

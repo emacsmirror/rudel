@@ -1,6 +1,6 @@
 ;;; adopted-nop.el --- Adopted no operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, nop
@@ -53,6 +53,9 @@
 
 (cl-defmethod adopted-transform ((_this adopted-nop) other)
   "Transforming OTHER with THIS simply returns OTHER."
+  other)
+
+(cl-defmethod adopted-transform (_this (other adopted-nop))
   other)
 
 (provide 'adopted-nop)

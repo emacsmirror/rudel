@@ -1,6 +1,6 @@
 ;;; rudel.el --- A collaborative editing framework for Emacs  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2018-2020 Free Software Foundation, Inc.
+;; Copyright (C) 2018-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, collaboration
@@ -70,8 +70,7 @@
 (require 'rudel-operators)
 (require 'rudel-overlay)
 (require 'rudel-hooks)
-(require 'rudel-interactive) ;; for `rudel-read-backend',
-			     ;; `rudel-read-document',
+(require 'rudel-interactive) ;; `rudel-read-document',
 			     ;; `rudel-read-session'
 (require 'rudel-icons)
 
@@ -94,7 +93,7 @@ nil if there is no active session.")
 (put 'rudel-buffer-document 'permanent-local t)
 
 (defvar rudel-buffer-change-workaround-data nil
-  "Buffer-local variable which holds change data that could not be accessed otherwise.
+  "Change data that could not be accessed otherwise.
 It would be nice to find another way to do this.")
 (make-variable-buffer-local 'rudel-buffer-change-workaround-data)
 (put 'rudel-buffer-change-workaround-data 'permanent-local t)
@@ -123,7 +122,6 @@ It would be nice to find another way to do this.")
 The function is called with the document name as the sole
 argument and has to return a buffer object which will be attached
 to the document in question."
-  :group   'rudel
   :type    '(choice (const    :tag "Clear content of existing buffer"
 			      rudel-allocate-buffer-clear-existing)
 		    (const    :tag "Create a new uniquely named buffer"
@@ -133,7 +131,6 @@ to the document in question."
 
 (defcustom rudel-default-username (user-login-name)
   "*"
-  :group 'rudel
   :type  '(string))
 
 
@@ -149,14 +146,12 @@ to the document in question."
 			 :type     list
 			 :initform nil
 			 :documentation
-			 "The list of users participating in this
-session.")
+			 "The list of users participating in this session.")
    (documents            :initarg  :documents
 			 :type     list
 			 :initform nil
 			 :documentation
-			 "This list of documents available in
-this session.")
+			 "This list of documents available in this session.")
    ;; Hooks
    (end-hook             :initarg  :end-hook
 			 :type     list
@@ -309,6 +304,7 @@ client perspective.")
     (cl-remove-if
      (lambda (document)
        ;; FIXME: Move this use of the slot to after the class that defines it.
+       (eieio-declare-slots subscribed)
        (with-slots (subscribed) document
 	 (memq self subscribed)))
      documents))
@@ -609,13 +605,11 @@ Modification hooks are disabled during the insertion."
 
 			   ;; Update overlays
 			   (rudel-overlay-operators
-			    "overlay-operators"
 			    :document this
 			    :user     user)
 
 			   ;; Notify connection
 			   (rudel-connection-operators
-			    "connection-operators"
 			    :connection connection
 			    :document   this)))
 
@@ -629,13 +623,11 @@ Modification hooks are disabled during the insertion."
 
 		       ;; Update buffer contents
 		       (list (rudel-document-operators
-			      "document-operators"
 			      :document this))
 
 		       ;; Update overlays
 		       (when user
 			 (list (rudel-overlay-operators
-				"overlay-operators"
 				:document this
 				:user     user)))))
 
@@ -740,7 +732,6 @@ See `after-change-functions' for more information."
 	    (setq text (buffer-substring-no-properties from to)))
 	  (rudel-local-operation document
 				 (rudel-insert-op
-				  "insert"
 				  :from (- from 1)
 				  :data text))))
 
@@ -749,7 +740,6 @@ See `after-change-functions' for more information."
 	     (not (zerop length)))
 	(rudel-local-operation document
 			       (rudel-delete-op
-				"delete"
 				:from   (- from 1)
 				:length length)))
 
@@ -763,12 +753,10 @@ See `after-change-functions' for more information."
 	    (setq text (buffer-substring-no-properties from to)))
 	  (rudel-local-operation document
 				 (rudel-delete-op
-				  "delete"
 				  :from   (- from 1)
 				  :length length))
 	  (rudel-local-operation document
 				 (rudel-insert-op
-				  "insert"
 				  :from (- from 1)
 				  :data text)))))))
   )

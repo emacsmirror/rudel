@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-directory.el --- Infinote directory group  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -202,7 +202,7 @@ explored.")
 (cl-defmethod rudel-enter
   ((this rudel-infinote-directory-state-subscribing) id)
   "Send 'subscribe-session' message and store ID in THIS for later."
-  (with-slots ((id1 :id)) this
+  (with-slots ((id1 id)) this
     (setq id1 id)
     (rudel-send this
 		`(subscribe-session
@@ -212,10 +212,11 @@ explored.")
 (cl-defmethod rudel-infinote/subscribe-session
   ((this rudel-infinote-directory-state-subscribing) xml)
   ""
-  (with-slots ((id1 :id)) this
+  (with-slots ((id1 id)) this
     (with-tag-attrs ((name group)
 		     method
-		     (id   id    number)) xml ;; optional seq
+		     (id   id    number))
+	xml ;; optional seq
 
       ;; Check received id against stored id.
       (unless (= id1 id)

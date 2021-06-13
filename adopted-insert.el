@@ -1,6 +1,6 @@
 ;;; adopted-insert.el --- Adopted insert operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation, insert
@@ -45,102 +45,70 @@
 (require 'adopted-nop)
 
 
-;;; Class adopted-insert
-;;
+(cl-defmethod adopted-transform ((this adopted-insert) (other adopted-insert))
+  ;; Transform an insert operation
+  (with-slots ((this-from from) (this-to to) (this-length length) (this-data data)) this
+    (with-slots ((other-from from) (other-to to) (other-length length) (other-data data)) other
+      (cond
+       ;;
+       ;; <other>
+       ;;         <this>
+       ;; No need to do anything in this case.
+       ((< other-from this-from)) ;; TODO remove this case; but not the comment
 
-(defclass adopted-insert (adopted-operation
-			  rudel-insert-op)
-  ()
-  "Objects of this class represent insertions into buffers.")
+       ;;
+       ;;        <other>
+       ;; <this>
+       ;;
+       ((> other-from this-from)
+	(cl-incf other-from this-length))
 
-(cl-defmethod adopted-transform ((this adopted-insert) other)
-  "Transform OTHER using THIS."
-  (cond
+       ;;
+       ;; <other>
+       ;; <this>
+       ;; OTHER inserted at the same start position as we did. Since
+       ;; the situation is symmetric in the location properties of
+       ;; OTHER and THIS, we use the inserted data to construct an
+       ;; ordering.
+       ((= other-from this-from)
+	(when (string< this-data other-data)
+	  (cl-incf other-from this-length))))))
+  other)
 
-   ;;
-   ;; Transform an insert operation
-   ;;
-   ((adopted-insert-p other)
-    (with-slots ((this-from :from) (this-to :to) (this-length :length) (this-data :data)) this
-      (with-slots ((other-from :from) (other-to :to) (other-length :length) (other-data :data)) other
-	(cond
-	 ;;
-	 ;; <other>
-	 ;;         <this>
-	 ;; No need to do anything in this case.
-	 ((< other-from this-from)) ;; TODO remove this case; but not the comment
+(cl-defmethod adopted-transform ((this adopted-insert) (other adopted-delete))
+  ;; Transform a delete operation
+  (with-slots ((this-from from) (this-to to) (this-length length)) this
+    (with-slots ((other-from from) (other-to to) (other-length length)) other
+      (cond
 
-	 ;;
-	 ;;        <other>
-	 ;; <this>
-	 ;;
-	 ((> other-from this-from)
-	  (cl-incf other-from this-length))
+       ;;
+       ;; <other>
+       ;;         <this>
+       ;; just keep OTHER
 
-	 ;;
-	 ;; <other>
-	 ;; <this>
-	 ;; OTHER inserted at the same start position as we did. Since
-	 ;; the situation is symmetric in the location properties of
-	 ;; OTHER and THIS, we use the inserted data to construct an
-	 ;; ordering.
-	 ((= other-from this-from)
-	  (when (string< this-data other-data)
-	    (cl-incf other-from this-length)))))))
+       ;;
+       ;; <other> and   <other> and        <other>
+       ;; <this>      <this>        <this>
+       ((>= other-from this-from)
+	(cl-incf other-from this-length)
+	(cl-incf other-to   this-length))
 
-   ;;
-   ;; Transform a delete operation
-   ;;
-   ((adopted-delete-p other)
-    (with-slots ((this-from :from) (this-to :to) (this-length :length)) this
-      (with-slots ((other-from :from) (other-to :to) (other-length :length)) other
-	(cond
-
-	 ;;
-	 ;; <other>
-	 ;;         <this>
-	 ;; just keep OTHER
-
-	 ;;
-	 ;; <other> and   <other> and        <other>
-	 ;; <this>      <this>        <this>
-	 ((>= other-from this-from)
-	  (cl-incf other-from this-length)
-	  (cl-incf other-to   this-length))
-
-	 ;;
-	 ;; <  other  >
-	 ;;   <this>
-	 ;; OTHER deleted a region that includes the point at which THIS
-	 ;; inserted in its interior. OTHER has to be split into one
-	 ;; deletion before and one delete after the inserted data.
-	 ((and (< other-from this-from) (> other-to this-to))
-	  (setq other
-		(adopted-compound "compound"
-	         :children (list (adopted-delete "delete-left"
-				  :from other-from
-				  :to   this-from)
-				 (adopted-delete "delete-right"
-				  :from this-to
-				  :to   (+ other-to this-length))))))
-	 ))))
-
-   ;;
-   ;; Transform a compound operation
-   ;;
-   ((adopted-compound-p other) ;; TODO encapsulation violation
-    (with-slots (children) other
-      (dolist (child children)
-	(setf child (adopted-transform this child)))))
-
-   ;;
-   ;; Transform a nop operation
-   ;;
-   ((adopted-nop-p other))
-
-   ;; TODO this is for debugging
-   (t (error "Cannot transform operation of type `%s'"
-	     (object-class other))))
+       ;;
+       ;; <  other  >
+       ;;   <this>
+       ;; OTHER deleted a region that includes the point at which THIS
+       ;; inserted in its interior. OTHER has to be split into one
+       ;; deletion before and one delete after the inserted data.
+       ((and (< other-from this-from) (> other-to this-to))
+	(setq other
+	      (adopted-compound
+	       :children (list (adopted-delete
+				:from other-from
+				:to   this-from)
+			       (adopted-delete
+				:from this-to
+				:to   (+ other-to this-length))))))
+       )))
   other)
 
 (provide 'adopted-insert)

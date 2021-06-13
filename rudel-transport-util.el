@@ -1,6 +1,6 @@
 ;;; rudel-transport-util.el --- Utility functions for Rudel transport functionality  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, backend, transport, utility, miscellaneous
@@ -102,25 +102,25 @@ transform a bidirectional data stream as it passes through them."
 			 slot-name operation &optional new-value)
   "Make slots of underlying transport available as virtual slots of THIS."
   (cond
-   ((and (or (eq slot-name :root-transport)
-	     (eq slot-name 'root-transport))
+   ((and (eq slot-name 'root-transport)
 	 (eq operation 'oref))
+    (eieio-declare-slots root-transport) ;FIXME: No such slot in Rudel!
     (with-slots (transport) this
-      (if (rudel-transport-filter-child-p transport)
-	  (oref transport :root-transport)
+      (if (cl-typep transport 'rudel-transport-filter)
+	  (slot-value transport 'root-transport)
 	transport)))
 
    ((eq operation 'oref)
-    (slot-value (oref this :transport) slot-name))
+    (slot-value (slot-value this 'transport) slot-name))
 
    ((eq operation 'oset)
-    (set-slot-value (oref this :transport) slot-name new-value)))
+    (setf (slot-value (slot-value this 'transport) slot-name) new-value)))
   )
 
 (cl-defmethod cl-no-applicable-method (method
                                        (this rudel-transport-filter) &rest args)
   "Make methods of underlying transport callable as virtual methods of THIS."
-  (apply method (oref this :transport) (cdr args)))
+  (apply method (slot-value this 'transport) (cdr args)))
 
 
 ;;; Class rudel-assembling-transport-filter

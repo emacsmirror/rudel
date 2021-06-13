@@ -1,6 +1,6 @@
 ;;; rudel-infinote-user.el --- Infinote user class  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, user
@@ -58,8 +58,8 @@ sessions.")
 			      :type     rudel-infinote-user-child
 			      :documentation
 			      "")
-   (impersonation-target-slot :initform session-user)
-   (delegation-target-slot    :initform session-user)
+   (impersonation-target-slot :initform 'session-user)
+   (delegation-target-slot    :initform 'session-user)
    (id                        :initarg  :id
 			      :type     integer
 			      :reader   rudel-id

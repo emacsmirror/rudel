@@ -1,6 +1,6 @@
 ;;; rudel-tcp.el --- socket transport backend for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, socket, transport, backend
@@ -163,7 +163,7 @@ be a transport object representing the incoming connection."))
 
 ;;;###rudel-autoload
 (defclass rudel-tcp-backend (rudel-transport-backend)
-  ((capabilities :initform (listen connect)))
+  ((capabilities :initform '(listen connect)))
   "TCP transport backend.
 The transport backend is a factory for TCP transport objects.")
 

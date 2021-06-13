@@ -1,6 +1,6 @@
 ;;; rudel-backend.el --- A generic backend management mechanism for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, backend, factory
@@ -160,7 +160,7 @@ for which CLASS-OR-OBJECT is an object."
     (with-slots (backends) this
       (maphash (lambda (name class)
 		 (when (or (not only-loaded)
-			   (object-p class))
+			   (eieio-object-p class))
 		   (push (cons name class) backend-list)))
 	       backends))
     backend-list)
@@ -193,7 +193,7 @@ objects."
   (with-slots (backends) this
     (maphash
      (lambda (name class)
-       (unless (object-p class)
+       (unless (eieio-object-p class)
 	 (condition-case error
 	     (puthash name (make-instance
 			    class (symbol-name name))
@@ -222,7 +222,7 @@ objects."
   "Check whether CELL is a cons of a backend name and object."
   (and (consp cell)
        (symbolp (car cell))
-       (object-p (cdr cell))))
+       (eieio-object-p (cdr cell))))
 
 ;;;###rudel-autoload
 (defun rudel-backend-get (category name)
@@ -299,7 +299,7 @@ available information available for the backends"
 
      ;; Insert all backends provided by this factory.
      (dolist (backend (rudel-all-backends factory))
-       (insert (if (or (object-p (cdr backend))
+       (insert (if (or (eieio-object-p (cdr backend))
                        (null (get (car backend)
                                   'rudel-backend-last-load-error)))
                    (rudel-backend--format-backend-normal backend)
@@ -319,11 +319,11 @@ available information available for the backends"
 	   'face 'font-lock-type-face)
 	  ;; Backend loading status
 	  (propertize
-	   (prin1-to-string (object-p (cdr backend)))
+	   (prin1-to-string (eieio-object-p (cdr backend)))
 	   'face 'font-lock-variable-name-face)
 	  ;; Backend version
 	  (propertize
-	   (if (object-p (cdr backend))
+	   (if (eieio-object-p (cdr backend))
 	       (mapconcat #'prin1-to-string
 			  (oref (cdr backend) version)
 			  ".")
@@ -331,7 +331,7 @@ available information available for the backends"
 	   'face 'font-lock-constant-face)
 	  ;; Backend capabilities
 	  (propertize
-	   (if (object-p (cdr backend))
+	   (if (eieio-object-p (cdr backend))
 	       (mapconcat #'prin1-to-string
 			  (oref (cdr backend) capabilities)
 			  " ")
@@ -356,4 +356,6 @@ available information available for the backends"
   )
 
 (provide 'rudel-backend)
+
+(require 'rudel-interactive) ;; for `rudel-read-backend'.
 ;;; rudel-backend.el ends here

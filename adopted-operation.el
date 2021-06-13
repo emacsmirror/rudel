@@ -1,6 +1,6 @@
 ;;; adopted-operation.el --- Base class for Adopted operations  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, adopted, algorithm, operation
@@ -39,6 +39,23 @@
 (defclass adopted-operation (rudel-operation)
   ()
   "")
+
+(defclass adopted-insert (adopted-operation
+			  rudel-insert-op)
+  ()
+  "Objects of this class represent insertions into buffers.")
+
+(defclass adopted-delete (adopted-operation
+			  rudel-delete-op)
+  ()
+  "Objects of this class represent deletions in buffers.")
+
+(cl-defgeneric adopted-transform (this other)
+  "Transform OTHER so as to apply before THIS.
+Returns operation such that the effect of applying it after THIS are equal to
+applying OTHER before THIS unmodified.
+In general, OTHER is destructively modified or replaced.")
+
 
 (provide 'adopted-operation)
 ;;; adopted-operation.el ends here

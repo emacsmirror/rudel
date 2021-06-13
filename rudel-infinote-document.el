@@ -1,6 +1,6 @@
 ;;; rudel-infinote-document.el --- Infinote document class  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, document
@@ -58,7 +58,7 @@
   "Add USER to THIS document.
 The :session-user slot of user is set to the session user. The
 session user is looked up and created if necessary."
-  (with-slots ((name :object-name) color) user
+  (with-slots ((name object-name) color) user
     ;; First, find an existing session user or create a new one.
     (let ((session-user
 	   (with-slots (session) this

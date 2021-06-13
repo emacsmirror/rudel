@@ -1,6 +1,6 @@
 ;;; rudel-infinote-node-directory.el --- Infinote directory node class  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, document, directory
@@ -58,19 +58,19 @@ Infinote tree.")
   (with-slots (child-cache) this
     (push document child-cache))) ;; TODO object-add-to-list or add-to-list?
 
+(eieio-declare-slots children)
+
 (cl-defmethod slot-missing ((this rudel-infinote-node-directory)
 			 slot-name operation &optional _new-value) ;; TODO why not use slot-unbound?
-  "Simulate slot :children. The value of the slot is fetched as
-necessary."
+  "Simulate slot `children'. The value of the slot is fetched as necessary."
   (cond
    ;; Slot :children
-   ((and (or (eq slot-name :children)
-	     (eq slot-name 'children))
+   ((and (eq slot-name 'children)
 	 (eq operation 'oref))
     ;; Retrieve children when the slot is accessed for the first time.
-    (unless (slot-boundp this :child-cache)
+    (unless (slot-boundp this 'child-cache)
       ;; Bind slot
-      (oset this :child-cache nil)
+      (setf (slot-value this 'child-cache) nil)
 
       ;; Make group fetch children
       (with-slots (id group) this
@@ -86,7 +86,7 @@ necessary."
 	(rudel-state-wait group '(idle) nil)))
 
     ;; Return children
-    (oref this :child-cache))
+    (slot-value this 'child-cache))
 
    ;; Call next method
    (t

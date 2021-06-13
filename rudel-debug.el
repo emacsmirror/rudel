@@ -1,6 +1,6 @@
 ;;; rudel-debug.el --- Debugging functions for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009-2018 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, debugging
@@ -59,23 +59,19 @@
 
 (defface rudel-debug-sent-data-face
   '((default (:background "orange")))
-  "Face used for sent data."
-  :group 'rudel-debug)
+  "Face used for sent data.")
 
 (defface rudel-debug-received-data-face
   '((default (:background "light sky blue")))
-  "Face used for received (but not yet processed) data."
-  :group 'rudel-debug)
+  "Face used for received (but not yet processed) data.")
 
 (defface rudel-debug-state-face
   '((default (:background "light gray")))
-  "Face used when indicating state changes."
-  :group 'rudel-debug)
+  "Face used when indicating state changes.")
 
 (defface rudel-debug-special-face
   '((default (:background "light sea green")))
-  "Face used for additional information."
-  :group 'rudel-debug)
+  "Face used for additional information.")
 
 (defvar rudel-debug-tag-faces
   '((:sent     . (rudel-debug-sent-data-face     "<  "))

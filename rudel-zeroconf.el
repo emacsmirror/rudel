@@ -1,6 +1,6 @@
 ;;; rudel-zeroconf.el --- Zeroconf support for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, service, discovery, advertising, zeroconf,
@@ -110,8 +110,8 @@ service type TYPE."
 
 ;;;###rudel-autoload
 (defclass rudel-zeroconf-backend (rudel-session-initiation-backend)
-  ((capabilities :initform (discover advertise))
-   (priority     :initform primary))
+  ((capabilities :initform '(discover advertise))
+   (priority     :initform 'primary))
   "")
 
 (cl-defmethod initialize-instance ((this rudel-zeroconf-backend) _slots)

@@ -1,6 +1,6 @@
 ;;; rudel-infinote-display.el --- Display functions for infinote users  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2010-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, user interface
@@ -43,7 +43,7 @@
 (cl-defmethod rudel-display-string ((this rudel-infinote-document-user)
 				 &optional _use-images)
   "Return a textual representation of THIS for user interface purposes."
-  (with-slots ((name :object-name) status) this
+  (with-slots ((name object-name) status) this
     (concat
      (cl-call-next-method)
 

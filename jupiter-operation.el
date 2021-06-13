@@ -1,6 +1,6 @@
 ;;; jupiter-operation.el --- Operation base class for jupiter algorithm  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Jupiter, operation, base
@@ -54,8 +54,21 @@ the same operations."
   :abstract t)
 
 ;; This one really could use multiple dispatch
-(cl-defgeneric jupiter-transform ((this jupiter-operation) other)
-  "Transform OTHER such that the effect of applying it after THIS are equal to applying OTHER before THIS unmodified.
+
+(defclass jupiter-insert (jupiter-operation
+			  rudel-insert-op)
+  ()
+  "Objects of this class represent insertions into buffers.")
+
+(defclass jupiter-delete (jupiter-operation
+			  rudel-delete-op)
+  ()
+  "Objects of this class represent deletions in buffers.")
+
+(cl-defgeneric jupiter-transform (this other)
+  "Transform OTHER so as to apply before THIS.
+Returns operation such that the effect of applying it after THIS are equal to
+applying OTHER before THIS unmodified.
 In general, OTHER is destructively modified or replaced.")
 
 (provide 'jupiter-operation)

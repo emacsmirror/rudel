@@ -1,6 +1,6 @@
 ;;; rudel-overlay.el --- Overlay functions for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008-2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, overlay
@@ -152,10 +152,12 @@ AUTHOR has to be an object of type rudel-user-child."
     (rudel-overlay-author-set-properties overlay author)
     overlay))
 
+(eieio-declare-slots color)             ;FIXME: (require 'cl) creates a cycle!
+
 (defun rudel-overlay-author-set-properties (overlay author)
   "Set properties of OVERLAY according to slots of AUTHOR.
 AUTHOR has to be an object of type rudel-user-child."
-  (with-slots ((name :object-name) color) author
+  (with-slots ((name object-name) color) author
     (overlay-put overlay :rudel     'author)
     (overlay-put overlay :user      author)
     (overlay-put overlay 'face      (when rudel-overlay-author-display

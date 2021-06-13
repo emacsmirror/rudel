@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group-text-document.el --- Communication group used by text documents  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, communication, group, text, document
@@ -57,11 +57,11 @@
    user xml)
   ""
   (with-tag-attrs ((position pos  number)
-		   (text     text))       xml
+		   (text     text))
+      xml
     (rudel-remote-operation
      this user
      (rudel-insert-op
-      "insert"
       :position position
       :data     (or text "\n")))) ;; TODO is this correct?
   nil)
@@ -71,12 +71,12 @@
    user xml)
   ""
   (with-tag-attrs ((position pos  number)
-		   (text     text))       xml
+		   (text     text))
+      xml
     ;; Perform the insert operation
     (rudel-remote-operation
      this user
      (rudel-insert-op
-      "insert"
       :from position
       :data (or text "\n")))
 
@@ -84,7 +84,6 @@
     (rudel-remote-operation
      this user
      (rudel-move-cursor-op
-      "move-cursor"
       :from position)))
   nil)
 
@@ -93,11 +92,11 @@
    user xml)
   ""
   (with-tag-attrs ((position pos number)
-		   (length   len number)) xml
+		   (length   len number))
+      xml
     (rudel-remote-operation
      this user
      (rudel-delete-op
-      "delete"
       :from   position
       :length length)))
   nil)
@@ -107,12 +106,12 @@
    user xml)
   ""
   (with-tag-attrs ((position pos number)
-		   (length   len number)) xml
+		   (length   len number))
+      xml
     ;; Perform the delete operation
     (rudel-remote-operation
      this user
      (rudel-delete-op
-      "delete"
       :from   position
       :length length))
 
@@ -120,7 +119,6 @@
     (rudel-remote-operation
      this user
      (rudel-move-cursor-op
-      "move-cursor"
       :from position)))
   nil)
 
@@ -135,19 +133,18 @@
    user xml)
   ""
   (with-tag-attrs ((position caret     number)
-		   (length   selection number)) xml
+		   (length   selection number))
+      xml
     ;; Perform the cursor movement operation
     (rudel-remote-operation
      this user
      (rudel-move-cursor-op
-      "move-cursor"
       :from position))
 
     ;; Perform the selection movement operation
     (rudel-remote-operation
      this user
      (rudel-move-selection-op
-      "move-selection"
       :from   position
       :length length)))
   nil)
@@ -186,7 +183,8 @@
   ""
   (with-slots (remaining-items document) this
     (with-tag-attrs ((author-id author number)
-		     (text      text))         xml
+		     (text      text))
+        xml
       (let ((author (rudel-find-user
 		     document author-id #'= #'rudel-id)))
 	(if (not author)
@@ -200,7 +198,6 @@
 	  (rudel-remote-operation
 	   this author
 	   (rudel-insert-op
-	    "insert-sync-segment"
 	    :from nil
 	    :data (or text "\n")))))
 

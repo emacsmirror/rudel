@@ -1,6 +1,6 @@
 ;;; rudel-infinote-group.el --- Common aspects of infinote communication groups  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009-2018 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, infinote, group, communication
@@ -59,7 +59,27 @@
 (require 'rudel-state-machine)
 (require 'rudel-infinote-state)
 
-
+;;; Miscellaneous functions
+;;
+
+(defmacro rudel-infinote-embed-in-group (group &rest forms) ;; TODO bad name
+  "Construct a message out of FORMS by adding data from GROUP.
+The returned message consists of an outer <group> element with
+GROUP's properties in its attributes and FORMS as children."
+  (declare (indent 1)
+	   (debug (form &rest form)))
+  (let ((group-var (make-symbol "group"))
+	(name      (make-symbol "name"))
+	(publisher (make-symbol "publisher")))
+    `(let* ((,group-var ,group)
+	    (,name      (object-name-string ,group-var))
+	    (,publisher (slot-value ,group-var 'publisher)))
+       `(group
+	 ((name      . ,,name)
+	  (publisher . ,,publisher))
+	 ,,@forms)))
+  )
+
 ;;; Class rudel-infinote-group-state
 ;;
 
@@ -86,7 +106,8 @@
        ;;      <request-failed><text>Bla</text></request-failed>
        (with-tag-attrs (domain
 			(code            code number)
-			(sequence-number seq  number)) xml
+			(sequence-number seq  number))
+	   xml
 	 (display-warning
 	  '(rudel infinote)
 	  (format "request failed; sequence number: `%s', \
@@ -201,7 +222,7 @@ If NO-SEQUENCE-NUMBER is non-nil, do not add a sequence number
 and do not increment the sequence number counter."
   (if no-sequence-number
       (cl-call-next-method this data)
-    (with-slots ((seq-num :next-sequence-number)) this
+    (with-slots ((seq-num next-sequence-number)) this
       (let ((data       (xml-node-name data))
 	    (attributes (xml-node-attributes data))
 	    (children   (xml-node-children data)))
@@ -217,26 +238,5 @@ and do not increment the sequence number counter."
   )
 
 
-;;; Miscellaneous functions
-;;
-
-(defmacro rudel-infinote-embed-in-group (group &rest forms) ;; TODO bad name
-  "Construct a message out of FORMS by adding data from GROUP.
-The returned message consists of an outer <group> element with
-GROUP's properties in its attributes and FORMS as children."
-  (declare (indent 1)
-	   (debug (form &rest form)))
-  (let ((group-var (make-symbol "group"))
-	(name      (make-symbol "name"))
-	(publisher (make-symbol "publisher")))
-    `(let* ((,group-var ,group)
-	    (,name      (object-name-string ,group-var))
-	    (,publisher (oref ,group-var :publisher)))
-       `(group
-	 ((name      . ,,name)
-	  (publisher . ,,publisher))
-	 ,,@forms)))
-  )
-
 (provide 'rudel-infinote-group)
 ;;; rudel-infinote-group.el ends here

@@ -1,6 +1,6 @@
 ;;; rudel-state-machine.el --- A simple state machine for Rudel  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009-2017 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, fsm
@@ -152,7 +152,7 @@ that fails as well, the first state in the state list is used."
 			(cdr start-arg)))
 	   (start     (or ;; First look for :start initarg.
 		          (cond
-			   ((rudel-state-child-p start-arg)
+			   ((cl-typep start-arg 'rudel-state)
 			    start-arg)
 			   ((symbolp start-arg)
 			    (rudel-find-state this start-arg))
@@ -212,7 +212,7 @@ just NAME."
       (cond
        ;; If NEXT is nil, a symbol or a state object, we switch states
        ;; without passing any data.
-       ((or (null next) (symbolp next) (rudel-state-child-p next))
+       ((or (null next) (symbolp next) (cl-typep next 'rudel-state))
 	(rudel-switch this next))
 
        ;; If NEXT is a list, it contains the symbol of the successor
@@ -233,7 +233,7 @@ state."
   (with-slots (states state) this
     (cond
      ;; When NEXT is a state object, use it.
-     ((rudel-state-child-p next))
+     ((cl-typep next 'rudel-state))
 
      ;; When NEXT is nil, stay in the current state.
      ((null next)
@@ -288,18 +288,6 @@ NEXT can nil, a list or a `rudel-state' object."
    ;; Otherwise NEXT is a `rudel-state' object.
    (t
     (rudel-switch this next)))
-  )
-
-(cl-defmethod object-print ((this rudel-state-machine) &rest strings)
-  "Add current state to the string representation of THIS."
-  (if (slot-boundp this 'state)
-      (with-slots (state) this
-	(apply #'cl-call-next-method
-	       this
-	       (format " state: %s"
-		       (object-name-string state))
-	       strings))
-    (cl-call-next-method this " state: #start" strings))
   )
 
 

@@ -1,6 +1,6 @@
 ;;; rudel-tls.el --- Start TLS protocol.  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2008, 2009, 2010, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2008-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: Rudel, TLS, encryption, starttls, gnutls
@@ -247,7 +247,7 @@ capability.")
 
 ;;;###rudel-autoload
 (defclass rudel-start-tls-backend (rudel-transport-backend)
-  ((capabilities :initform (connect encrypt)))
+  ((capabilities :initform '(connect encrypt)))
   "STARTTLS transport backend.
 The transport backend is a factory for transport objects that
 support STARTTLS behavior.")
@@ -298,7 +298,7 @@ INFO has to be a property list containing the keys :host
 and :port."
   ;; Ensure that INFO contains all necessary information.
   (unless (cl-every (lambda (keyword) (member keyword info))
-		 '(:host :port))
+		    '(:host :port))
     (setq info (funcall info-callback this info)))
 
   ;; Extract information from INFO and create the socket.

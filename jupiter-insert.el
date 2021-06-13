@@ -1,6 +1,6 @@
 ;;; jupiter-insert.el --- Jupiter insert operation  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: jupiter, operation, insert
@@ -42,126 +42,85 @@
 (require 'rudel-operations)
 (require 'jupiter-operation)
 (require 'jupiter-nop)
+(require 'jupiter-compound)
 
 
-;;; Class jupiter-insert
-;;
+(cl-defmethod jupiter-transform ((this jupiter-insert) (other jupiter-insert))
+  ;; Transform an insert operation
+  (with-slots ((this-from   from)
+	       (this-to     to)
+	       (this-length length)
+	       (this-data   data))
+      this
+    (with-slots ((other-from   from)
+		 (other-to     to)
+		 (other-length length)
+		 (other-data   data))
+	other
+      (cond
+       ;;
+       ;; <other>
+       ;;         <this>
+       ;; No need to do anything in this case.
+       ;; ((< other-from this-from))
 
-(defclass jupiter-insert (jupiter-operation
-			  rudel-insert-op)
-  ()
-  "Objects of this class represent insertions into buffers.")
+       ;;
+       ;;        <other>
+       ;; <this>
+       ;;
+       ((> other-from this-from)
+	(cl-incf other-from this-length))
 
-(cl-defmethod jupiter-transform ((this jupiter-insert) other)
-  "Transform OTHER using THIS."
-  (cond
-
-   ;;
-   ;; Transform an insert operation
-   ;;
-   ((jupiter-insert-p other)
-    (with-slots ((this-from   :from)
-		 (this-to     :to)
-		 (this-length :length)
-		 (this-data   :data)) this
-      (with-slots ((other-from   :from)
-		   (other-to     :to)
-		   (other-length :length)
-		   (other-data   :data)) other
-	(cond
-	 ;;
-	 ;; <other>
-	 ;;         <this>
-	 ;; No need to do anything in this case.
-	 ;; ((< other-from this-from))
-
-	 ;;
-	 ;;        <other>
-	 ;; <this>
-	 ;;
-	 ((> other-from this-from)
-	  (cl-incf other-from this-length))
-
-	 ;;
-	 ;; <other>
-	 ;; <this>
-	 ;; OTHER inserted at the same start position as we did. Since
-	 ;; the situation is symmetric in the location properties of
-	 ;; OTHER and THIS, we use the inserted data to construct an
-	 ;; ordering.
-	 ((= other-from this-from)
-	  (when (string< this-data other-data)
-	    (cl-incf other-from this-length)))))))
-
-   ;;
-   ;; Transform a delete operation
-   ;;
-   ((jupiter-delete-p other)
-    (with-slots ((this-from   :from)
-		 (this-to     :to)
-		 (this-length :length)) this
-      (with-slots ((other-from   :from)
-		   (other-to     :to)
-		   (other-length :length)) other
-	(cond
-
-	 ;;
-	 ;; <other>
-	 ;;         <this>
-	 ;; just keep OTHER
-
-	 ;;
-	 ;; <other> and   <other> and        <other>
-	 ;; <this>      <this>        <this>
-	 ((>= other-from this-from)
-	  (cl-incf other-from this-length)
-	  (cl-incf other-to   this-length))
-
-	 ;;
-	 ;; <  other  >
-	 ;;   <this>
-	 ;; OTHER deleted a region that includes the point at which THIS
-	 ;; inserted in its interior. OTHER has to be split into one
-	 ;; deletion before and one delete after the inserted data.
-	 ((and (< other-from this-from) (> other-to this-to))
-	  (setq other
-		(jupiter-compound "compound"
-	         :children (list (jupiter-delete "delete-left"
-				  :from other-from
-				  :to   this-from)
-				 (jupiter-delete "delete-right"
-				  :from this-to
-				  :to   (+ other-to this-length))))))
-	 ))))
-
-   ;;
-   ;; Transform a compound operation
-   ;;
-   ((jupiter-compound-p other) ;; TODO encapsulation violation
-    (with-slots (children) other
-      (dolist (child children)
-	(setf child (jupiter-transform this child)))))
-
-   ;;
-   ;; Transform a nop operation
-   ;;
-   ((jupiter-nop-p other))
-
-   ;; TODO this is for debugging
-   (t (error "Cannot transform operation of type `%s'"
-	     (object-class other))))
+       ;;
+       ;; <other>
+       ;; <this>
+       ;; OTHER inserted at the same start position as we did. Since
+       ;; the situation is symmetric in the location properties of
+       ;; OTHER and THIS, we use the inserted data to construct an
+       ;; ordering.
+       ((= other-from this-from)
+	(when (string< this-data other-data)
+	  (cl-incf other-from this-length))))))
   other)
 
-(cl-defmethod object-print ((this jupiter-insert) &rest _strings)
-  "Add from, to, length and data to string representation of THIS."
-  (with-slots (from to length data) this
-    (cl-call-next-method
-     this
-     (format " from %d" from)
-     (format " to %d" to)
-     (format " length %d" length)
-     (format " data \"%s\"" data)))
-  )
+(cl-defmethod jupiter-transform ((this jupiter-insert) (other jupiter-delete))
+  ;; Transform a delete operation
+  (with-slots ((this-from   from)
+	       (this-to     to)
+	       (this-length length))
+      this
+    (with-slots ((other-from   from)
+		 (other-to     to)
+		 (other-length length))
+	other
+      (cond
+
+       ;;
+       ;; <other>
+       ;;         <this>
+       ;; just keep OTHER
+
+       ;;
+       ;; <other> and   <other> and        <other>
+       ;; <this>      <this>        <this>
+       ((>= other-from this-from)
+	(cl-incf other-from this-length)
+	(cl-incf other-to   this-length))
+
+       ;;
+       ;; <  other  >
+       ;;   <this>
+       ;; OTHER deleted a region that includes the point at which THIS
+       ;; inserted in its interior. OTHER has to be split into one
+       ;; deletion before and one delete after the inserted data.
+       ((and (< other-from this-from) (> other-to this-to))
+	(setq other
+	      (jupiter-compound :children (list (jupiter-delete :from other-from
+				                                :to   this-from)
+				                (jupiter-delete :from this-to
+				                                :to   (+ other-to this-length))))))
+       )))
+  other)
 
 (provide 'jupiter-insert)
 ;;; jupiter-insert.el ends here

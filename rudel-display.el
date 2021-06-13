@@ -1,6 +1,6 @@
 ;;; rudel-display.el --- Display functions for Rudel objects  -*- lexical-binding:t -*-
 ;;
-;; Copyright (C) 2009, 2014, 2016 Free Software Foundation, Inc.
+;; Copyright (C) 2009-2021  Free Software Foundation, Inc.
 ;;
 ;; Author: Jan Moringen <scymtym@users.sourceforge.net>
 ;; Keywords: rudel, display, icons, text, representation
@@ -53,7 +53,7 @@ the text representation.
 When ALIGN is non-nil, align the text representation. If ALIGN is
 t, align it to a fixed width. When ALIGN is a number, align it to
 a width equal to that number."
-  (with-slots ((name :object-name) color) this
+  (with-slots ((name object-name) color) this
     (propertize
      (concat
       (when use-images
@@ -70,7 +70,7 @@ to the text representation.
 When ALIGN is non-nil, align the text representation. If ALIGN is
 t, align it to a fixed width. When ALIGN is a number, align it to
 a width equal to that number."
-  (with-slots ((name :object-name)) this
+  (with-slots ((name object-name)) this
     (concat
      (when use-images
        (propertize "*" 'display rudel-icon-document))
