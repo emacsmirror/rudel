@@ -555,7 +555,7 @@ received from the server.")
 		    :documentation
 		    "Flag that remembers, whether the session has
 a 'self' user object."))
-  "State used for synching session data."
+  "State used for syncing session data."
   :method-invocation-order :c3)
 
 (cl-defmethod rudel-enter ((this rudel-obby-client-state-session-synching)
